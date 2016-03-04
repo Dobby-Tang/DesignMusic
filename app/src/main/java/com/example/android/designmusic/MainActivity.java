@@ -14,6 +14,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+
+/**
+*@author By Dobby Tang
+*Created on 2016-03-04 15:36
+*/
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
