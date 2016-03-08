@@ -14,8 +14,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by KJHmobileAdmin on 2016-03-04.
- */
+*@author By Dobby Tang
+*Created on 2016-03-08 13:53
+*/
 public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
 
     public static final int TYPE_SONG = 0;
