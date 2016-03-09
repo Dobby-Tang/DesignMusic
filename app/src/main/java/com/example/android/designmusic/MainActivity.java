@@ -14,6 +14,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.android.designmusic.ui.adapter.HomeFragmentPagerAdapter;
+import com.example.android.designmusic.ui.fragment.HomeFragment;
+
 
 /**
 *@author By Dobby Tang
@@ -75,7 +78,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupViewPager(ViewPager viewPager){
-
+        HomeFragmentPagerAdapter homeFragmentPagerAdapter = new HomeFragmentPagerAdapter(getSupportFragmentManager());
+        HomeFragment homeFragment = new HomeFragment();
+        homeFragment.newInstance(HomeFragment.TYPE_SONG);
+        homeFragmentPagerAdapter.addFragment(homeFragment,"歌曲");
+        viewPager.setAdapter(homeFragmentPagerAdapter);
     }
 
 

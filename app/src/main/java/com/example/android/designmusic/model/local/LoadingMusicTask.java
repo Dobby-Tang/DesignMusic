@@ -1,14 +1,17 @@
 package com.example.android.designmusic.model.local;
 
-import android.app.FragmentManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+
+import com.example.android.designmusic.ui.adapter.MusicListAdapter;
+import com.example.android.designmusic.ui.fragment.HomeFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,11 +21,6 @@ import java.util.HashMap;
 *Created on 2016-03-08 13:53
 */
 public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
-
-    public static final int TYPE_SONG = 0;
-    public static final int TYPE_ARTIST = 1;
-    public static final int TYPE_ALBUM = 2;
-    public static final int TYPE_PLAYER = 3;
 
     public static final String musicId = "musicId";               //音乐ID
     public static final String musicName = "musicName";           //音乐名称
@@ -44,16 +42,16 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
 
     private ArrayList<HashMap<String,String >> List;
 
-    private int type;
+    private String Type;
     private Context context;
     private RecyclerView mRecyclerView;
     private LayoutInflater mInflater;
     private FragmentManager fragmentManager;
 
 
-    public LoadingMusicTask(int type, Context context, RecyclerView mRecyclerView,
+    public LoadingMusicTask(String Type, Context context, RecyclerView mRecyclerView,
                             LayoutInflater mInflater, FragmentManager fragmentManager){
-        this.type = type;
+        this.Type = Type;
         this.context = context;
         this.mRecyclerView = mRecyclerView;
         this.mInflater = mInflater;
@@ -61,18 +59,19 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
     }
 
 
+
+
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         if(aBoolean){
-            switch (type){
-                case TYPE_SONG:
+            switch (Type){
+                case HomeFragment.TYPE_SONG:
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+                    mRecyclerView.setAdapter(new MusicListAdapter(context,List));
                     break;
-                case TYPE_ARTIST:
+                case HomeFragment.TYPE_ARTIST:
                     break;
-                case TYPE_ALBUM:
-                    break;
-                case TYPE_PLAYER:
+                case HomeFragment.TYPE_ALBUM:
                     break;
 
             }
@@ -84,14 +83,14 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
     @Override
     protected Boolean doInBackground(Void... params) {
         List = new ArrayList<>();
-        switch(type){
-            case TYPE_SONG:
+        switch(Type){
+            case HomeFragment.TYPE_SONG:
                 List = getMusicFromProvider();
                 break;
-            case TYPE_ARTIST:
+            case HomeFragment.TYPE_ARTIST:
                 List = getArtistFromProvider();
                 break;
-            case TYPE_ALBUM:
+            case HomeFragment.TYPE_ALBUM:
                 List = getAlbumFromProvider();
                 break;
             default:
@@ -110,7 +109,7 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
         ContentResolver resolver = context.getContentResolver();
         int time;
         try{
-            Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,null,null,null,
+            Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,
                     MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
             HashMap<String,String> item;
             while (cursor.moveToNext()){
