@@ -13,9 +13,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.support.design.widget.TabLayout;
 
 import com.example.android.designmusic.ui.adapter.HomeFragmentPagerAdapter;
 import com.example.android.designmusic.ui.fragment.HomeFragment;
+import com.facebook.drawee.backends.pipeline.Fresco;
 
 
 /**
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fresco.initialize(MainActivity.this);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -57,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
     }
 
     @Override
@@ -79,9 +86,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager){
         HomeFragmentPagerAdapter homeFragmentPagerAdapter = new HomeFragmentPagerAdapter(getSupportFragmentManager());
-        HomeFragment homeFragment = new HomeFragment();
-        homeFragment.newInstance(HomeFragment.TYPE_SONG);
-        homeFragmentPagerAdapter.addFragment(homeFragment,"歌曲");
+        HomeFragment homeFragment1 = new HomeFragment();
+        HomeFragment homeFragment2 = new HomeFragment();
+
+        homeFragmentPagerAdapter.addFragment(homeFragment1.newInstance(HomeFragment.TYPE_SONG),"歌曲");
+        homeFragmentPagerAdapter.addFragment(homeFragment2.newInstance(HomeFragment.TYPE_ALBUM),"专辑");
+
         viewPager.setAdapter(homeFragmentPagerAdapter);
     }
 

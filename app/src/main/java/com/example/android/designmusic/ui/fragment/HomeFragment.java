@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.android.designmusic.R;
-import com.example.android.designmusic.model.local.LoadingMusicTask;
+import com.example.android.designmusic.task.LoadingMusicTask;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,7 +31,7 @@ public class HomeFragment extends Fragment {
     private static final String LIST_TYPE = "list_type";      //队列类型
 
     // TODO: Rename and change types of parameters
-    private String mType = TYPE_SONG;
+    private String mType = TYPE_ALBUM;
 
     private OnFragmentInteractionListener mListener;
 
@@ -57,7 +57,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+        Bundle arg = getArguments();
+        if (arg != null) {
             mType = getArguments().getString(LIST_TYPE);
         }
     }
@@ -65,16 +66,8 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        RecyclerView mHomeList = (RecyclerView) inflater.inflate(R.layout.fragment_home,container,false);
-        switch (mType){
-            case TYPE_SONG:
-                setupMusicList(mHomeList);
-                break;
-            case TYPE_ARTIST:
-                break;
-            case TYPE_ALBUM:
-                break;
-        }
+        RecyclerView mHomeList = (RecyclerView) inflater.inflate(R.layout.fragment_home_list,container,false);
+        setupHomeList(mType,mHomeList);
         return mHomeList;
     }
 
@@ -103,12 +96,16 @@ public class HomeFragment extends Fragment {
     }
 
 
-    private void setupMusicList(RecyclerView mHomeList){
+    private void setupHomeList(String mType,RecyclerView mHomeList){
         LoadingMusicTask musicTask;
         LayoutInflater inflater = LayoutInflater.from(getActivity());
+
         musicTask = new LoadingMusicTask(mType,getActivity(),mHomeList,inflater,getFragmentManager());
         musicTask.execute();
+
+
     }
+
 
     /**
      * This interface must be implemented by activities that contain this

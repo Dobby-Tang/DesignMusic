@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by KJHmobileAdmin on 2016-03-09.
- */
+*@author By Dobby Tang
+*Created on 2016-03-10 16:51
+*/
 public class HomeFragmentPagerAdapter extends FragmentPagerAdapter{
     private final List<Fragment> mFragments = new ArrayList<>();
     private final List<String> mFragmentTitle = new ArrayList<>();

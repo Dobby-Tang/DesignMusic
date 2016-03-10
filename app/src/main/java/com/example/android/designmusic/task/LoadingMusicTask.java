@@ -1,15 +1,18 @@
-package com.example.android.designmusic.model.local;
+package com.example.android.designmusic.task;
 
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 
+import com.example.android.designmusic.ui.adapter.AlbumListAdapter;
 import com.example.android.designmusic.ui.adapter.MusicListAdapter;
 import com.example.android.designmusic.ui.fragment.HomeFragment;
 
@@ -22,22 +25,25 @@ import java.util.HashMap;
 */
 public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
 
-    public static final String musicId = "musicId";               //音乐ID
-    public static final String musicName = "musicName";           //音乐名称
+    public static final String songId = "songId";               //音乐ID
+    public static final String songName = "songName";           //音乐名称
     public static final String artistName = "artistName";         //艺术家名称
     public static final String albumName = "albumName";           //专辑名称
-    public static final String musicPath = "musicPath";                     //歌曲路径
+    public static final String songPath = "songPath";                     //歌曲路径
     public static final String duration_t = "duration_t";         //音乐时长（毫秒）
     public static final String duration = "duration";             //音乐时长
 
     public static final String artistId = "artistId";             //艺术家ID
-    public static final String musicNumber = "musicNumber";        //音乐序号
+    public static final String songNumber = "songNumber";        //音乐序号
 
     public static final String albumId = "albumId";               //专辑ID
     public static final String albumArt = "albumArt";             //专辑图片
+    public static final String artistaa = "sss";
 
-    public static final String musicList = "musicList";            //音乐队列
+    public static final String songList = "songList";            //音乐队列
     public static final String playPosition = "playPosition";      //列表list
+
+    public static final Uri albumArtUri = Uri.parse("content://media/external/audio/albumart");
 
 
     private ArrayList<HashMap<String,String >> List;
@@ -48,6 +54,7 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
     private LayoutInflater mInflater;
     private FragmentManager fragmentManager;
 
+    private static final String TAG = "LoadingMusicTask";
 
     public LoadingMusicTask(String Type, Context context, RecyclerView mRecyclerView,
                             LayoutInflater mInflater, FragmentManager fragmentManager){
@@ -72,6 +79,8 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
                 case HomeFragment.TYPE_ARTIST:
                     break;
                 case HomeFragment.TYPE_ALBUM:
+                    mRecyclerView.setLayoutManager(new GridLayoutManager(context,2));
+                    mRecyclerView.setAdapter(new AlbumListAdapter(context,List));
                     break;
 
             }
@@ -114,17 +123,17 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
             HashMap<String,String> item;
             while (cursor.moveToNext()){
                 item = new HashMap<>();
-                item.put(musicId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
+                item.put(songId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
 
                 time = Integer.parseInt(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)))/1000;
 
-                item.put(musicName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+                item.put(songName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
                 item.put(artistName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
                 item.put(albumName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
                 item.put(albumId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
                 item.put(duration,TimeConversions(time));
                 item.put(duration_t,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
-                item.put(musicPath,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
+                item.put(songPath,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
 
                 musicList.add(item);
             }
@@ -151,7 +160,7 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
                 item.put(albumId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums._ID)));
                 item.put(albumName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM)));
                 item.put(artistName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST)));
-                item.put(musicNumber,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS)));
+                item.put(songNumber,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS)));
                 item.put(albumArt,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)));
 
                 albumsList.add(item);
@@ -177,7 +186,7 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
 
                 item.put(artistId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
                 item.put(artistName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST)));
-                item.put(musicNumber,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.NUMBER_OF_ALBUMS)));
+                item.put(songNumber,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.NUMBER_OF_ALBUMS)));
                 artistsList.add(item);
             }
             return  artistsList;

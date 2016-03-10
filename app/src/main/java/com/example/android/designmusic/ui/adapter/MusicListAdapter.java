@@ -1,6 +1,8 @@
 package com.example.android.designmusic.ui.adapter;
 
+import android.content.ContentUris;
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.designmusic.R;
-import com.example.android.designmusic.model.local.LoadingMusicTask;
+import com.example.android.designmusic.task.LoadingMusicTask;
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +25,7 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.Musi
     private Context context;
     private ArrayList<HashMap<String,String>> musicList;
 
+
     public MusicListAdapter(Context context, ArrayList<HashMap<String,String>> musicList){
         this.context = context;
         this.musicList = musicList;
@@ -29,7 +33,7 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.Musi
 
     @Override
     public MusicListAdapter.MusicListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View musicItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.music_list_item,parent,false);
+        View musicItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_music_list_item,parent,false);
         return new MusicListHolder(musicItem);
     }
 
@@ -37,12 +41,13 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.Musi
     public void onBindViewHolder(MusicListAdapter.MusicListHolder holder, int position) {
         HashMap<String,String> Song;
         Song = musicList.get(position);
-        int userId = Integer.parseInt(Song.get(LoadingMusicTask.musicId));
         int albumId = Integer.parseInt(Song.get(LoadingMusicTask.albumId));
 
-        holder.musicName.setText(musicList.get(position).get(LoadingMusicTask.musicName));
-        holder.artistName.setText(musicList.get(position).get(LoadingMusicTask.artistName));
-//        holder.musicImage.setImageBitmap(AlbumCoverHelper.getArtwork(context,userId,albumId,true,false));
+        holder.musicName.setText(Song.get(LoadingMusicTask.songName));
+        holder.artistName.setText(Song.get(LoadingMusicTask.artistName));
+
+        Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
+        holder.musicImage.setImageURI(uri);
     }
 
     @Override
@@ -50,18 +55,19 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.Musi
         return musicList == null ? 0 : musicList.size();
     }
 
+
     public static class MusicListHolder extends RecyclerView.ViewHolder{
 
         TextView musicName;
         TextView artistName;
-        ImageView musicImage;
+        SimpleDraweeView musicImage;
         ImageView itemMore;
 
         public MusicListHolder(View itemView) {
             super(itemView);
             musicName = (TextView) itemView.findViewById(R.id.music_item_music_name);
             artistName = (TextView) itemView.findViewById(R.id.music_item_artist_name);
-            musicImage = (ImageView) itemView.findViewById(R.id.music_item_album_img);
+            musicImage = (SimpleDraweeView) itemView.findViewById(R.id.music_item_album_img);
             itemMore = (ImageView) itemView.findViewById(R.id.music_item_more);
 
         }
