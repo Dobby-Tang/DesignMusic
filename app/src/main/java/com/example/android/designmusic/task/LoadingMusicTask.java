@@ -6,14 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 
-import com.example.android.designmusic.ui.adapter.AlbumListAdapter;
-import com.example.android.designmusic.ui.adapter.MusicListAdapter;
 import com.example.android.designmusic.ui.fragment.HomeFragment;
 
 import java.util.ArrayList;
@@ -50,19 +43,13 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
 
     private String Type;
     private Context context;
-    private RecyclerView mRecyclerView;
-    private LayoutInflater mInflater;
-    private FragmentManager fragmentManager;
 
     private static final String TAG = "LoadingMusicTask";
 
-    public LoadingMusicTask(String Type, Context context, RecyclerView mRecyclerView,
-                            LayoutInflater mInflater, FragmentManager fragmentManager){
+    public LoadingMusicTask(String Type, Context context){
         this.Type = Type;
         this.context = context;
-        this.mRecyclerView = mRecyclerView;
-        this.mInflater = mInflater;
-        this.fragmentManager = fragmentManager;
+
     }
 
 
@@ -73,14 +60,16 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
         if(aBoolean){
             switch (Type){
                 case HomeFragment.TYPE_SONG:
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-                    mRecyclerView.setAdapter(new MusicListAdapter(context,List));
+                    HomeFragment.musicListAdapter.setMusicList(List);
+                    HomeFragment.musicListAdapter.notifyDataSetChanged();
                     break;
                 case HomeFragment.TYPE_ARTIST:
+                    HomeFragment.artistListAdapter.setArtistList(List);
+                    HomeFragment.artistListAdapter.notifyDataSetChanged();
                     break;
                 case HomeFragment.TYPE_ALBUM:
-                    mRecyclerView.setLayoutManager(new GridLayoutManager(context,2));
-                    mRecyclerView.setAdapter(new AlbumListAdapter(context,List));
+                    HomeFragment.albumListAdapter.setAlbumList(List);
+                    HomeFragment.albumListAdapter.notifyDataSetChanged();
                     break;
 
             }

@@ -1,7 +1,6 @@
 package com.example.android.designmusic.ui.adapter;
 
 import android.content.ContentUris;
-import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,24 +22,22 @@ import java.util.HashMap;
 */
 public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.AlbumListHolder>{
 
-    private Context context;
-    private ArrayList<HashMap<String,String>> homeList;
+    private ArrayList<HashMap<String,String>> albumList;
 
-    public AlbumListAdapter(Context context, ArrayList<HashMap<String,String >> homeList){
-        this.context = context;
-        this.homeList = homeList;
+    public AlbumListAdapter( ArrayList<HashMap<String,String >> albumList){
+        this.albumList = albumList;
     }
 
     @Override
     public AlbumListAdapter.AlbumListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View homeList = LayoutInflater.from(context).
+        View homeList = LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.home_album_list_item,parent,false);
         return new AlbumListHolder(homeList);
     }
 
     @Override
     public void onBindViewHolder(AlbumListAdapter.AlbumListHolder holder, int position) {
-        HashMap<String,String> Home = homeList.get(position);
+        HashMap<String,String> Home = albumList.get(position);
         int albumId = Integer.parseInt(Home.get(LoadingMusicTask.albumId));
         Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
 
@@ -52,7 +49,11 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.Albu
 
     @Override
     public int getItemCount() {
-        return homeList == null ? 0 : homeList.size();
+        return albumList == null ? 0 : albumList.size();
+    }
+
+    public void setAlbumList(ArrayList<HashMap<String,String>> albumList){
+        this.albumList = albumList;
     }
 
     public class AlbumListHolder extends RecyclerView.ViewHolder {

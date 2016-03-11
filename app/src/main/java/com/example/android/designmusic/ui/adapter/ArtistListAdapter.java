@@ -1,6 +1,5 @@
 package com.example.android.designmusic.ui.adapter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,17 +18,15 @@ import java.util.HashMap;
  * Created by KJHmobileAdmin on 2016-03-11.
  */
 public class ArtistListAdapter extends RecyclerView.Adapter<ArtistListAdapter.ArtisstListHolder> {
-    private Context context;
     private ArrayList<HashMap<String,String>> artistList;
 
-    public ArtistListAdapter(Context context,ArrayList<HashMap<String,String>> artistList){
-        this.context = context;
+    public ArtistListAdapter(ArrayList<HashMap<String,String>> artistList){
         this.artistList = artistList;
     }
 
     @Override
     public ArtisstListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View artistItem = LayoutInflater.from(context).inflate(R.layout.home_artist_list_item,parent,false);
+        View artistItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_artist_list_item,parent,false);
         return new ArtisstListHolder(artistItem);
     }
 
@@ -44,6 +41,11 @@ public class ArtistListAdapter extends RecyclerView.Adapter<ArtistListAdapter.Ar
     @Override
     public int getItemCount() {
         return artistList == null ? 0 : artistList.size();
+    }
+
+
+    public void setArtistList(ArrayList<HashMap<String,String>> artistList){
+        this.artistList = artistList;
     }
 
     public class ArtisstListHolder extends RecyclerView.ViewHolder {

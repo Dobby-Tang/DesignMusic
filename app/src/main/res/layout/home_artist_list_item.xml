@@ -15,7 +15,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            fresco:placeholderImage="@drawable/recipe" />
+            fresco:placeholderImage="@drawable/hd_default_artwork" />
 
         <TextView
             android:id="@+id/home_artist_item_title"
