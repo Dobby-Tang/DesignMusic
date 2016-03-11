@@ -15,8 +15,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by KJHmobileAdmin on 2016-03-11.
- */
+*@author By Dobby Tang
+*Created on 2016-03-11 16:52
+*/
 public class ArtistListAdapter extends RecyclerView.Adapter<ArtistListAdapter.ArtisstListHolder> {
     private ArrayList<HashMap<String,String>> artistList;
 
