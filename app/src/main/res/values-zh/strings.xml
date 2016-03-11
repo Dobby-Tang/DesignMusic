@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">白书音乐</string>
+    <string name="app_name">多比音乐</string>
     <string name="action_settings">设置</string>
-    <string name="hello">你好</string>
+
+
+    <!--抽屉菜单-->
+    <string name="local_music">本地音乐</string>
+    <string name="find_music">发现音乐</string>
+
+    <!--本地音乐菜单-->
+    <string name="local_song">歌曲</string>
+    <string name="local_artist">歌手</string>
+    <string name="local_album">专辑</string>
+    <string name="local_file">文件</string>
 </resources>

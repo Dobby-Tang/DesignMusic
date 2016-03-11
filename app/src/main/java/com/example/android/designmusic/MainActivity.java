@@ -1,5 +1,6 @@
 package com.example.android.designmusic;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -27,12 +28,16 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
+    private Resources resources;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fresco.initialize(MainActivity.this);
         setContentView(R.layout.activity_main);
+
+        resources = getResources();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -89,8 +94,10 @@ public class MainActivity extends AppCompatActivity {
         HomeFragment homeFragment1 = new HomeFragment();
         HomeFragment homeFragment2 = new HomeFragment();
 
-        homeFragmentPagerAdapter.addFragment(homeFragment1.newInstance(HomeFragment.TYPE_SONG),"歌曲");
-        homeFragmentPagerAdapter.addFragment(homeFragment2.newInstance(HomeFragment.TYPE_ALBUM),"专辑");
+        homeFragmentPagerAdapter.addFragment(
+                homeFragment1.newInstance(HomeFragment.TYPE_SONG),resources.getString(R.string.local_song));
+        homeFragmentPagerAdapter.addFragment(
+                homeFragment2.newInstance(HomeFragment.TYPE_ALBUM),resources.getString(R.string.local_album));
 
         viewPager.setAdapter(homeFragmentPagerAdapter);
     }

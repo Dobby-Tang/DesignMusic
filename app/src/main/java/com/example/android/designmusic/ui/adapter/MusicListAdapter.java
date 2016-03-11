@@ -33,7 +33,7 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.Musi
 
     @Override
     public MusicListAdapter.MusicListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View musicItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_music_list_item,parent,false);
+        View musicItem = LayoutInflater.from(context).inflate(R.layout.home_music_list_item,parent,false);
         return new MusicListHolder(musicItem);
     }
 

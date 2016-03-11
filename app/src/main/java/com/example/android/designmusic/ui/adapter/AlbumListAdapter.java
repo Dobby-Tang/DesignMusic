@@ -33,8 +33,8 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.Albu
 
     @Override
     public AlbumListAdapter.AlbumListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View homeList = LayoutInflater.from(parent.getContext()).
-                inflate(R.layout.home_other_list_item,parent,false);
+        View homeList = LayoutInflater.from(context).
+                inflate(R.layout.home_album_list_item,parent,false);
         return new AlbumListHolder(homeList);
     }
 
@@ -62,10 +62,10 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.Albu
         ImageView itemMore;
         public AlbumListHolder(View itemView) {
             super(itemView);
-            itemImg = (SimpleDraweeView) itemView.findViewById(R.id.home_order_item_img);
-            itemTitle = (TextView) itemView.findViewById(R.id.home_order_item_title);
-            itemSubTitle = (TextView) itemView.findViewById(R.id.home_order_item_subtitle);
-            itemMore = (ImageView) itemView.findViewById(R.id.homec_item_more);
+            itemImg = (SimpleDraweeView) itemView.findViewById(R.id.home_album_item_img);
+            itemTitle = (TextView) itemView.findViewById(R.id.home_album_item_title);
+            itemSubTitle = (TextView) itemView.findViewById(R.id.home_album_item_subtitle);
+            itemMore = (ImageView) itemView.findViewById(R.id.home_album_item_more);
         }
     }
 }

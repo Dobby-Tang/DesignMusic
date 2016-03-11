@@ -3,8 +3,13 @@
     <string name="app_name">DesignMusic</string>
     <string name="action_settings">Settings</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--抽屉菜单-->
+    <string name="local_music">Local music</string>
+    <string name="find_music">Find music</string>
 
-    <string name="hello">hello</string>
+    <!--本地音乐菜单-->
+    <string name="local_song">SONG</string>
+    <string name="local_artist">ARTIST</string>
+    <string name="local_album">ALBUM</string>
+    <string name="local_file">FILE</string>
 </resources>
