@@ -1,13 +1,26 @@
-package entity;
+package com.example.android.designmusic.player.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
-*@author By Dobby Tang
-*Created on 2016-03-11 16:52
+*待播放列表的音乐实体类
+*@author Dobby-Tang
+*created at 16/3/13  上午10:26
 */
 public class Music implements Parcelable {
+    public HashMap<String,String> music;
+    public String musicType;
+
+    public Music(HashMap<String,String> music,  String musicType){
+        this.music = music;
+        this.musicType = musicType;
+    }
+
+
     protected Music(Parcel in) {
     }
 
@@ -30,5 +43,8 @@ public class Music implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeMap(music);
+        dest.writeString(musicType);
     }
 }

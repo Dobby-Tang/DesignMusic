@@ -31,10 +31,6 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
 
     public static final String albumId = "albumId";               //专辑ID
     public static final String albumArt = "albumArt";             //专辑图片
-    public static final String artistaa = "sss";
-
-    public static final String songList = "songList";            //音乐队列
-    public static final String playPosition = "playPosition";      //列表list
 
     public static final Uri albumArtUri = Uri.parse("content://media/external/audio/albumart");
 
