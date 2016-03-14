@@ -1,6 +1,7 @@
 package com.example.android.designmusic.ui.adapter;
 
 import android.content.ContentUris;
+import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,22 +21,22 @@ import java.util.HashMap;
 *@author By Dobby Tang
 *Created on 2016-03-08 13:53
 */
-public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.MusicListHolder>{
+public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MusicListHolder>{
+
     private ArrayList<HashMap<String,String>> musicList;
 
-
-    public MusicListAdapter(ArrayList<HashMap<String,String>> musicList){
+    public SongListAdapter(ArrayList<HashMap<String,String>> musicList){
         this.musicList = musicList;
     }
 
     @Override
-    public MusicListAdapter.MusicListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SongListAdapter.MusicListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View musicItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_music_list_item,parent,false);
-        return new MusicListHolder(musicItem);
+        return new MusicListHolder(musicItem,parent.getContext());
     }
 
     @Override
-    public void onBindViewHolder(MusicListAdapter.MusicListHolder holder, int position) {
+    public void onBindViewHolder(SongListAdapter.MusicListHolder holder, int position) {
         HashMap<String,String> Song;
         Song = musicList.get(position);
         int albumId = Integer.parseInt(Song.get(LoadingMusicTask.albumId));
@@ -45,6 +46,9 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.Musi
 
         Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
         holder.musicImage.setImageURI(uri);
+
+
+
     }
 
     @Override
@@ -64,12 +68,18 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.Musi
         SimpleDraweeView musicImage;
         ImageView itemMore;
 
-        public MusicListHolder(View itemView) {
+        public MusicListHolder(final View itemView,Context context) {
             super(itemView);
             musicName = (TextView) itemView.findViewById(R.id.music_item_music_name);
             artistName = (TextView) itemView.findViewById(R.id.music_item_artist_name);
             musicImage = (SimpleDraweeView) itemView.findViewById(R.id.music_item_album_img);
             itemMore = (ImageView) itemView.findViewById(R.id.music_item_more);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
 
         }
     }

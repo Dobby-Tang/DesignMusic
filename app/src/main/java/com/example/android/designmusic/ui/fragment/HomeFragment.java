@@ -16,7 +16,7 @@ import com.example.android.designmusic.R;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.ui.adapter.AlbumListAdapter;
 import com.example.android.designmusic.ui.adapter.ArtistListAdapter;
-import com.example.android.designmusic.ui.adapter.MusicListAdapter;
+import com.example.android.designmusic.ui.adapter.SongListAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,7 +40,7 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mType;
     private Context context;
-    public static MusicListAdapter musicListAdapter;
+    public static SongListAdapter songListAdapter;
     public static ArtistListAdapter artistListAdapter;
     public static AlbumListAdapter albumListAdapter;
 
@@ -112,11 +112,11 @@ public class HomeFragment extends Fragment {
         LoadingMusicTask musicTask;
         switch (mType){
             case TYPE_SONG:
-                if(musicListAdapter == null){
-                    musicListAdapter = new MusicListAdapter(null);
+                if(songListAdapter == null){
+                    songListAdapter = new SongListAdapter(null);
                 }
                 mHomeList.setLayoutManager(new LinearLayoutManager(context));
-                mHomeList.setAdapter(musicListAdapter);
+                mHomeList.setAdapter(songListAdapter);
                 break;
             case TYPE_ARTIST:
                 if (artistListAdapter == null){

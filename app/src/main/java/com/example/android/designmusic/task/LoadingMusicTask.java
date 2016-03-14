@@ -56,8 +56,8 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
         if(aBoolean){
             switch (Type){
                 case HomeFragment.TYPE_SONG:
-                    HomeFragment.musicListAdapter.setMusicList(List);
-                    HomeFragment.musicListAdapter.notifyDataSetChanged();
+                    HomeFragment.songListAdapter.setMusicList(List);
+                    HomeFragment.songListAdapter.notifyDataSetChanged();
                     break;
                 case HomeFragment.TYPE_ARTIST:
                     HomeFragment.artistListAdapter.setArtistList(List);
