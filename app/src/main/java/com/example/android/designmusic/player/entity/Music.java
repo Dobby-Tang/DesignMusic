@@ -3,7 +3,6 @@ package com.example.android.designmusic.player.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -22,6 +21,8 @@ public class Music implements Parcelable {
 
 
     protected Music(Parcel in) {
+        music = in.readHashMap(HashMap.class.getClassLoader());
+        musicType = in.readString();
     }
 
     public static final Creator<Music> CREATOR = new Creator<Music>() {
