@@ -2,6 +2,7 @@ package com.example.android.designmusic.ui.adapter;
 
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,9 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.task.LoadingMusicTask;
+import com.example.android.designmusic.ui.activity.MusicPlayerActivity;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
@@ -68,7 +71,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MusicL
         SimpleDraweeView musicImage;
         ImageView itemMore;
 
-        public MusicListHolder(final View itemView,Context context) {
+        public MusicListHolder(final View itemView, final Context context) {
             super(itemView);
             musicName = (TextView) itemView.findViewById(R.id.music_item_music_name);
             artistName = (TextView) itemView.findViewById(R.id.music_item_artist_name);
@@ -77,7 +80,9 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MusicL
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Toast.makeText(context,"dlsfjk",Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(context, MusicPlayerActivity.class);
+                    context.startActivity(intent);
                 }
             });
 

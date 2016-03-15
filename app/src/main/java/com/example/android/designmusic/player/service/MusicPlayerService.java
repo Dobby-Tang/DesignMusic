@@ -12,7 +12,6 @@ import android.util.Log;
 import com.example.android.designmusic.IMusicManager;
 import com.example.android.designmusic.player.entity.Music;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,9 +57,9 @@ public class MusicPlayerService extends Service {
         }
 
         @Override
-        public void player(int position) throws RemoteException, IOException {
-            mPlayer.setDataSource(musicList.get(position).music.get(songPath));
-            mPlayer.prepare();
+        public void player(int position) throws RemoteException {
+//            mPlayer.setDataSource(musicList.get(position).music.get(songPath));
+//            mPlayer.prepare();
             mPlayer.start();
         }
 

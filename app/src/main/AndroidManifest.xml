@@ -22,6 +22,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.activity.MusicPlayerActivity"
+            android:launchMode="singleTask"/>
+
         <service
             android:name=".player.service.MusicPlayerService"
             android:enabled="true"
