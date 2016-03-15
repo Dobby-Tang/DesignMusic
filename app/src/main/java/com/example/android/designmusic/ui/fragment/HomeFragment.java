@@ -69,8 +69,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle arg = getArguments();
-        if (arg != null) {
+        if (getArguments() != null) {
             mType = getArguments().getString(LIST_TYPE);
         }
     }

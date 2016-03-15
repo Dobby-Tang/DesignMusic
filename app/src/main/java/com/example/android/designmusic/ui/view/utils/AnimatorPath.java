@@ -1,4 +1,4 @@
-package com.example.android.designmusic.ui.fragment_v21.utils;/*
+package com.example.android.designmusic.ui.view.utils;/*
  * Copyright (C) 2012 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");

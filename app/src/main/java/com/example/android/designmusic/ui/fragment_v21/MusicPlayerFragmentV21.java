@@ -16,9 +16,9 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.example.android.designmusic.R;
-import com.example.android.designmusic.ui.fragment_v21.utils.AnimatorPath;
-import com.example.android.designmusic.ui.fragment_v21.utils.PathEvaluator;
-import com.example.android.designmusic.ui.fragment_v21.utils.PathPoint;
+import com.example.android.designmusic.ui.view.utils.AnimatorPath;
+import com.example.android.designmusic.ui.view.utils.PathEvaluator;
+import com.example.android.designmusic.ui.view.utils.PathPoint;
 
 /**
  * Created by KJHmobileAdmin on 2016-03-15.

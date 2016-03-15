@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.designmusic.ui.fragment_v21.utils;
+package com.example.android.designmusic.ui.view.utils;
 
 import android.animation.TypeEvaluator;
 

@@ -91,18 +91,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager){
         HomeFragmentPagerAdapter homeFragmentPagerAdapter = new HomeFragmentPagerAdapter(getSupportFragmentManager());
-        HomeFragment homeFragment1 = new HomeFragment();
-        HomeFragment homeFragment2 = new HomeFragment();
-        HomeFragment homeFragment3 = new HomeFragment();
+//        HomeFragment homeFragment1 = new HomeFragment();
+//        HomeFragment homeFragment2 = new HomeFragment();
+//        HomeFragment homeFragment3 = new HomeFragment();
 
         homeFragmentPagerAdapter.addFragment(
-                homeFragment1.newInstance(HomeFragment.TYPE_SONG),resources.getString(R.string.local_song));
+                HomeFragment.newInstance(HomeFragment.TYPE_SONG),resources.getString(R.string.local_song));
 
         homeFragmentPagerAdapter.addFragment(
-                homeFragment3.newInstance(HomeFragment.TYPE_ARTIST),resources.getString(R.string.local_artist));
+                HomeFragment.newInstance(HomeFragment.TYPE_ARTIST),resources.getString(R.string.local_artist));
 
         homeFragmentPagerAdapter.addFragment(
-                homeFragment2.newInstance(HomeFragment.TYPE_ALBUM),resources.getString(R.string.local_album));
+                HomeFragment.newInstance(HomeFragment.TYPE_ALBUM),resources.getString(R.string.local_album));
 
         viewPager.setAdapter(homeFragmentPagerAdapter);
     }
