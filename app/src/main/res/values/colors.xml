@@ -8,4 +8,6 @@
     <color name="window_background">#FFF5F5F5</color>
     <color name="lineColor">#9e9e9e</color>
 
+    <color name="musicPlayerToolbar">#00ffffff</color>
+
 </resources>

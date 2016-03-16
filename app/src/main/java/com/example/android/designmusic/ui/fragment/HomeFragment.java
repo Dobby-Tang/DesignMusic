@@ -33,6 +33,9 @@ public class HomeFragment extends Fragment {
     public static final String TYPE_ARTIST = "artist";    //艺术家
     public static final String TYPE_ALBUM = "album";      //专辑
 
+    public static final String PLAYIONG_LIST = "Playing_list";
+    public static final String PLAYIONG_POSITION = "Playing_position";
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String LIST_TYPE = "list_type";      //队列类型

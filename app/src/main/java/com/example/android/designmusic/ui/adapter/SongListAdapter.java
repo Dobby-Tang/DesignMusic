@@ -10,11 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.ui.activity.MusicPlayerActivity;
+import com.example.android.designmusic.ui.fragment.HomeFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import java.util.HashMap;
 */
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MusicListHolder>{
 
-    private ArrayList<HashMap<String,String>> musicList;
+    public static ArrayList<HashMap<String,String>> musicList;
 
     public SongListAdapter(ArrayList<HashMap<String,String>> musicList){
         this.musicList = musicList;
@@ -71,20 +71,26 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MusicL
         SimpleDraweeView musicImage;
         ImageView itemMore;
 
+
         public MusicListHolder(final View itemView, final Context context) {
             super(itemView);
             musicName = (TextView) itemView.findViewById(R.id.music_item_music_name);
             artistName = (TextView) itemView.findViewById(R.id.music_item_artist_name);
             musicImage = (SimpleDraweeView) itemView.findViewById(R.id.music_item_album_img);
             itemMore = (ImageView) itemView.findViewById(R.id.music_item_more);
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context,"dlsfjk",Toast.LENGTH_SHORT).show();
+                    int position = getLayoutPosition();
                     Intent intent = new Intent(context, MusicPlayerActivity.class);
+                    intent.putExtra(HomeFragment.PLAYIONG_POSITION,position);
+                    intent.putExtra(HomeFragment.PLAYIONG_LIST,musicList);
                     context.startActivity(intent);
                 }
             });
+
+
 
         }
     }
