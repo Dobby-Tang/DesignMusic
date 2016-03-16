@@ -12,13 +12,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.designmusic.R;
+import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.ui.activity.MusicPlayerActivity;
 import com.example.android.designmusic.ui.fragment.HomeFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
 *@author By Dobby Tang
@@ -26,10 +26,10 @@ import java.util.HashMap;
 */
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MusicListHolder>{
 
-    public static ArrayList<HashMap<String,String>> musicList;
+    public static ArrayList<Song> songList;
 
-    public SongListAdapter(ArrayList<HashMap<String,String>> musicList){
-        this.musicList = musicList;
+    public SongListAdapter(ArrayList<Song> songList){
+        this.songList = songList;
     }
 
     @Override
@@ -40,12 +40,12 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MusicL
 
     @Override
     public void onBindViewHolder(SongListAdapter.MusicListHolder holder, int position) {
-        HashMap<String,String> Song;
-        Song = musicList.get(position);
-        int albumId = Integer.parseInt(Song.get(LoadingMusicTask.albumId));
+        Song Song;
+        Song = songList.get(position);
+        int albumId = Integer.parseInt(Song.song.get(LoadingMusicTask.albumId));
 
-        holder.musicName.setText(Song.get(LoadingMusicTask.songName));
-        holder.artistName.setText(Song.get(LoadingMusicTask.artistName));
+        holder.musicName.setText(Song.song.get(LoadingMusicTask.songName));
+        holder.artistName.setText(Song.song.get(LoadingMusicTask.artistName));
 
         Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
         holder.musicImage.setImageURI(uri);
@@ -56,11 +56,11 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MusicL
 
     @Override
     public int getItemCount() {
-        return musicList == null ? 0 : musicList.size();
+        return songList == null ? 0 : songList.size();
     }
 
-    public void setMusicList(ArrayList<HashMap<String,String>> musicList){
-        this.musicList = musicList;
+    public void setMusicList(ArrayList<Song> songList){
+        this.songList = songList;
     }
 
 
@@ -85,7 +85,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MusicL
                     int position = getLayoutPosition();
                     Intent intent = new Intent(context, MusicPlayerActivity.class);
                     intent.putExtra(HomeFragment.PLAYIONG_POSITION,position);
-                    intent.putExtra(HomeFragment.PLAYIONG_LIST,musicList);
+                    intent.putExtra(HomeFragment.PLAYIONG_LIST,songList);
                     context.startActivity(intent);
                 }
             });

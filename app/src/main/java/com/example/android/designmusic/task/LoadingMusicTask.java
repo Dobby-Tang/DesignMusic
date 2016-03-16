@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 
+import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.ui.fragment.HomeFragment;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
 
 
     private ArrayList<HashMap<String,String >> List;
+    private ArrayList<Song> songList;          //歌曲队列
 
     private String Type;
     private Context context;
@@ -56,7 +58,7 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
         if(aBoolean){
             switch (Type){
                 case HomeFragment.TYPE_SONG:
-                    HomeFragment.songListAdapter.setMusicList(List);
+                    HomeFragment.songListAdapter.setMusicList(songList);
                     HomeFragment.songListAdapter.notifyDataSetChanged();
                     break;
                 case HomeFragment.TYPE_ARTIST:
@@ -79,7 +81,7 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
         List = new ArrayList<>();
         switch(Type){
             case HomeFragment.TYPE_SONG:
-                List = getMusicFromProvider();
+                songList = getMusicFromProvider();
                 break;
             case HomeFragment.TYPE_ARTIST:
                 List = getArtistFromProvider();
@@ -98,8 +100,8 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
     }
 
     //在媒体库中获取所有音乐信息
-    public ArrayList<HashMap<String,String>> getMusicFromProvider(){
-        ArrayList<HashMap<String,String>> musicList = new ArrayList<>();
+    public ArrayList<Song> getMusicFromProvider(){
+        ArrayList<Song> songList = new ArrayList<>();
         ContentResolver resolver = context.getContentResolver();
         int time;
         try{
@@ -120,9 +122,11 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
                 item.put(duration_t,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
                 item.put(songPath,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
 
-                musicList.add(item);
+                Song song = new Song(item,Song.LOCAL_SONG);
+
+                songList.add(song);
             }
-            return  musicList;
+            return  songList;
         }catch (Exception e){
             e.printStackTrace();
             return  null;

@@ -10,7 +10,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.example.android.designmusic.IMusicManager;
-import com.example.android.designmusic.player.entity.Music;
+import com.example.android.designmusic.entity.Song;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class MusicPlayerService extends Service {
     public static final String albumId = "albumId";               //专辑ID
     public static final String albumArt = "albumArt";             //专辑图片
 
-    private List<Music> musicList = new ArrayList<Music>();
+    private List<Song> songList = new ArrayList<Song>();
 
     private MediaPlayer mPlayer;
 
@@ -45,14 +45,14 @@ public class MusicPlayerService extends Service {
         }
 
         @Override
-        public List<Music> getMusicList() throws RemoteException {
-            return musicList;
+        public List<Song> getSongList() throws RemoteException {
+            return songList;
         }
 
         @Override
-        public void addMusic(Music music) throws RemoteException {
-            if(!musicList.contains(music)){
-                musicList.add(music);
+        public void addMusic(Song song) throws RemoteException {
+            if(!songList.contains(song)){
+                songList.add(song);
             }
         }
 

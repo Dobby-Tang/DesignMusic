@@ -1,11 +1,11 @@
 // IMusicManager.aidl
 package com.example.android.designmusic;
 
-import com.example.android.designmusic.player.entity.Music;
+import com.example.android.designmusic.entity.Song;
 
 interface IMusicManager {
-     List<Music> getMusicList();
-     void addMusic(in Music music);
+     List<Song> getSongList();
+     void addMusic(in Song song);
      void player(in int position);
      void stop();
      void pause();

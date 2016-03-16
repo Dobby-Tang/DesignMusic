@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.example.android.designmusic.R;
-import com.example.android.designmusic.player.entity.Music;
+import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.ui.fragment.HomeFragment;
 import com.example.android.designmusic.ui.fragment.MusicPlayerFragment;
 import com.example.android.designmusic.ui.fragment_v21.MusicPlayerFragmentV21;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 */
 public class MusicPlayerActivity extends AppCompatActivity {
 
-    private ArrayList<Music> mplayerList;
+    private ArrayList<Song> mplayerList;
     private int playerPosition;
 
     @Override

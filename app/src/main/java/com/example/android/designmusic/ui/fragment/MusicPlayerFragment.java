@@ -10,7 +10,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.android.designmusic.R;
-import com.example.android.designmusic.player.entity.Music;
+import com.example.android.designmusic.entity.Song;
+import com.example.android.designmusic.task.LoadingMusicTask;
 import com.wnafee.vector.MorphButton;
 
 import java.util.ArrayList;
@@ -26,9 +27,9 @@ public class MusicPlayerFragment extends Fragment{
     private ImageView musicCover;
 
     private int position;
-    private static ArrayList<Music> mPlayingList;
+    private static ArrayList<Song> mPlayingList;
 
-    public static MusicPlayerFragment newInstance(ArrayList<Music> mPlayingList,int position) {
+    public static MusicPlayerFragment newInstance(ArrayList<Song> mPlayingList, int position) {
 
         Bundle args = new Bundle();
         args.putParcelableArrayList(HomeFragment.PLAYIONG_LIST,mPlayingList);
@@ -44,8 +45,9 @@ public class MusicPlayerFragment extends Fragment{
         if(getArguments() != null){
             mPlayingList = getArguments().getParcelableArrayList(HomeFragment.PLAYIONG_LIST);
             position = getArguments().getInt(HomeFragment.PLAYIONG_POSITION,0);
-            Toast.makeText(getActivity(),"position="+String.valueOf(position),Toast.LENGTH_SHORT).show();
-//            Log.i(TAG,mPlayingList.get(position).music.get(LoadingMusicTask.songName));
+            String str = mPlayingList.get(position).song.get(LoadingMusicTask.songName);
+            Toast.makeText(getActivity(),"position="+str,Toast.LENGTH_SHORT).show();
+
         }
     }
 

@@ -21,8 +21,9 @@ import com.example.android.designmusic.ui.view.utils.PathEvaluator;
 import com.example.android.designmusic.ui.view.utils.PathPoint;
 
 /**
- * Created by KJHmobileAdmin on 2016-03-15.
- */
+*@author By Dobby Tang
+*Created on 2016-03-16 16:53
+*/
 public class MusicPlayerFragmentV21 extends Fragment{
     private View mFab;
     private FrameLayout mFabContainer;
