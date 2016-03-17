@@ -50,6 +50,7 @@ public class HomeFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
 
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.

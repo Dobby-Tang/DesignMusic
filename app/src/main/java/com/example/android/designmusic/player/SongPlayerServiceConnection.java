@@ -15,11 +15,20 @@ import java.util.ArrayList;
  */
 public class SongPlayerServiceConnection implements ServiceConnection {
 
-    private ISongManager mISongManager;
+    public ISongManager mISongManager;
+    private ArrayList<Song> songList;
+    private int songPosition;
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         mISongManager = ISongManager.Stub.asInterface(service);
+        try {
+            mISongManager.stop();
+            mISongManager.initSongList(songList);
+            mISongManager.play(songPosition);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -27,11 +36,14 @@ public class SongPlayerServiceConnection implements ServiceConnection {
         mISongManager = null;
     }
 
-    public void initSongList(ArrayList<Song> mSongList) throws RemoteException {
-        mISongManager.initSongList(mSongList);
+    public void initSongList(ArrayList<Song> SongList,int songPosition) throws RemoteException {
+        this.songList = SongList;
+        this.songPosition = songPosition;
     }
 
     public void play(int songPosition) throws RemoteException{
         mISongManager.play(songPosition);
     }
+
+
 }

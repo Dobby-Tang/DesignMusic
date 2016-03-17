@@ -3,21 +3,20 @@ package com.example.android.designmusic.player.service;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.os.Binder;
 import android.os.IBinder;
-import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
 
 import com.example.android.designmusic.ISongManager;
 import com.example.android.designmusic.entity.Song;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SongPlayerService extends Service {
+public class MusicService extends Service {
 
-    private final static String TAG = "SongPlayerService";
+    private final static String TAG = "MusicService";
     private static final String PACKAGE_SAYHI = "com.example.android.designmusic";
 
     public static final String songId = "songId";               //音乐ID
@@ -51,6 +50,7 @@ public class SongPlayerService extends Service {
         @Override
         public void initSongList(List<Song> songList) throws RemoteException {
             mSongList = songList;
+
         }
 
         @Override
@@ -61,15 +61,26 @@ public class SongPlayerService extends Service {
         }
 
         @Override
-        public void play(int songPosition) throws RemoteException {
-//            mPlayer.setDataSource(musicList.get(position).music.get(songPath));
-//            mPlayer.prepare();
-            mPlayer.start();
+        public void play(int songPosition) throws RemoteException{
+            if (mSongList != null && mSongList.size() > 0){
+                mPlayer.stop();
+                mPlayer.reset();
+                try{
+                    mPlayer.setDataSource(mSongList.get(songPosition).song.get(songPath));
+                    mPlayer.prepare();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+
+                mPlayer.start();
+            }
         }
 
         @Override
         public void stop() throws RemoteException {
-
+            mPlayer.stop();
+            mPlayer.reset();
+            mPlayer.release();
         }
 
         @Override
@@ -82,27 +93,32 @@ public class SongPlayerService extends Service {
          *@author By Dobby Tang
          *Created on 2016-03-14 10:52
          */
-        @Override
-        public boolean onTransact(int code, Parcel data,Parcel reply,int flags)throws RemoteException{
-            String packageName = null;
-            String[] packages = SongPlayerService.this.getPackageManager().
-                    getPackagesForUid(Binder.getCallingUid());
-            if (packages != null && packages.length > 0){
-                packageName = packages[0];
-            }
-            Log.d(TAG,"onTransact:" + packageName);
-            if(!PACKAGE_SAYHI.equals(packageName)){
-                return false;
-            }
-            return super.onTransact(code, data, reply, flags);
-        }
+//        @Override
+//        public boolean onTransact(int code, Parcel data,Parcel reply,int flags)throws RemoteException{
+//            String packageName = null;
+//            String[] packages = MusicService.this.getPackageManager().
+//                    getPackagesForUid(Binder.getCallingUid());
+//            if (packages != null && packages.length > 0){
+//                packageName = packages[0];
+//            }
+//            Log.d(TAG,"onTransact:" + packageName);
+//            if(!PACKAGE_SAYHI.equals(packageName)){
+//                return false;
+//            }
+//            return super.onTransact(code, data, reply, flags);
+//        }
     };
 
 
+    @Override
+    public void onCreate() {
+        mPlayer = new MediaPlayer();
+        super.onCreate();
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
-        mPlayer = new MediaPlayer();
+        Log.i(TAG,"服务器已启动");
         return mBinder;
     }
 

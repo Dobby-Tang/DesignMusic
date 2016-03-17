@@ -26,7 +26,7 @@
             android:launchMode="singleTask"/>
 
         <service
-            android:name=".player.service.MusicPlayerService"
+            android:name=".player.service.MusicService"
             android:enabled="true"
             android:exported="true"
             android:process=":musicService"></service>
