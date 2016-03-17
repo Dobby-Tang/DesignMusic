@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimaryBack">#eceff1</color>
     <color name="colorPrimaryDeep">#263238</color>
     <color name="colorPrimary">#00bcd4</color>
     <color name="colorPrimaryDark">#0097a7</color>
@@ -9,5 +8,7 @@
     <color name="lineColor">#9e9e9e</color>
 
     <color name="musicPlayerToolbar">#00ffffff</color>
+    <color name="colorPrimaryBack">#424242</color>
+    <color name="musicPlayerBottom">#455a64</color>
 
 </resources>

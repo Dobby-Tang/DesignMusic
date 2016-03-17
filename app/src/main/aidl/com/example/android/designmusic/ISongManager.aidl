@@ -3,10 +3,11 @@ package com.example.android.designmusic;
 
 import com.example.android.designmusic.entity.Song;
 
-interface IMusicManager {
+interface ISongManager {
      List<Song> getSongList();
-     void addMusic(in Song song);
-     void player(in int position);
+     void initSongList(in List<Song> songList);
+     void addSong(in Song song);
+     void play(in int songPosition);
      void stop();
      void pause();
 }

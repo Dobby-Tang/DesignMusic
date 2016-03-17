@@ -2,6 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,20 +15,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
+        <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/music_player_cover"
             android:layout_width="match_parent"
             android:layout_height="350dp"
-            android:background="@android:drawable/ic_media_rew"
-            android:src="@drawable/hd_default_artwork"
-            android:scaleType="centerCrop"
+            fresco:actualImageScaleType="fitXY"
+            fresco:placeholderImageScaleType="fitXY"
+            fresco:placeholderImage="@drawable/hd_default_artwork"
+            fresco:failureImage="@drawable/hd_default_artwork"
             />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="16dp"
             android:orientation="horizontal"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="25dp"
             android:layout_gravity="bottom"
             >
             <View
@@ -42,9 +44,6 @@
         </LinearLayout>
 
     </FrameLayout>
-
-
-
 
     <FrameLayout
         android:id="@+id/music_player_container"
@@ -106,7 +105,7 @@
         android:layout_width="match_parent"
         android:layout_height="72dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimaryBack"
+        android:background="@color/musicPlayerBottom"
         >
     </RelativeLayout>
 </RelativeLayout>

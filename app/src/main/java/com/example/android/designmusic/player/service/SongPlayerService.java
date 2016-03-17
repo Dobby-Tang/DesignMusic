@@ -9,15 +9,15 @@ import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.example.android.designmusic.IMusicManager;
+import com.example.android.designmusic.ISongManager;
 import com.example.android.designmusic.entity.Song;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MusicPlayerService extends Service {
+public class SongPlayerService extends Service {
 
-    private final static String TAG = "MusicPlayerService";
+    private final static String TAG = "SongPlayerService";
     private static final String PACKAGE_SAYHI = "com.example.android.designmusic";
 
     public static final String songId = "songId";               //音乐ID
@@ -34,11 +34,10 @@ public class MusicPlayerService extends Service {
     public static final String albumId = "albumId";               //专辑ID
     public static final String albumArt = "albumArt";             //专辑图片
 
-    private List<Song> songList = new ArrayList<Song>();
-
+    public List<Song> mSongList = new ArrayList<Song>();
     private MediaPlayer mPlayer;
 
-    private final IMusicManager.Stub mBinder = new IMusicManager.Stub() {
+    private final ISongManager.Stub mBinder = new ISongManager.Stub() {
         @Override
         public IBinder asBinder() {
             return this;
@@ -46,18 +45,23 @@ public class MusicPlayerService extends Service {
 
         @Override
         public List<Song> getSongList() throws RemoteException {
-            return songList;
+            return mSongList;
         }
 
         @Override
-        public void addMusic(Song song) throws RemoteException {
-            if(!songList.contains(song)){
-                songList.add(song);
+        public void initSongList(List<Song> songList) throws RemoteException {
+            mSongList = songList;
+        }
+
+        @Override
+        public void addSong(Song song) throws RemoteException {
+            if(!mSongList.contains(song)){
+                mSongList.add(song);
             }
         }
 
         @Override
-        public void player(int position) throws RemoteException {
+        public void play(int songPosition) throws RemoteException {
 //            mPlayer.setDataSource(musicList.get(position).music.get(songPath));
 //            mPlayer.prepare();
             mPlayer.start();
@@ -81,7 +85,7 @@ public class MusicPlayerService extends Service {
         @Override
         public boolean onTransact(int code, Parcel data,Parcel reply,int flags)throws RemoteException{
             String packageName = null;
-            String[] packages = MusicPlayerService.this.getPackageManager().
+            String[] packages = SongPlayerService.this.getPackageManager().
                     getPackagesForUid(Binder.getCallingUid());
             if (packages != null && packages.length > 0){
                 packageName = packages[0];
