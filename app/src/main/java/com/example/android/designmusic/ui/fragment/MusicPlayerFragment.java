@@ -29,6 +29,9 @@ public class MusicPlayerFragment extends Fragment{
     private int position;
     private static ArrayList<Song> mPlayingList;
 
+    MorphButton.MorphState START = MorphButton.MorphState.START;
+    MorphButton.MorphState END = MorphButton.MorphState.END;
+
     public static MusicPlayerFragment newInstance(ArrayList<Song> mPlayingList, int position) {
 
         Bundle args = new Bundle();
@@ -62,6 +65,10 @@ public class MusicPlayerFragment extends Fragment{
         playerBtn.setOnStateChangedListener(new MorphButton.OnStateChangedListener() {
             @Override
             public void onStateChanged(MorphButton.MorphState changedTo, boolean isAnimating) {
+                switch (changedTo){
+                    case START:
+                        break;
+                }
                 Toast.makeText(getActivity(), "Changed to: " + changedTo, Toast.LENGTH_SHORT).show();
             }
         });

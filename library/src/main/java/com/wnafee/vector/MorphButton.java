@@ -365,7 +365,7 @@ public class MorphButton extends CompoundButton {
     @SuppressWarnings("deprecation")
     public void setState(MorphState state, boolean animate) {
         boolean checked;
-        if (state == MorphState.START) {
+        if (state == MorphState.END) {
             checked = false;
             int w = mEndCanMorph ? mEndDrawableWidth : mStartDrawableWidth;
             int h = mEndCanMorph ? mEndDrawableHeight : mStartDrawableHeight;
