@@ -23,7 +23,6 @@ public class SongPlayerServiceConnection implements ServiceConnection {
     public void onServiceConnected(ComponentName name, IBinder service) {
         mISongManager = ISongManager.Stub.asInterface(service);
         try {
-            mISongManager.stop();
             mISongManager.initSongList(songList);
             mISongManager.play(songPosition);
         } catch (RemoteException e) {

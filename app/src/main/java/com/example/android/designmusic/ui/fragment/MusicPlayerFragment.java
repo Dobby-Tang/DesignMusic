@@ -33,7 +33,7 @@ public class MusicPlayerFragment extends Fragment{
     private MorphButton playerBtn;
     private SimpleDraweeView musicCover;
 
-    private SongPlayerServiceConnection songPlayerServiceConnection;
+    private SongPlayerServiceConnection songPlayerServiceConnection = null;
 
     private int position;
     private static ArrayList<Song> mPlayingList;
@@ -121,10 +121,22 @@ public class MusicPlayerFragment extends Fragment{
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        try {
+            songPlayerServiceConnection.mISongManager.stop();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         getActivity().unbindService(songPlayerServiceConnection);
     }
 }
