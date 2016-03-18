@@ -20,6 +20,11 @@ import java.util.List;
 
 public class MusicService extends Service {
 
+    public final static int PAUSED = 0;
+    public final static int PLAYING = 1;
+    public final static int STOP = 2;
+    public int state = STOP;
+
     private final static String TAG = "MusicService";
     private static final String PACKAGE_SAYHI = "com.example.android.designmusic";
 
@@ -67,19 +72,19 @@ public class MusicService extends Service {
 
         @Override
         public void play(int songPosition) throws RemoteException{
-
-            if (mSongList != null && mSongList.size() > 0){
-                mPlayer.stop();
-                mPlayer.reset();
-                try{
-                    mPlayer.setDataSource(mSongList.get(songPosition).song.get(songPath));
-                    mPlayer.prepare();
-                }catch (IOException e){
-                    e.printStackTrace();
+            if (requestAudioFocus() == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
+                if(state == PAUSED){
+                    state = PLAYING;
+                    mPlayer.start();
+                }else if(state == STOP){
+                    state = PLAYING;
+                    mPlayer.reset();
+                    playingSetting(songPosition);
+                    mPlayer.start();
                 }
-
-                mPlayer.start();
             }
+
+
         }
 
         @Override
@@ -91,7 +96,10 @@ public class MusicService extends Service {
 
         @Override
         public void pause() throws RemoteException {
-
+            if(mPlayer.isPlaying()){
+                state = PAUSED;
+                mPlayer.pause();
+            }
         }
 
         /**
@@ -118,8 +126,11 @@ public class MusicService extends Service {
 
     @Override
     public void onCreate() {
-        mPlayer = new MediaPlayer();
         super.onCreate();
+        mPlayer = new MediaPlayer();
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        mComponentName = new ComponentName(getPackageName()
+                ,RemoteControlReceiver.class.getName());
     }
 
     @Override
@@ -128,26 +139,61 @@ public class MusicService extends Service {
         return mBinder;
     }
 
-    private int registerAudioFocus(){
 
-        return 1;
+
+    public void playingSetting(int position){
+        mPlayer.reset();
+        try {
+            mPlayer.setDataSource(mSongList.get(position).song.get(songPath));
+            mPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
     }
 
-    private AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-    private ComponentName mComponentName = new ComponentName(getPackageName()
-            ,RemoteControlReceiver.class.getName());
 
+    /**
+     * 获取播放焦点
+    *@author By Dobby Tang
+    *Created on 2016-03-18 14:13
+    */
+    private int requestAudioFocus(){
+        int result = audioManager.requestAudioFocus(afChangeListener,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN);
+        return result;
+    }
+
+    private AudioManager audioManager;
+    private ComponentName mComponentName ;
+
+    /**
+     * 管理音频焦点事件
+    *@author By Dobby Tang
+    *Created on 2016-03-18 15:08
+    */
     private AudioManager.OnAudioFocusChangeListener afChangeListener = new
             AudioManager.OnAudioFocusChangeListener() {
         @Override
         public void onAudioFocusChange(int focusChange) {
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
-
+                state = PAUSED;
+                mPlayer.pause();
             }else if (focusChange == AudioManager.AUDIOFOCUS_GAIN){
-
+                state = PLAYING;
+                mPlayer.start();
             }else if (focusChange== AudioManager.AUDIOFOCUS_LOSS){
                 audioManager.unregisterMediaButtonEventReceiver(mComponentName);
                 audioManager.abandonAudioFocus(afChangeListener);
+                mPlayer.stop();
+                mPlayer.reset();
+                mPlayer.release();
             }
         }
     };

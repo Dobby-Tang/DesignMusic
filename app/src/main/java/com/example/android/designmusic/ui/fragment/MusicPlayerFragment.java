@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
@@ -102,7 +101,7 @@ public class MusicPlayerFragment extends Fragment{
                         play(mPosition);
                         break;
                     case END:
-                        Toast.makeText(getActivity(), "Changed to: end 1111 " , Toast.LENGTH_SHORT).show();
+                        pause();
                         break;
                 }
 
@@ -121,16 +120,25 @@ public class MusicPlayerFragment extends Fragment{
         }
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
+    private void pause(){
+        try {
+            songPlayerServiceConnection.mISongManager.pause();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stop(){
         try {
             songPlayerServiceConnection.mISongManager.stop();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
 
-
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
     @Override
