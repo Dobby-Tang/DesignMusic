@@ -3,6 +3,8 @@ package com.example.android.designmusic.ui.fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.android.designmusic.IAudioStatusChangeListener;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.ui.adapter.AlbumListAdapter;
@@ -27,7 +30,7 @@ import com.example.android.designmusic.ui.adapter.SongListAdapter;
  * create an instance of this fragment.
  *
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements IAudioStatusChangeListener{
 
     public static final String TYPE_SONG = "music";      //音乐队列
     public static final String TYPE_ARTIST = "artist";    //艺术家
@@ -141,6 +144,26 @@ public class HomeFragment extends Fragment {
         musicTask.execute();
 
 
+    }
+
+    @Override
+    public void AudioIsPlay() throws RemoteException {
+
+    }
+
+    @Override
+    public void AudioIsPause() throws RemoteException {
+
+    }
+
+    @Override
+    public void AudioIsStop() throws RemoteException {
+
+    }
+
+    @Override
+    public IBinder asBinder() {
+        return null;
     }
 
 

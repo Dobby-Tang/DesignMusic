@@ -2,6 +2,7 @@
 package com.example.android.designmusic;
 
 import com.example.android.designmusic.entity.Song;
+import com.example.android.designmusic.IAudioStatusChangeListener;
 
 interface ISongManager {
      List<Song> getSongList();
@@ -10,4 +11,6 @@ interface ISongManager {
      void play(in int songPosition);
      void stop();
      void pause();
+
+     void registerCallBack(IAudioStatusChangeListener mListener);
 }

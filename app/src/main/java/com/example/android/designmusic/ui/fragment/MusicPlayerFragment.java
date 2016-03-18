@@ -1,10 +1,13 @@
 package com.example.android.designmusic.ui.fragment;
 
+import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,9 +15,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.android.designmusic.IAudioStatusChangeListener;
+import com.example.android.designmusic.ISongManager;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
-import com.example.android.designmusic.player.SongPlayerServiceConnection;
 import com.example.android.designmusic.player.service.MusicService;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -32,13 +36,34 @@ public class MusicPlayerFragment extends Fragment{
     private MorphButton playerBtn;
     private SimpleDraweeView musicCover;
 
-    private SongPlayerServiceConnection songPlayerServiceConnection = null;
 
     private int position;
     private static ArrayList<Song> mPlayingList;
 
     MorphButton.MorphState START = MorphButton.MorphState.START;
     MorphButton.MorphState END = MorphButton.MorphState.END;
+
+    public ISongManager mISongManager;
+
+    private ServiceConnection songPlayerServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mISongManager = ISongManager.Stub.asInterface(service);
+            try {
+//                mISongManager.registerCallBack();
+                mISongManager.initSongList(mPlayingList);
+                mISongManager.play(position);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mISongManager = null;
+        }
+    };
+
 
     public static MusicPlayerFragment newInstance(ArrayList<Song> mPlayingList, int position) {
 
@@ -64,12 +89,7 @@ public class MusicPlayerFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_music_player,container,false);
         Song mSong = mPlayingList.get(position);
-        songPlayerServiceConnection = new SongPlayerServiceConnection();
-        try {
-            songPlayerServiceConnection.initSongList(mPlayingList,position);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+
         Intent intent = new Intent(getActivity(), MusicService.class);
         getActivity().bindService(intent,songPlayerServiceConnection, Context.BIND_AUTO_CREATE);
 
@@ -98,10 +118,18 @@ public class MusicPlayerFragment extends Fragment{
             public void onStateChanged(MorphButton.MorphState changedTo, boolean isAnimating) {
                 switch (changedTo){
                     case START:
-                        play(mPosition);
+                        try {
+                            mISongManager.play(mPosition);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                         break;
                     case END:
-                        pause();
+                        try {
+                            mISongManager.pause();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                         break;
                 }
 
@@ -112,29 +140,25 @@ public class MusicPlayerFragment extends Fragment{
         return view;
     }
 
-    private void play(int songPosition) {
-        try {
-            songPlayerServiceConnection.play(songPosition);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void pause(){
-        try {
-            songPlayerServiceConnection.mISongManager.pause();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void stop(){
-        try {
-            songPlayerServiceConnection.mISongManager.stop();
-        } catch (RemoteException e) {
-            e.printStackTrace();
+
+    private IAudioStatusChangeListener mListener = new IAudioStatusChangeListener.Stub() {
+        @Override
+        public void AudioIsPlay() throws RemoteException {
+
         }
-    }
+
+        @Override
+        public void AudioIsPause() throws RemoteException {
+
+        }
+
+        @Override
+        public void AudioIsStop() throws RemoteException {
+
+        }
+    };
 
     @Override
     public void onStop() {
@@ -147,4 +171,5 @@ public class MusicPlayerFragment extends Fragment{
 
         getActivity().unbindService(songPlayerServiceConnection);
     }
+
 }

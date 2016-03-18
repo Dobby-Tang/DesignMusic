@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.example.android.designmusic.IAudioStatusChangeListener;
 import com.example.android.designmusic.ISongManager;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.player.Receiver.RemoteControlReceiver;
@@ -45,6 +46,7 @@ public class MusicService extends Service {
     public List<Song> mSongList = new ArrayList<Song>();
     private MediaPlayer mPlayer;
 
+    private IAudioStatusChangeListener mStatusListener ;
 
     private final ISongManager.Stub mBinder = new ISongManager.Stub() {
         @Override
@@ -100,6 +102,11 @@ public class MusicService extends Service {
                 state = PAUSED;
                 mPlayer.pause();
             }
+        }
+
+        @Override
+        public void registerCallBack(IAudioStatusChangeListener mListener) throws RemoteException {
+            mStatusListener = mListener;
         }
 
         /**
@@ -185,15 +192,31 @@ public class MusicService extends Service {
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
                 state = PAUSED;
                 mPlayer.pause();
+                try {
+                    mStatusListener.AudioIsPause();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }else if (focusChange == AudioManager.AUDIOFOCUS_GAIN){
                 state = PLAYING;
                 mPlayer.start();
+                try {
+                    mStatusListener.AudioIsPlay();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }else if (focusChange== AudioManager.AUDIOFOCUS_LOSS){
+                state = STOP;
                 audioManager.unregisterMediaButtonEventReceiver(mComponentName);
                 audioManager.abandonAudioFocus(afChangeListener);
                 mPlayer.stop();
                 mPlayer.reset();
                 mPlayer.release();
+                try {
+                    mStatusListener.AudioIsStop();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
