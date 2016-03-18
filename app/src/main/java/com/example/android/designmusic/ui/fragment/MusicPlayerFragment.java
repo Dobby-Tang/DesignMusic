@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.example.android.designmusic.IAudioStatusChangeListener;
 import com.example.android.designmusic.ISongManager;
@@ -35,22 +36,22 @@ public class MusicPlayerFragment extends Fragment{
 
     private MorphButton playerBtn;
     private SimpleDraweeView musicCover;
+    private ImageView nextBtn;
 
-
-    private int position;
+    int position;
     private static ArrayList<Song> mPlayingList;
 
     MorphButton.MorphState START = MorphButton.MorphState.START;
     MorphButton.MorphState END = MorphButton.MorphState.END;
 
-    public ISongManager mISongManager;
+    public ISongManager mISongManager = null;
 
     private ServiceConnection songPlayerServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mISongManager = ISongManager.Stub.asInterface(service);
             try {
-//                mISongManager.registerCallBack();
+                mISongManager.registerCallBack(mListener);
                 mISongManager.initSongList(mPlayingList);
                 mISongManager.play(position);
             } catch (RemoteException e) {
@@ -93,25 +94,40 @@ public class MusicPlayerFragment extends Fragment{
         Intent intent = new Intent(getActivity(), MusicService.class);
         getActivity().bindService(intent,songPlayerServiceConnection, Context.BIND_AUTO_CREATE);
 
-        final int mPosition = position;
-
-
         musicCover = (SimpleDraweeView) view.findViewById(R.id.music_player_cover);
         playerBtn = (MorphButton) view.findViewById(R.id.music_player_playBtn);
+        nextBtn = (ImageView) view .findViewById(R.id.music_player_nextBtn);
 
         int albumId = Integer.parseInt(mSong.song.get(LoadingMusicTask.albumId));
         Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
         musicCover.setImageURI(uri);
 
 
-        MorphButton.MorphState mState = playerBtn.getState();
-        //判断playerBtn的状态
-        switch (mState){
-            case START:
-                break;
-            case END:
-                break;
-        }
+//        MorphButton.MorphState mState = playerBtn.getState();
+//        //判断playerBtn的状态
+//        switch (mState){
+//            case START:
+//                break;
+//            case END:
+//                break;
+//        }
+
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            boolean b = true;
+            @Override
+            public void onClick(View v) {
+                if(!b){
+                    playerBtn.setState(START);
+                    b = true;
+                }
+
+                if (b){
+                    playerBtn.setState(END);
+                    b = false;
+                }
+
+            }
+        });
 
         playerBtn.setOnStateChangedListener(new MorphButton.OnStateChangedListener() {
             @Override
@@ -119,7 +135,7 @@ public class MusicPlayerFragment extends Fragment{
                 switch (changedTo){
                     case START:
                         try {
-                            mISongManager.play(mPosition);
+                            mISongManager.play(position);
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
@@ -146,19 +162,23 @@ public class MusicPlayerFragment extends Fragment{
     private IAudioStatusChangeListener mListener = new IAudioStatusChangeListener.Stub() {
         @Override
         public void AudioIsPlay() throws RemoteException {
-
         }
 
         @Override
         public void AudioIsPause() throws RemoteException {
-
         }
 
         @Override
         public void AudioIsStop() throws RemoteException {
-
+            getActivity().finish();
         }
     };
+
+
+    @Override
+    public void onResume() {
+        super.onStart();
+    }
 
     @Override
     public void onStop() {
