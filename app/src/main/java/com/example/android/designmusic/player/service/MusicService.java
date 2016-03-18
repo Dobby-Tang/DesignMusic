@@ -1,7 +1,10 @@
 package com.example.android.designmusic.player.service;
 
 import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -9,6 +12,7 @@ import android.util.Log;
 
 import com.example.android.designmusic.ISongManager;
 import com.example.android.designmusic.entity.Song;
+import com.example.android.designmusic.player.Receiver.RemoteControlReceiver;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +40,7 @@ public class MusicService extends Service {
     public List<Song> mSongList = new ArrayList<Song>();
     private MediaPlayer mPlayer;
 
+
     private final ISongManager.Stub mBinder = new ISongManager.Stub() {
         @Override
         public IBinder asBinder() {
@@ -62,6 +67,7 @@ public class MusicService extends Service {
 
         @Override
         public void play(int songPosition) throws RemoteException{
+
             if (mSongList != null && mSongList.size() > 0){
                 mPlayer.stop();
                 mPlayer.reset();
@@ -121,5 +127,31 @@ public class MusicService extends Service {
         Log.i(TAG,"服务器已启动");
         return mBinder;
     }
+
+    private int registerAudioFocus(){
+
+        return 1;
+    }
+
+    private AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    private ComponentName mComponentName = new ComponentName(getPackageName()
+            ,RemoteControlReceiver.class.getName());
+
+    private AudioManager.OnAudioFocusChangeListener afChangeListener = new
+            AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
+
+            }else if (focusChange == AudioManager.AUDIOFOCUS_GAIN){
+
+            }else if (focusChange== AudioManager.AUDIOFOCUS_LOSS){
+                audioManager.unregisterMediaButtonEventReceiver(mComponentName);
+                audioManager.abandonAudioFocus(afChangeListener);
+            }
+        }
+    };
+
+
 
 }
