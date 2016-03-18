@@ -161,14 +161,6 @@ public class MusicPlayerFragment extends Fragment{
 
     private IAudioStatusChangeListener mListener = new IAudioStatusChangeListener.Stub() {
         @Override
-        public void AudioIsPlay() throws RemoteException {
-        }
-
-        @Override
-        public void AudioIsPause() throws RemoteException {
-        }
-
-        @Override
         public void AudioIsStop() throws RemoteException {
             getActivity().finish();
         }

@@ -192,19 +192,9 @@ public class MusicService extends Service {
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
                 state = PAUSED;
                 mPlayer.pause();
-                try {
-                    mStatusListener.AudioIsPause();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
             }else if (focusChange == AudioManager.AUDIOFOCUS_GAIN){
                 state = PLAYING;
                 mPlayer.start();
-                try {
-                    mStatusListener.AudioIsPlay();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
             }else if (focusChange== AudioManager.AUDIOFOCUS_LOSS){
                 state = STOP;
                 audioManager.unregisterMediaButtonEventReceiver(mComponentName);
@@ -212,10 +202,12 @@ public class MusicService extends Service {
                 mPlayer.stop();
                 mPlayer.reset();
                 mPlayer.release();
-                try {
-                    mStatusListener.AudioIsStop();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+                if (mStatusListener != null){
+                    try {
+                        mStatusListener.AudioIsStop();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
