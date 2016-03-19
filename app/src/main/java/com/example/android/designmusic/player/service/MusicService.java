@@ -211,13 +211,19 @@ public class MusicService extends Service {
                 mPlayer.reset();
                 mPlayer.release();
                 int listenerNum = mStatusListener.beginBroadcast();
-                if (mStatusListener != null){
-                    try {
-                        mStatusListener.getBroadcastItem(0).AudioIsStop();
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+                if(listenerNum > 0){
+                    IAudioStatusChangeListener listener =
+                            mStatusListener.getBroadcastItem(0);
+                    if (listener != null){
+                        try {
+                            listener.AudioIsStop();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
+                mStatusListener.finishBroadcast();
+
             }
         }
     };
