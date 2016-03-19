@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
+import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -46,7 +47,8 @@ public class MusicService extends Service {
     public List<Song> mSongList = new ArrayList<Song>();
     private MediaPlayer mPlayer;
 
-    private IAudioStatusChangeListener mStatusListener ;
+    private RemoteCallbackList<IAudioStatusChangeListener> mStatusListener
+            = new RemoteCallbackList<IAudioStatusChangeListener>();
 
     private final ISongManager.Stub mBinder = new ISongManager.Stub() {
         @Override
@@ -106,7 +108,13 @@ public class MusicService extends Service {
 
         @Override
         public void registerCallBack(IAudioStatusChangeListener mListener) throws RemoteException {
-            mStatusListener = mListener;
+            mStatusListener.register(mListener);
+
+        }
+
+        @Override
+        public void unregisterCallBack(IAudioStatusChangeListener mListener) throws RemoteException {
+            mStatusListener.unregister(mListener);
         }
 
         /**
@@ -202,9 +210,10 @@ public class MusicService extends Service {
                 mPlayer.stop();
                 mPlayer.reset();
                 mPlayer.release();
+                int listenerNum = mStatusListener.beginBroadcast();
                 if (mStatusListener != null){
                     try {
-                        mStatusListener.AudioIsStop();
+                        mStatusListener.getBroadcastItem(0).AudioIsStop();
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }

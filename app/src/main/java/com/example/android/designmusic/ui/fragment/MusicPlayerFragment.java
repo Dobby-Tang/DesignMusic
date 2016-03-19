@@ -180,7 +180,11 @@ public class MusicPlayerFragment extends Fragment{
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        try {
+            mISongManager.unregisterCallBack(mListener);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         getActivity().unbindService(songPlayerServiceConnection);
     }
 
