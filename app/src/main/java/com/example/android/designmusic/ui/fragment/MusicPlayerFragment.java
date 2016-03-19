@@ -164,6 +164,13 @@ public class MusicPlayerFragment extends Fragment{
         public void AudioIsStop() throws RemoteException {
             getActivity().finish();
         }
+
+        @Override
+        public void AudioIsPause() throws RemoteException {
+            if (playerBtn != null){
+                playerBtn.setState(END);
+            }
+        }
     };
 
 

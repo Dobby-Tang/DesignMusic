@@ -5,5 +5,7 @@ package com.example.android.designmusic;
 
 interface IAudioStatusChangeListener {
      void AudioIsStop();
+     void AudioIsPause();
+     void AudioIsPlaying();
 
 }
