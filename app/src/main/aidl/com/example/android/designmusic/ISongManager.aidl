@@ -12,6 +12,8 @@ interface ISongManager {
      void stop();
      void pause();
 
+     boolean isPlaying();
+
      void registerCallBack(IAudioStatusChangeListener mListener);
      void unregisterCallBack(IAudioStatusChangeListener mListener);
 }

@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 *@author By Dobby Tang
 *Created on 2016-03-15 13:51
 */
+
 public class MusicPlayerFragment extends Fragment{
     private static final String TAG = "MusicPlayerFragment";
 
@@ -158,25 +160,51 @@ public class MusicPlayerFragment extends Fragment{
 
 
 
-
+    /**
+    *service回调监听器
+    *@author Dobby-Tang
+    *created at 16/3/20  下午12:31
+    */
     private IAudioStatusChangeListener mListener = new IAudioStatusChangeListener.Stub() {
         @Override
         public void AudioIsStop() throws RemoteException {
+            Log.d(TAG,"Audio is stop");
             getActivity().finish();
         }
 
         @Override
         public void AudioIsPause() throws RemoteException {
             if (playerBtn != null){
+                Log.d(TAG,"Audio is pause");
                 playerBtn.setState(END);
             }
         }
+
+        @Override
+        public void AudioIsPlaying() throws RemoteException {
+            if (playerBtn != null){
+                Log.d(TAG,"Audio is playing");
+                playerBtn.setState(START);
+            }
+        }
+
     };
 
 
     @Override
-    public void onResume() {
+    public void onStart() {
         super.onStart();
+        if (mISongManager != null){
+            try {
+                if (mISongManager.isPlaying()){
+                    playerBtn.setState(START);
+                }else {
+                    playerBtn.setState(END);
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

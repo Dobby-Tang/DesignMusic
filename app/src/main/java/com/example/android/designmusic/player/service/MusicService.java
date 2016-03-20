@@ -107,6 +107,16 @@ public class MusicService extends Service {
         }
 
         @Override
+        public boolean isPlaying() throws RemoteException {
+            if (mPlayer != null){
+                if (mPlayer.isPlaying()){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
         public void registerCallBack(IAudioStatusChangeListener mListener) throws RemoteException {
             mStatusListener.register(mListener);
 
@@ -197,12 +207,32 @@ public class MusicService extends Service {
             AudioManager.OnAudioFocusChangeListener() {
         @Override
         public void onAudioFocusChange(int focusChange) {
+            int listenerNum = mStatusListener.beginBroadcast();
+            IAudioStatusChangeListener listener = null;
+            if(listenerNum > 0) {
+                listener = mStatusListener.getBroadcastItem(0);
+            }
+
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
                 state = PAUSED;
                 mPlayer.pause();
+                if (listener != null){
+                    try {
+                        listener.AudioIsPause();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
             }else if (focusChange == AudioManager.AUDIOFOCUS_GAIN){
                 state = PLAYING;
                 mPlayer.start();
+                if (listener != null){
+                    try {
+                        listener.AudioIsPlaying();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
             }else if (focusChange== AudioManager.AUDIOFOCUS_LOSS){
                 state = STOP;
                 audioManager.unregisterMediaButtonEventReceiver(mComponentName);
@@ -210,21 +240,16 @@ public class MusicService extends Service {
                 mPlayer.stop();
                 mPlayer.reset();
                 mPlayer.release();
-                int listenerNum = mStatusListener.beginBroadcast();
-                if(listenerNum > 0){
-                    IAudioStatusChangeListener listener =
-                            mStatusListener.getBroadcastItem(0);
-                    if (listener != null){
-                        try {
-                            listener.AudioIsStop();
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
+                if (listener != null){
+                    try {
+                        listener.AudioIsStop();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
                     }
                 }
-                mStatusListener.finishBroadcast();
 
             }
+            mStatusListener.finishBroadcast();
         }
     };
 
