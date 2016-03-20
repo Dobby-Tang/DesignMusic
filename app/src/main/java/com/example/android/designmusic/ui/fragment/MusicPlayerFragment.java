@@ -59,7 +59,8 @@ public class MusicPlayerFragment extends Fragment{
             try {
                 mISongManager.registerCallBack(mListener);
                 mISongManager.initSongList(mPlayingList);
-                Log.d(TAG,"positon = "+position+" getSongItem = "+mISongManager.getSongItem());
+                Log.d(TAG,"select positon is " + position + " get service now playing position = "
+                        + mISongManager.getSongItem());
                 if (position != mISongManager.getSongItem()){
                     mISongManager.play(position);
                 }

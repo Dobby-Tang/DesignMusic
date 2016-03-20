@@ -26,12 +26,13 @@ public class MusicService extends Service {
     public final static int PAUSED = 0;
     public final static int PLAYING = 1;
     public final static int STOP = 2;
+    public final static int UNREGISTER = 3;
     public int state = STOP;
 
     private static final String TAG = "MusicService";
     private static final String PACKAGE_SAYHI = "com.example.android.designmusic";
     private static boolean isSameList;
-    private static final String MY_SHARED = "nowPlayingPosition";
+    private static final String NOW_PLAYING = "nowPlayingPosition";
 
     public static final String songId = "songId";               //音乐ID
     public static final String songName = "songName";           //音乐名称
@@ -54,8 +55,8 @@ public class MusicService extends Service {
 
     private int nowPlayingPosition = -1;
 
-    private SharedPreferences shared ;
-    private SharedPreferences.Editor editor;
+//    private SharedPreferences shared ;
+//    private SharedPreferences.Editor editor;
 
     private RemoteCallbackList<IAudioStatusChangeListener> mStatusListener
             = new RemoteCallbackList<>();
@@ -91,33 +92,33 @@ public class MusicService extends Service {
 
         @Override
         public int getSongItem() throws RemoteException {
-            return shared.getInt(MY_SHARED,-1);
+            return nowPlayingPosition;
         }
 
         @Override
         public void play(int songPosition) throws RemoteException{
             if (requestAudioFocus() == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
-                if (!isSameList){
-                    Log.d(TAG,"nowplayingPosition is : "+nowPlayingPosition+" songPosition is : "+
-                            songPosition);
-                    nowPlayingPosition = songPosition;
-                    if(state == PAUSED){
-                        state = PLAYING;
-                        mPlayer.start();
-                    }else if(state == STOP){
-                        state = PLAYING;
-                        mPlayer.reset();
-                        playingSetting(nowPlayingPosition);
-                        mPlayer.start();
-                    }
-                    editor.putInt(MY_SHARED,songPosition);
-                    editor.commit();
-
+                Log.d(TAG,"nowplayingPosition is : "+nowPlayingPosition+" songPosition is : "+
+                        songPosition);
+                nowPlayingPosition = songPosition;
+                if(state == PAUSED){
+                    state = PLAYING;
+                    mPlayer.start();
+                }else if(state == STOP){
+                    state = PLAYING;
+                    mPlayer.reset();
+                    playingSetting(nowPlayingPosition);
+                    mPlayer.start();
+                }else if(state == UNREGISTER){
+                    state = PLAYING;
+                    mPlayer.reset();
+                    playingSetting(nowPlayingPosition);
+                    mPlayer.start();
                 }
+//                editor.putInt(NOW_PLAYING,songPosition);
+//                editor.commit();
 
             }
-
-
         }
 
         @Override
@@ -154,6 +155,7 @@ public class MusicService extends Service {
         @Override
         public void unregisterCallBack(IAudioStatusChangeListener mListener) throws RemoteException {
             mStatusListener.unregister(mListener);
+            state = UNREGISTER;
         }
 
         /**
@@ -185,8 +187,8 @@ public class MusicService extends Service {
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mComponentName = new ComponentName(getPackageName()
                 ,RemoteControlReceiver.class.getName());
-        shared = getSharedPreferences(MY_SHARED,0);
-        editor = shared.edit();
+//        shared = getSharedPreferences(NOW_PLAYING,0);
+//        editor = shared.edit();
     }
 
     @Override
@@ -270,7 +272,7 @@ public class MusicService extends Service {
                 audioManager.abandonAudioFocus(afChangeListener);
                 mPlayer.stop();
                 mPlayer.reset();
-                mPlayer.release();
+//                mPlayer.release();
                 if (listener != null){
                     try {
                         listener.AudioIsStop();

@@ -71,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-//        Intent intent = new Intent(MainActivity.this, MusicService.class);
-//        startService(intent);
+        Intent intent = new Intent(MainActivity.this, MusicService.class);
+        startService(intent);
     }
 
     @Override
