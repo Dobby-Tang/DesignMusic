@@ -8,6 +8,8 @@ interface ISongManager {
      List<Song> getSongList();
      void initSongList(in List<Song> songList);
      void addSong(in Song song);
+     int getSongItem();
+
      void play(in int songPosition);
      void stop();
      void pause();

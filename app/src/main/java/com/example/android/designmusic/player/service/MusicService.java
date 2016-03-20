@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
@@ -27,8 +28,10 @@ public class MusicService extends Service {
     public final static int STOP = 2;
     public int state = STOP;
 
-    private final static String TAG = "MusicService";
+    private static final String TAG = "MusicService";
     private static final String PACKAGE_SAYHI = "com.example.android.designmusic";
+    private static boolean isSameList;
+    private static final String MY_SHARED = "nowPlayingPosition";
 
     public static final String songId = "songId";               //音乐ID
     public static final String songName = "songName";           //音乐名称
@@ -44,11 +47,18 @@ public class MusicService extends Service {
     public static final String albumId = "albumId";               //专辑ID
     public static final String albumArt = "albumArt";             //专辑图片
 
-    public List<Song> mSongList = new ArrayList<Song>();
+    public static final String POSITION = "position";         //正在播放曲目序号
+
+    public List<Song> mSongList = new ArrayList<>();
     private MediaPlayer mPlayer;
 
+    private int nowPlayingPosition = -1;
+
+    private SharedPreferences shared ;
+    private SharedPreferences.Editor editor;
+
     private RemoteCallbackList<IAudioStatusChangeListener> mStatusListener
-            = new RemoteCallbackList<IAudioStatusChangeListener>();
+            = new RemoteCallbackList<>();
 
     private final ISongManager.Stub mBinder = new ISongManager.Stub() {
         @Override
@@ -63,7 +73,12 @@ public class MusicService extends Service {
 
         @Override
         public void initSongList(List<Song> songList) throws RemoteException {
-            mSongList = songList;
+            if (!mSongList.equals(songList)) {
+                mSongList = songList;
+                isSameList = false;
+            }else{
+                isSameList = true;
+            }
 
         }
 
@@ -75,17 +90,31 @@ public class MusicService extends Service {
         }
 
         @Override
+        public int getSongItem() throws RemoteException {
+            return shared.getInt(MY_SHARED,-1);
+        }
+
+        @Override
         public void play(int songPosition) throws RemoteException{
             if (requestAudioFocus() == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
-                if(state == PAUSED){
-                    state = PLAYING;
-                    mPlayer.start();
-                }else if(state == STOP){
-                    state = PLAYING;
-                    mPlayer.reset();
-                    playingSetting(songPosition);
-                    mPlayer.start();
+                if (!isSameList){
+                    Log.d(TAG,"nowplayingPosition is : "+nowPlayingPosition+" songPosition is : "+
+                            songPosition);
+                    nowPlayingPosition = songPosition;
+                    if(state == PAUSED){
+                        state = PLAYING;
+                        mPlayer.start();
+                    }else if(state == STOP){
+                        state = PLAYING;
+                        mPlayer.reset();
+                        playingSetting(nowPlayingPosition);
+                        mPlayer.start();
+                    }
+                    editor.putInt(MY_SHARED,songPosition);
+                    editor.commit();
+
                 }
+
             }
 
 
@@ -156,6 +185,8 @@ public class MusicService extends Service {
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mComponentName = new ComponentName(getPackageName()
                 ,RemoteControlReceiver.class.getName());
+        shared = getSharedPreferences(MY_SHARED,0);
+        editor = shared.edit();
     }
 
     @Override

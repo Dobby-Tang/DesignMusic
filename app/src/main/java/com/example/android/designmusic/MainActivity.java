@@ -1,5 +1,6 @@
 package com.example.android.designmusic;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.support.design.widget.TabLayout;
 
+import com.example.android.designmusic.player.service.MusicService;
 import com.example.android.designmusic.ui.adapter.HomeFragmentPagerAdapter;
 import com.example.android.designmusic.ui.fragment.HomeFragment;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -69,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
+//        Intent intent = new Intent(MainActivity.this, MusicService.class);
+//        startService(intent);
     }
 
     @Override
