@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -35,16 +37,18 @@ import java.util.ArrayList;
 
 public class MusicPlayerFragment extends Fragment{
     private static final String TAG = "MusicPlayerFragment";
+    private static final int playingCallBack = 1;
+    private static final int pauseCallBack = 0;
 
-    private MorphButton playerBtn;
+    private static MorphButton playerBtn;
     private SimpleDraweeView musicCover;
     private ImageView nextBtn;
 
     int position;
     private static ArrayList<Song> mPlayingList;
 
-    MorphButton.MorphState START = MorphButton.MorphState.START;
-    MorphButton.MorphState END = MorphButton.MorphState.END;
+    static MorphButton.MorphState START = MorphButton.MorphState.START;
+    static MorphButton.MorphState END = MorphButton.MorphState.END;
 
     public ISongManager mISongManager = null;
 
@@ -64,6 +68,19 @@ public class MusicPlayerFragment extends Fragment{
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mISongManager = null;
+        }
+    };
+
+    private static Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == playingCallBack){
+                playerBtn.setState(START);
+                Log.d(TAG,"setState START");
+            }else if (msg.what == pauseCallBack){
+                playerBtn.setState(END);
+                Log.d(TAG,"setState END");
+            }
         }
     };
 
@@ -103,6 +120,7 @@ public class MusicPlayerFragment extends Fragment{
         int albumId = Integer.parseInt(mSong.song.get(LoadingMusicTask.albumId));
         Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
         musicCover.setImageURI(uri);
+
 
 
 //        MorphButton.MorphState mState = playerBtn.getState();
@@ -174,18 +192,18 @@ public class MusicPlayerFragment extends Fragment{
 
         @Override
         public void AudioIsPause() throws RemoteException {
-            if (playerBtn != null){
-                Log.d(TAG,"Audio is pause");
-                playerBtn.setState(END);
-            }
+            Log.d(TAG,"Audio is pause");
+            Message msg = Message.obtain();
+            msg.what = pauseCallBack;
+            mHandler.sendMessage(msg);
         }
 
         @Override
         public void AudioIsPlaying() throws RemoteException {
-            if (playerBtn != null){
-                Log.d(TAG,"Audio is playing");
-                playerBtn.setState(START);
-            }
+            Log.d(TAG,"Audio is playing");
+            Message msg = Message.obtain();
+            msg.what = playingCallBack;
+            mHandler.sendMessage(msg);
         }
 
     };
