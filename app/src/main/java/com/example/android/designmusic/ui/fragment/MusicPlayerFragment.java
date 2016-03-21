@@ -140,16 +140,11 @@ public class MusicPlayerFragment extends Fragment{
             boolean b = true;
             @Override
             public void onClick(View v) {
-                if(!b){
-                    playerBtn.setState(START);
-                    b = true;
-                }
+                try {
+                    mISongManager.next();
+                } catch (RemoteException e) {
 
-                if (b){
-                    playerBtn.setState(END);
-                    b = false;
                 }
-
             }
         });
 

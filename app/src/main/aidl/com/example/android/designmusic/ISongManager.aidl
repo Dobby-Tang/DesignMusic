@@ -13,6 +13,7 @@ interface ISongManager {
      void play(in int songPosition);
      void stop();
      void pause();
+     void next();
 
      boolean isPlaying();
 

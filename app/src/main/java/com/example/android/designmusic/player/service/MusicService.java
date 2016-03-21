@@ -97,28 +97,7 @@ public class MusicService extends Service {
 
         @Override
         public void play(int songPosition) throws RemoteException{
-            if (requestAudioFocus() == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
-                Log.d(TAG,"nowplayingPosition is : "+nowPlayingPosition+" songPosition is : "+
-                        songPosition);
-                nowPlayingPosition = songPosition;
-                if(state == PAUSED){
-                    state = PLAYING;
-                    mPlayer.start();
-                }else if(state == STOP){
-                    state = PLAYING;
-                    mPlayer.reset();
-                    playingSetting(nowPlayingPosition);
-                    mPlayer.start();
-                }else if(state == UNREGISTER){
-                    state = PLAYING;
-                    mPlayer.reset();
-                    playingSetting(nowPlayingPosition);
-                    mPlayer.start();
-                }
-//                editor.putInt(NOW_PLAYING,songPosition);
-//                editor.commit();
-
-            }
+            player(songPosition);
         }
 
         @Override
@@ -134,6 +113,11 @@ public class MusicService extends Service {
                 state = PAUSED;
                 mPlayer.pause();
             }
+        }
+
+        @Override
+        public void next() throws RemoteException {
+            nextSong();
         }
 
         @Override
@@ -189,6 +173,12 @@ public class MusicService extends Service {
                 ,RemoteControlReceiver.class.getName());
 //        shared = getSharedPreferences(NOW_PLAYING,0);
 //        editor = shared.edit();
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                nextSong();
+            }
+        });
     }
 
     @Override
@@ -212,6 +202,50 @@ public class MusicService extends Service {
             e.printStackTrace();
         } catch (IllegalStateException e) {
             e.printStackTrace();
+        }
+    }
+
+
+
+    public void player(int songPosition){
+        if (requestAudioFocus() == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
+            Log.d(TAG,"nowplayingPosition is : "+nowPlayingPosition+" songPosition is : "+
+                    songPosition);
+            nowPlayingPosition = songPosition;
+            if(state == PAUSED){
+                state = PLAYING;
+                mPlayer.start();
+            }else if(state == STOP){
+                state = PLAYING;
+                mPlayer.reset();
+                playingSetting(nowPlayingPosition);
+                mPlayer.start();
+            }else if(state == UNREGISTER){
+                state = PLAYING;
+                mPlayer.reset();
+                playingSetting(nowPlayingPosition);
+                mPlayer.start();
+            }
+//                editor.putInt(NOW_PLAYING,songPosition);
+//                editor.commit();
+
+        }
+    }
+
+
+    public void nextSong(){
+        if (nowPlayingPosition >= 0){
+            int songPosition = -1;
+            if(nowPlayingPosition <= mSongList.size()){
+                songPosition = nowPlayingPosition + 1;
+            }else {
+                songPosition = 0;
+            }
+            if (songPosition >= 0){
+                state = STOP;
+                player(songPosition);
+            }
+
         }
     }
 
@@ -268,6 +302,7 @@ public class MusicService extends Service {
                 }
             }else if (focusChange== AudioManager.AUDIOFOCUS_LOSS){
                 state = STOP;
+                nowPlayingPosition = -1;
                 audioManager.unregisterMediaButtonEventReceiver(mComponentName);
                 audioManager.abandonAudioFocus(afChangeListener);
                 mPlayer.stop();
