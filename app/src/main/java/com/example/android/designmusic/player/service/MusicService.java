@@ -82,7 +82,7 @@ public class MusicService extends Service {
             if (mSongList == null) {
                 Log.d(TAG,"-----> init Song list is mSonglist == null");
                 mSongList = songList;
-                isSameList = false;
+                isSameList = true;
             }else{
                 if (!songListEquals(mSongList,songList)){
                     Log.d(TAG,"-----> init Song list is mSonglist != songList");
@@ -247,7 +247,6 @@ public class MusicService extends Service {
                 try {
                     setSongIsPlayingFlag(songPosition);
                     listener.playingCallback(songPosition);
-
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
