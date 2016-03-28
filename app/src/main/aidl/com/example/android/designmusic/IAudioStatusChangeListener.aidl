@@ -8,4 +8,6 @@ interface IAudioStatusChangeListener {
      void AudioIsPause();
      void AudioIsPlaying();
 
+     void playingCallback(in int position);
+
 }

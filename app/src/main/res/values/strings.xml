@@ -12,4 +12,8 @@
     <string name="local_artist">ARTIST</string>
     <string name="local_album">ALBUM</string>
     <string name="local_file">FILE</string>
+
+    <string name="playing_clear">Clear</string>
+    <string name="playing_queue">Queue</string>
+    <string name="playing_favorites">Favorites</string>
 </resources>

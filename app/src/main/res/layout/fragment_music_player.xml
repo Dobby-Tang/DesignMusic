@@ -29,7 +29,6 @@
             android:layout_width="match_parent"
             android:layout_height="16dp"
             android:orientation="horizontal"
-            android:layout_marginBottom="25dp"
             android:layout_gravity="bottom"
             >
             <View
@@ -49,7 +48,6 @@
         android:id="@+id/music_player_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="-30dp"
         android:elevation="10dp"
         android:layout_marginBottom="72dp"
         android:layout_below="@+id/music_player_layout"
@@ -67,9 +65,10 @@
             >
 
             <ImageView
-                android:id="@+id/music_player_preBtn"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:id="@+id/music_player_lastBtn"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:padding="16dp"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="48dp"
                 android:src="@drawable/ic_rewind_white_24dp"
@@ -78,18 +77,22 @@
 
             <com.wnafee.vector.MorphButton
                 android:id="@+id/music_player_playBtn"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:padding="16dp"
                 android:layout_gravity="center"
                 android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 app:vc_foregroundTint="@color/window_background"
                 app:vc_startDrawable="@drawable/ic_play_to_pause"
                 app:vc_endDrawable="@drawable/ic_pause_to_play"/>
 
             <ImageView
                 android:id="@+id/music_player_nextBtn"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:padding="16dp"
+                android:onClick="click"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="48dp"
                 android:layout_centerVertical="true"
@@ -100,12 +103,5 @@
 
 
     </FrameLayout>
-    
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:layout_alignParentBottom="true"
-        android:background="@color/musicPlayerBottom"
-        >
-    </RelativeLayout>
+
 </RelativeLayout>

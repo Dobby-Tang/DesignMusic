@@ -24,44 +24,28 @@ import java.util.ArrayList;
 *@author By Dobby Tang
 *Created on 2016-03-08 13:53
 */
-public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MusicListHolder>{
+public class SongListAdapter extends BaseListAdapter<Song>{
 
-    public static ArrayList<Song> songList;
-
-    public SongListAdapter(ArrayList<Song> songList){
-        this.songList = songList;
-    }
 
     @Override
-    public SongListAdapter.MusicListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View musicItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_music_list_item,parent,false);
+    public RecyclerView.ViewHolder onCreate(ViewGroup parent, int viewType) {
+        View musicItem = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.home_music_list_item,parent,false);
         return new MusicListHolder(musicItem,parent.getContext());
     }
 
     @Override
-    public void onBindViewHolder(SongListAdapter.MusicListHolder holder, int position) {
-        Song Song;
-        Song = songList.get(position);
-        int albumId = Integer.parseInt(Song.song.get(LoadingMusicTask.albumId));
+    public void onBind(RecyclerView.ViewHolder holder, int Realposition, Song data) {
+        int albumId = Integer.parseInt(data.song.get(LoadingMusicTask.albumId));
 
-        holder.musicName.setText(Song.song.get(LoadingMusicTask.songName));
-        holder.artistName.setText(Song.song.get(LoadingMusicTask.artistName));
+        ((MusicListHolder)holder).musicName.setText(data.song.get(LoadingMusicTask.songName));
+        ((MusicListHolder)holder).artistName.setText(data.song.get(LoadingMusicTask.artistName));
 
         Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
-        holder.musicImage.setImageURI(uri);
-
-
+        ((MusicListHolder)holder).musicImage.setImageURI(uri);
 
     }
 
-    @Override
-    public int getItemCount() {
-        return songList == null ? 0 : songList.size();
-    }
-
-    public void setMusicList(ArrayList<Song> songList){
-        this.songList = songList;
-    }
 
 
     public static class MusicListHolder extends RecyclerView.ViewHolder{
@@ -79,19 +63,16 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MusicL
             musicImage = (SimpleDraweeView) itemView.findViewById(R.id.music_item_album_img);
             itemMore = (ImageView) itemView.findViewById(R.id.music_item_more);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int position = getLayoutPosition();
-                    Intent intent = new Intent(context, MusicPlayerActivity.class);
-                    intent.putExtra(HomeFragment.PLAYIONG_POSITION,position);
-                    intent.putExtra(HomeFragment.PLAYIONG_LIST,songList);
-                    context.startActivity(intent);
-                }
-            });
-
-
-
+//            itemView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    int position = getLayoutPosition();
+//                    Intent intent = new Intent(context, MusicPlayerActivity.class);
+//                    intent.putExtra(HomeFragment.PLAYIONG_POSITION,position);
+//                    intent.putExtra(HomeFragment.PLAYIONG_LIST,songList);
+//                    context.startActivity(intent);
+//                }
+//            });
         }
     }
 }

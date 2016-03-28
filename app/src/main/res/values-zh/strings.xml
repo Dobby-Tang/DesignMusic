@@ -13,4 +13,8 @@
     <string name="local_artist">歌手</string>
     <string name="local_album">专辑</string>
     <string name="local_file">文件</string>
+
+    <string name="playing_clear">清空</string>
+    <string name="playing_queue">播放列表</string>
+    <string name="playing_favorites">收藏歌单</string>
 </resources>

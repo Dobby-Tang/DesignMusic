@@ -13,47 +13,31 @@ import com.example.android.designmusic.R;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.facebook.drawee.view.SimpleDraweeView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
 *@author By Dobby Tang
 *Created on 2016-03-10 16:51
 */
-public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.AlbumListHolder>{
-
-    private ArrayList<HashMap<String,String>> albumList;
-
-    public AlbumListAdapter( ArrayList<HashMap<String,String >> albumList){
-        this.albumList = albumList;
-    }
+public class AlbumListAdapter extends BaseListAdapter<HashMap<String,String>>{
 
     @Override
-    public AlbumListAdapter.AlbumListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreate(ViewGroup parent, int viewType) {
         View homeList = LayoutInflater.from(parent.getContext()).
                 inflate(R.layout.home_album_list_item,parent,false);
         return new AlbumListHolder(homeList);
     }
 
     @Override
-    public void onBindViewHolder(AlbumListAdapter.AlbumListHolder holder, int position) {
-        HashMap<String,String> Home = albumList.get(position);
-        int albumId = Integer.parseInt(Home.get(LoadingMusicTask.albumId));
-        Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
+    public void onBind(RecyclerView.ViewHolder holder, int Realposition, HashMap<String, String> data) {
+       if (holder instanceof AlbumListHolder){
+           int albumId = Integer.parseInt(data.get(LoadingMusicTask.albumId));
+           Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
 
-        holder.itemTitle.setText(Home.get(LoadingMusicTask.albumName));
-        holder.itemSubTitle.setText(Home.get(LoadingMusicTask.artistName));
-        holder.itemImg.setImageURI(uri);
-    }
-
-
-    @Override
-    public int getItemCount() {
-        return albumList == null ? 0 : albumList.size();
-    }
-
-    public void setAlbumList(ArrayList<HashMap<String,String>> albumList){
-        this.albumList = albumList;
+           ((AlbumListHolder)holder).itemTitle.setText(data.get(LoadingMusicTask.albumName));
+           ((AlbumListHolder)holder).itemSubTitle.setText(data.get(LoadingMusicTask.artistName));
+           ((AlbumListHolder)holder).itemImg.setImageURI(uri);
+       }
     }
 
     public class AlbumListHolder extends RecyclerView.ViewHolder {

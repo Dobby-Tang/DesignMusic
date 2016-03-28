@@ -11,42 +11,26 @@ import com.example.android.designmusic.R;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.facebook.drawee.view.SimpleDraweeView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
 *@author By Dobby Tang
 *Created on 2016-03-11 16:52
 */
-public class ArtistListAdapter extends RecyclerView.Adapter<ArtistListAdapter.ArtisstListHolder> {
-    private ArrayList<HashMap<String,String>> artistList;
-
-    public ArtistListAdapter(ArrayList<HashMap<String,String>> artistList){
-        this.artistList = artistList;
-    }
+public class ArtistListAdapter extends BaseListAdapter<HashMap<String,String>> {
 
     @Override
-    public ArtisstListHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View artistItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_artist_list_item,parent,false);
+    public RecyclerView.ViewHolder onCreate(ViewGroup parent, int viewType) {
+        View artistItem = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.home_artist_list_item,parent,false);
         return new ArtisstListHolder(artistItem);
     }
 
     @Override
-    public void onBindViewHolder(ArtisstListHolder holder, int position) {
-        HashMap<String,String> Artist = artistList.get(position);
-        holder.title.setText(Artist.get(LoadingMusicTask.artistName));
-        holder.subTitle.setText(Artist.get(LoadingMusicTask.songNumber));
-    }
-
-
-    @Override
-    public int getItemCount() {
-        return artistList == null ? 0 : artistList.size();
-    }
-
-
-    public void setArtistList(ArrayList<HashMap<String,String>> artistList){
-        this.artistList = artistList;
+    public void onBind(RecyclerView.ViewHolder holder, int Realposition
+            , HashMap<String, String> data) {
+        ((ArtisstListHolder)holder).title.setText(data.get(LoadingMusicTask.artistName));
+        ((ArtisstListHolder)holder).subTitle.setText(data.get(LoadingMusicTask.songNumber));
     }
 
     public class ArtisstListHolder extends RecyclerView.ViewHolder {

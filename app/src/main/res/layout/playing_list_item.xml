@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_width="match_parent"
+    android:clickable="true"
+    android:layout_height="48dp">
+
+    <ImageView
+        android:id="@+id/playing_item_album_img"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/playing"
+        android:padding="2dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        android:tint="?attr/colorPrimaryDark"/>
+
+    <TextView
+        android:id="@+id/playing_item_music_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:textSize="15sp"
+        android:textColor="@color/playingQueueUnSeleteSongColor"
+        android:layout_toRightOf="@id/playing_item_album_img"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="2dp"
+        android:text="ldsjf"/>
+
+    <TextView
+        android:id="@+id/playing_item_artist_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="@color/playingQueueUnSeleteArtistColor"
+        android:text="ldsjf"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@id/playing_item_music_name" />
+
+    <!--<ImageView-->
+        <!--android:id="@+id/playing_item_more"-->
+        <!--android:layout_width="4dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:src="@mipmap/music_more"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_marginRight="16dp"/>-->
+
+    <View
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@color/lineColor"
+        android:layout_alignParentBottom="true"
+        />
+
+
+</RelativeLayout>

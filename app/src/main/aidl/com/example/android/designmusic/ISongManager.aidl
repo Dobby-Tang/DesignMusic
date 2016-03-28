@@ -14,6 +14,7 @@ interface ISongManager {
      void stop();
      void pause();
      void next();
+     void last();
 
      boolean isPlaying();
 

@@ -16,17 +16,16 @@ public class Song implements Parcelable {
     public static final String REMOTE_SONG = "remote_song";
 
     public HashMap<String,String> song;
-    public String musicType;
 
-    public Song(HashMap<String,String> song, String musicType){
+
+
+    public Song(HashMap<String,String> song){
         this.song = song;
-        this.musicType = musicType;
     }
 
 
     protected Song(Parcel in) {
         song = in.readHashMap(HashMap.class.getClassLoader());
-        musicType = in.readString();
     }
 
     public static final Creator<Song> CREATOR = new Creator<Song>() {
@@ -48,8 +47,6 @@ public class Song implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
         dest.writeMap(song);
-        dest.writeString(musicType);
     }
 }

@@ -1,22 +1,30 @@
 package com.example.android.designmusic.ui.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.android.designmusic.R;
+import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.task.LoadingMusicTask;
+import com.example.android.designmusic.ui.activity.MusicPlayerActivity;
 import com.example.android.designmusic.ui.adapter.AlbumListAdapter;
 import com.example.android.designmusic.ui.adapter.ArtistListAdapter;
+import com.example.android.designmusic.ui.adapter.BaseListAdapter;
 import com.example.android.designmusic.ui.adapter.SongListAdapter;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +36,8 @@ import com.example.android.designmusic.ui.adapter.SongListAdapter;
  *
  */
 public class HomeFragment extends Fragment{
+
+    public static final String TAG = "HomeFragment";
 
     public static final String TYPE_SONG = "music";      //音乐队列
     public static final String TYPE_ARTIST = "artist";    //艺术家
@@ -42,7 +52,6 @@ public class HomeFragment extends Fragment{
 
     // TODO: Rename and change types of parameters
     private String mType;
-    private Context context;
     public static SongListAdapter songListAdapter;
     public static ArtistListAdapter artistListAdapter;
     public static AlbumListAdapter albumListAdapter;
@@ -65,9 +74,6 @@ public class HomeFragment extends Fragment{
         HomeFragment fragment = new HomeFragment();
         fragment.setArguments(args);
         return fragment;
-    }
-    public HomeFragment() {
-        context = getActivity();
     }
 
     @Override
@@ -93,16 +99,7 @@ public class HomeFragment extends Fragment{
         }
     }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
+
 
     @Override
     public void onDetach() {
@@ -116,21 +113,32 @@ public class HomeFragment extends Fragment{
         switch (mType){
             case TYPE_SONG:
                 if(songListAdapter == null){
-                    songListAdapter = new SongListAdapter(null);
+                    songListAdapter = new SongListAdapter();
+                    songListAdapter.setOnItemClickListener(
+                            new BaseListAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(int position, Object data) {
+                            Intent intent = new Intent(getActivity(), MusicPlayerActivity.class);
+                            intent.putExtra(HomeFragment.PLAYIONG_POSITION,position);
+                            intent.putExtra(HomeFragment.PLAYIONG_LIST
+                                    ,(ArrayList<Song>) songListAdapter.getData());
+                            getActivity().startActivity(intent);
+                        }
+                    });
                 }
-                mHomeList.setLayoutManager(new LinearLayoutManager(context));
+                mHomeList.setLayoutManager(new LinearLayoutManager(getActivity()));
                 mHomeList.setAdapter(songListAdapter);
                 break;
             case TYPE_ARTIST:
                 if (artistListAdapter == null){
-                    artistListAdapter = new ArtistListAdapter(null);
+                    artistListAdapter = new ArtistListAdapter();
                 }
                 mHomeList.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
                 mHomeList.setAdapter(artistListAdapter);
                 break;
             case TYPE_ALBUM:
                 if(albumListAdapter == null){
-                    albumListAdapter = new AlbumListAdapter(null);
+                    albumListAdapter = new AlbumListAdapter();
                 }
                 mHomeList.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
                 mHomeList.setAdapter(albumListAdapter);

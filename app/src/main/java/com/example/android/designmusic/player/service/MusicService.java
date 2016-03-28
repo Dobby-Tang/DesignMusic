@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
@@ -18,7 +17,6 @@ import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.player.Receiver.RemoteControlReceiver;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MusicService extends Service {
@@ -26,7 +24,6 @@ public class MusicService extends Service {
     public final static int PAUSED = 0;
     public final static int PLAYING = 1;
     public final static int STOP = 2;
-    public final static int UNREGISTER = 3;
     public int state = STOP;
 
     private static final String TAG = "MusicService";
@@ -50,7 +47,13 @@ public class MusicService extends Service {
 
     public static final String POSITION = "position";         //正在播放曲目序号
 
-    public List<Song> mSongList = new ArrayList<>();
+
+    public static final String isPlaying = "isPlaying";           //是否播放
+    public static final String isPlaying_TRUE = "true";
+    public static final String isPlaying_FALSE = "false";
+
+
+    public List<Song> mSongList ;
     private MediaPlayer mPlayer;
 
     private int nowPlayingPosition = -1;
@@ -74,11 +77,22 @@ public class MusicService extends Service {
 
         @Override
         public void initSongList(List<Song> songList) throws RemoteException {
-            if (!mSongList.equals(songList)) {
+
+
+            if (mSongList == null) {
+                Log.d(TAG,"-----> init Song list is mSonglist == null");
                 mSongList = songList;
                 isSameList = false;
             }else{
-                isSameList = true;
+                if (!songListEquals(mSongList,songList)){
+                    Log.d(TAG,"-----> init Song list is mSonglist != songList");
+                    mSongList = songList;
+                    isSameList = false;
+                }else{
+                    Log.d(TAG,"-----> init Song list is mSonglist == songList");
+                    isSameList = true;
+                }
+
             }
 
         }
@@ -121,6 +135,11 @@ public class MusicService extends Service {
         }
 
         @Override
+        public void last() throws RemoteException {
+            lastSong();
+        }
+
+        @Override
         public boolean isPlaying() throws RemoteException {
             if (mPlayer != null){
                 if (mPlayer.isPlaying()){
@@ -139,7 +158,7 @@ public class MusicService extends Service {
         @Override
         public void unregisterCallBack(IAudioStatusChangeListener mListener) throws RemoteException {
             mStatusListener.unregister(mListener);
-            state = UNREGISTER;
+//            state = STOP;
         }
 
         /**
@@ -171,8 +190,7 @@ public class MusicService extends Service {
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mComponentName = new ComponentName(getPackageName()
                 ,RemoteControlReceiver.class.getName());
-//        shared = getSharedPreferences(NOW_PLAYING,0);
-//        editor = shared.edit();
+
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -209,25 +227,31 @@ public class MusicService extends Service {
 
     public void player(int songPosition){
         if (requestAudioFocus() == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
-            Log.d(TAG,"nowplayingPosition is : "+nowPlayingPosition+" songPosition is : "+
+            Log.d(TAG,"now playingPosition is : "+nowPlayingPosition+" songPosition is : "+
                     songPosition);
-            nowPlayingPosition = songPosition;
-            if(state == PAUSED){
+            Log.d(TAG,"state :" + state);
+            if(state == PAUSED && mSongList.get(songPosition).song.get(isPlaying)
+                    .equals(isPlaying_TRUE)){
                 state = PLAYING;
                 mPlayer.start();
-            }else if(state == STOP){
-                state = PLAYING;
-                mPlayer.reset();
-                playingSetting(nowPlayingPosition);
-                mPlayer.start();
-            }else if(state == UNREGISTER){
+            }else if(!isSameList || mSongList.get(songPosition).song.get(isPlaying)
+                    .equals(isPlaying_FALSE)) {
+                nowPlayingPosition = songPosition;
                 state = PLAYING;
                 mPlayer.reset();
                 playingSetting(nowPlayingPosition);
                 mPlayer.start();
             }
-//                editor.putInt(NOW_PLAYING,songPosition);
-//                editor.commit();
+            IAudioStatusChangeListener listener = getIAudioStatusChangeListener();
+            if (listener != null){
+                try {
+                    setSongIsPlayingFlag(songPosition);
+                    listener.playingCallback(songPosition);
+
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
 
         }
     }
@@ -236,7 +260,7 @@ public class MusicService extends Service {
     public void nextSong(){
         if (nowPlayingPosition >= 0){
             int songPosition = -1;
-            if(nowPlayingPosition <= mSongList.size()){
+            if(nowPlayingPosition < mSongList.size() - 1 ){
                 songPosition = nowPlayingPosition + 1;
             }else {
                 songPosition = 0;
@@ -246,6 +270,33 @@ public class MusicService extends Service {
                 player(songPosition);
             }
 
+        }
+    }
+
+    public void lastSong(){
+        if (nowPlayingPosition >= 0){
+            int songPosition = -1;
+            if(nowPlayingPosition - 1 >= 0 ){
+                songPosition = nowPlayingPosition - 1;
+            }else {
+                songPosition = mSongList.size() - 1;
+            }
+            if (songPosition >= 0){
+                state = STOP;
+                player(songPosition);
+            }
+
+        }
+    }
+
+
+    public void setSongIsPlayingFlag(int position){
+        for (int i = 0 ; i < mSongList.size(); i++){
+            if (i == position){
+                mSongList.get(i).song.put(isPlaying,isPlaying_TRUE);
+            }else {
+                mSongList.get(i).song.put(isPlaying,isPlaying_FALSE);
+            }
         }
     }
 
@@ -262,8 +313,23 @@ public class MusicService extends Service {
         return result;
     }
 
+
+    private IAudioStatusChangeListener getIAudioStatusChangeListener(){
+        int listenerNum = mStatusListener.beginBroadcast();
+        IAudioStatusChangeListener listener = null;
+        if(listenerNum > 0) {
+            listener = mStatusListener.getBroadcastItem(0);
+            mStatusListener.finishBroadcast();
+            return listener;
+        }
+        mStatusListener.finishBroadcast();
+        return null;
+    }
+
     private AudioManager audioManager;
     private ComponentName mComponentName ;
+
+
 
     /**
      * 管理音频焦点事件
@@ -274,12 +340,7 @@ public class MusicService extends Service {
             AudioManager.OnAudioFocusChangeListener() {
         @Override
         public void onAudioFocusChange(int focusChange) {
-            int listenerNum = mStatusListener.beginBroadcast();
-            IAudioStatusChangeListener listener = null;
-            if(listenerNum > 0) {
-                listener = mStatusListener.getBroadcastItem(0);
-            }
-
+            IAudioStatusChangeListener listener = getIAudioStatusChangeListener();
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
                 state = PAUSED;
                 mPlayer.pause();
@@ -317,10 +378,23 @@ public class MusicService extends Service {
                 }
 
             }
-            mStatusListener.finishBroadcast();
         }
     };
 
 
-
+    public boolean songListEquals(List<Song> thisList,List<Song> newList) {
+        if (thisList.size() != newList.size()) {
+            Log.e(TAG,"songListEquals : " + "size is Unequal" );
+            return false;
+        }
+        for (int i = 0; i < thisList.size(); i++) {
+            Log.d(TAG,"thisList ID : " + thisList.get(i).song.get(songId)
+            + "newList ID : " + newList.get(i).song.get(songId));
+            if (!thisList.get(i).song.get(songId).equals(newList.get(i).song.get(songId))) {
+                Log.d(TAG, "songListEquals: unequal id is " + thisList.get(i).song.get(songId));
+                return false;
+            }
+        }
+        return true;
+    }
 }

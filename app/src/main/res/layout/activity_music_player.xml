@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -30,7 +30,76 @@
 
 
     </android.support.design.widget.AppBarLayout>
+    
+    <RelativeLayout
+        android:id="@+id/music_player_bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="@color/musicPlayerBottom"
+        android:layout_gravity="bottom">
+
+        <ImageView
+            android:id="@+id/music_player_headphones"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:tint="?attr/colorPrimary"
+            android:src="@mipmap/music_payer_play"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"/>
+
+        <TextView
+            android:id="@+id/music_player_playing_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-regular"
+            android:textSize="18sp"
+            android:textColor="@color/playingNumTextColor"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf= "@id/music_player_headphones"
+            android:layout_marginLeft="32dp" />
 
 
+        <TextView
+            android:id="@+id/music_player_playing_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-regular"
+            android:textSize="17sp"
+            android:textColor="@color/playingNumTextColor"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="32dp"
+            android:text="4:15"
+            android:layout_alignParentRight="true"/>
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/music_player_playing_songname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-regular"
+            android:textSize="17sp"
+            android:textColor="@color/playingSongTextColor"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="32dp"
+            android:paddingRight="32dp"
+            android:layout_toRightOf="@id/music_player_playing_num"
+            android:layout_toLeftOf="@id/music_player_playing_time"/>
+
+
+    </RelativeLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/show_playing_queue_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@mipmap/queue_music"
+        app:layout_anchor="@id/music_player_bottom_layout"
+        app:layout_anchorGravity="right"
+        app:backgroundTint="#ffea00"/>
+
+</android.support.design.widget.CoordinatorLayout>

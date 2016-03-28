@@ -35,14 +35,20 @@ import java.util.ArrayList;
 *Created on 2016-03-15 13:51
 */
 
-public class MusicPlayerFragment extends Fragment{
+public class MusicPlayerFragment extends Fragment implements View.OnClickListener{
     private static final String TAG = "MusicPlayerFragment";
-    private static final int playingCallBack = 1;
-    private static final int pauseCallBack = 0;
 
-    private static MorphButton playerBtn;
+    private static final int AUDIO_PAUSE_CALL_BACK = 0;         //音频焦点暂停播放
+    private static final int AUDIO_PLAYING_CALL_BACK = 1;       //音频焦点开始播放
+
+    private static final int PLAYING_CALL_BACK = 2;             //service开始播放回调
+
+    private MorphButton playerBtn;
     private SimpleDraweeView musicCover;
     private ImageView nextBtn;
+    private ImageView lastBtn;
+
+    playingCallback playingCallbackListener;
 
     int position;
     private static ArrayList<Song> mPlayingList;
@@ -59,11 +65,14 @@ public class MusicPlayerFragment extends Fragment{
             try {
                 mISongManager.registerCallBack(mListener);
                 mISongManager.initSongList(mPlayingList);
+                playingCallbackListener.getISongManager(mISongManager);
+                Message msg = Message.obtain();
+                msg.arg1 = mISongManager.getSongItem();
+                msg.what = PLAYING_CALL_BACK;
+                mHandler.sendMessage(msg);
                 Log.d(TAG,"select positon is " + position + " get service now playing position = "
                         + mISongManager.getSongItem());
-                if (position != mISongManager.getSongItem()){
                     mISongManager.play(position);
-                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -75,19 +84,41 @@ public class MusicPlayerFragment extends Fragment{
         }
     };
 
-    private static Handler mHandler = new Handler(){
+    private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == playingCallBack){
-                playerBtn.setState(START);
-                Log.d(TAG,"setState START");
-            }else if (msg.what == pauseCallBack){
-                playerBtn.setState(END);
-                Log.d(TAG,"setState END");
+            switch (msg.what) {
+                case AUDIO_PLAYING_CALL_BACK:
+                    playerBtn.setState(START);
+                    Log.d(TAG, "setState START");
+                    break;
+
+                case AUDIO_PAUSE_CALL_BACK:
+                    playerBtn.setState(END);
+                    Log.d(TAG, "setState END");
+                    break;
+
+                case PLAYING_CALL_BACK:
+                    initSongData(msg.arg1);
+                    playingCallbackListener.onSongPosition(msg.arg1);
+                    Log.d(TAG, "handleMessage: play callback");
+                    break;
             }
         }
     };
 
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try{
+            playingCallbackListener = (playingCallback) context;
+        }catch (ClassCastException e){
+            e.printStackTrace();
+        }
+
+    }
 
     public static MusicPlayerFragment newInstance(ArrayList<Song> mPlayingList, int position) {
 
@@ -112,41 +143,16 @@ public class MusicPlayerFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_music_player,container,false);
-        Song mSong = mPlayingList.get(position);
-
         Intent intent = new Intent(getActivity(), MusicService.class);
         getActivity().bindService(intent,songPlayerServiceConnection, Context.BIND_AUTO_CREATE);
 
         musicCover = (SimpleDraweeView) view.findViewById(R.id.music_player_cover);
         playerBtn = (MorphButton) view.findViewById(R.id.music_player_playBtn);
         nextBtn = (ImageView) view .findViewById(R.id.music_player_nextBtn);
+        lastBtn = (ImageView) view.findViewById(R.id.music_player_lastBtn);
 
-        int albumId = Integer.parseInt(mSong.song.get(LoadingMusicTask.albumId));
-        Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
-        musicCover.setImageURI(uri);
-
-
-
-//        MorphButton.MorphState mState = playerBtn.getState();
-//        //判断playerBtn的状态
-//        switch (mState){
-//            case START:
-//                break;
-//            case END:
-//                break;
-//        }
-
-        nextBtn.setOnClickListener(new View.OnClickListener() {
-            boolean b = true;
-            @Override
-            public void onClick(View v) {
-                try {
-                    mISongManager.next();
-                } catch (RemoteException e) {
-
-                }
-            }
-        });
+        nextBtn.setOnClickListener(this);
+        lastBtn.setOnClickListener(this);
 
         playerBtn.setOnStateChangedListener(new MorphButton.OnStateChangedListener() {
             @Override
@@ -154,6 +160,7 @@ public class MusicPlayerFragment extends Fragment{
                 switch (changedTo){
                     case START:
                         try {
+                            position = mISongManager.getSongItem();
                             mISongManager.play(position);
                         } catch (RemoteException e) {
                             e.printStackTrace();
@@ -176,7 +183,6 @@ public class MusicPlayerFragment extends Fragment{
     }
 
 
-
     /**
     *service回调监听器
     *@author Dobby-Tang
@@ -193,7 +199,7 @@ public class MusicPlayerFragment extends Fragment{
         public void AudioIsPause() throws RemoteException {
             Log.d(TAG,"Audio is pause");
             Message msg = Message.obtain();
-            msg.what = pauseCallBack;
+            msg.what = AUDIO_PAUSE_CALL_BACK;
             mHandler.sendMessage(msg);
         }
 
@@ -201,11 +207,37 @@ public class MusicPlayerFragment extends Fragment{
         public void AudioIsPlaying() throws RemoteException {
             Log.d(TAG,"Audio is playing");
             Message msg = Message.obtain();
-            msg.what = playingCallBack;
+            msg.what = AUDIO_PLAYING_CALL_BACK;
             mHandler.sendMessage(msg);
         }
 
+
+        @Override
+        public void playingCallback(int position) throws RemoteException {
+            Log.d(TAG, "playingCallback: " + "play song is: "+ position);
+            Message msg = Message.obtain();
+            msg.arg1 = position;
+            msg.what = PLAYING_CALL_BACK;
+            mHandler.sendMessage(msg);
+            ArrayList<Song> songList = new ArrayList<>();
+            songList.addAll(mISongManager.getSongList());
+            playingCallbackListener.getSongList(songList);
+        }
+
     };
+
+    private void initSongData(int Position){
+        if (Position >= 0){
+            Song mSong = mPlayingList.get(Position);
+            int albumId = Integer.parseInt(mSong.song.get(LoadingMusicTask.albumId));
+            Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
+            musicCover.setImageURI(uri);
+
+            if (playerBtn.getState() == END){
+                playerBtn.setState(START);
+            }
+        }
+    }
 
 
     @Override
@@ -240,4 +272,31 @@ public class MusicPlayerFragment extends Fragment{
         getActivity().unbindService(songPlayerServiceConnection);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.music_player_nextBtn:
+                try {
+                    mISongManager.next();
+                } catch (RemoteException e) {
+
+                }
+                break;
+
+            case R.id.music_player_lastBtn:
+                try {
+                    mISongManager.last();
+                }catch (RemoteException e){
+                    e.printStackTrace();
+                }
+                break;
+        }
+    }
+
+
+    public interface playingCallback{
+        void onSongPosition(int position);
+        void getSongList(ArrayList<Song> SongList);
+        void getISongManager(ISongManager mISongManager);
+    }
 }

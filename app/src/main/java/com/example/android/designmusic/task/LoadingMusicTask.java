@@ -33,6 +33,10 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
     public static final String albumId = "albumId";               //专辑ID
     public static final String albumArt = "albumArt";             //专辑图片
 
+    public static final String isPlaying = "isPlaying";           //是否播放
+    public static final String isPlaying_TRUE = "true";
+    public static final String isPlaying_FALSE = "false";
+
     public static final Uri albumArtUri = Uri.parse("content://media/external/audio/albumart");
 
 
@@ -58,15 +62,15 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
         if(aBoolean){
             switch (Type){
                 case HomeFragment.TYPE_SONG:
-                    HomeFragment.songListAdapter.setMusicList(songList);
+                    HomeFragment.songListAdapter.setDatas(songList);
                     HomeFragment.songListAdapter.notifyDataSetChanged();
                     break;
                 case HomeFragment.TYPE_ARTIST:
-                    HomeFragment.artistListAdapter.setArtistList(List);
+                    HomeFragment.artistListAdapter.setDatas(List);
                     HomeFragment.artistListAdapter.notifyDataSetChanged();
                     break;
                 case HomeFragment.TYPE_ALBUM:
-                    HomeFragment.albumListAdapter.setAlbumList(List);
+                    HomeFragment.albumListAdapter.setDatas(List);
                     HomeFragment.albumListAdapter.notifyDataSetChanged();
                     break;
 
@@ -122,7 +126,8 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
                 item.put(duration_t,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
                 item.put(songPath,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
 
-                Song song = new Song(item,Song.LOCAL_SONG);
+                item.put(isPlaying,isPlaying_FALSE);
+                Song song = new Song(item);
 
                 songList.add(song);
             }
