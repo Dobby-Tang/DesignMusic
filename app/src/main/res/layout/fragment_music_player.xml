@@ -97,9 +97,28 @@
                 android:layout_marginRight="48dp"
                 android:layout_centerVertical="true"
                 android:src="@drawable/ic_fast_forward_white_24dp"
-                android:layout_gravity="center_vertical"
                 />
+
+
         </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="48dp"
+            android:orientation="horizontal">
+            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+                android:id="@+id/discrete2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:dsb_allowTrackClickToDrag="false"
+                app:dsb_indicatorTextAppearance="@style/CustomFloaterTextAppearance"
+                app:dsb_progressColor="@color/my_progress_color"
+                app:dsb_rippleColor="#FF7788FF"
+                app:dsb_indicatorColor="@color/my_floater_color"
+                app:dsb_indicatorFormatter="%d"/>
+        </LinearLayout>
 
 
     </FrameLayout>
