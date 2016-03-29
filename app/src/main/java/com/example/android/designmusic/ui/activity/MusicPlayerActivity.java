@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.designmusic.ISongManager;
@@ -48,6 +49,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
     private RecyclerView bottomListView;
     private TextView songNum;
     private TextView songName;
+    private ImageView songListBtn;
     private BottomSheetDialog bottomSheetDialog;
 
     private PlayingListAdapter playingListAdapter;
@@ -60,23 +62,6 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
         Fresco.initialize(MusicPlayerActivity.this);
         setContentView(R.layout.activity_music_player);
 
-
-
-//        final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomListView);
-//        bottomSheetBehavior.setHideable(true);
-//        bottomSheetBehavior.setPeekHeight(1);
-//        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-//            @Override
-//            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-//
-//            }
-//
-//            @Override
-//            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-////                bottomSheet.getStateListAnimator()
-//
-//            }
-//        });
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.music_player_toolbar);
         toolbar.setTitle("");
@@ -122,6 +107,14 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
 
         songNum = (TextView)findViewById(R.id.music_player_playing_num);
         songName = (TextView)findViewById(R.id.music_player_playing_songname);
+        songListBtn = (ImageView)findViewById(R.id.music_player_song_list_btn);
+
+        songListBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showBottomSheetDialog();
+            }
+        });
 
         mCoordinatorLayout = (CoordinatorLayout) LayoutInflater.from(this)
                 .inflate(R.layout.activity_music_player,null);

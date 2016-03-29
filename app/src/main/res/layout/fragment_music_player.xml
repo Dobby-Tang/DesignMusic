@@ -108,16 +108,35 @@
             android:layout_gravity="bottom"
             android:layout_marginBottom="48dp"
             android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:layout_gravity="center"
+                android:paddingLeft="16dp"
+                android:textColor="#ff555555"
+                android:layout_weight="1"/>
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
                 android:id="@+id/discrete2"
-                android:layout_width="match_parent"
+                android:layout_width="250dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="3"
                 app:dsb_allowTrackClickToDrag="false"
                 app:dsb_indicatorTextAppearance="@style/CustomFloaterTextAppearance"
                 app:dsb_progressColor="@color/my_progress_color"
                 app:dsb_rippleColor="#FF7788FF"
                 app:dsb_indicatorColor="@color/my_floater_color"
                 app:dsb_indicatorFormatter="%d"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="05:00"
+                android:paddingRight="16dp"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal"
+                android:textColor="#ff555555"
+                android:layout_weight="1"/>
         </LinearLayout>
 
 

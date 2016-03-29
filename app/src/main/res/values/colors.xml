@@ -18,4 +18,6 @@
     <color name="colorPrimaryBack">#424242</color>
     <color name="musicPlayerBottom">#455a64</color>
 
+    <color name="DiscreteSeekBarColor">#FFFF8877</color>
+
 </resources>
