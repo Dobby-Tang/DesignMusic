@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.ui.fragment.HomeFragment;
+import com.example.android.designmusic.utils.FormatTime;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -122,7 +123,7 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
                 item.put(artistName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
                 item.put(albumName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
                 item.put(albumId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
-                item.put(duration,TimeConversions(time));
+                item.put(duration,FormatTime.secToTime(time));
                 item.put(duration_t,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
                 item.put(songPath,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
 

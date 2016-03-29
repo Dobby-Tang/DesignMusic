@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.android.designmusic.IAudioStatusChangeListener;
 import com.example.android.designmusic.ISongManager;
@@ -25,8 +26,11 @@ import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.player.service.MusicService;
 import com.example.android.designmusic.task.LoadingMusicTask;
+import com.example.android.designmusic.utils.FormatTime;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.wnafee.vector.MorphButton;
+
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import java.util.ArrayList;
 
@@ -40,13 +44,19 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
 
     private static final int AUDIO_PAUSE_CALL_BACK = 0;         //音频焦点暂停播放
     private static final int AUDIO_PLAYING_CALL_BACK = 1;       //音频焦点开始播放
-
     private static final int PLAYING_CALL_BACK = 2;             //service开始播放回调
+    private static final int PLAYING_TIME_CALL_BACK = 4;        //播放进度回调
 
     private MorphButton playerBtn;
     private SimpleDraweeView musicCover;
     private ImageView nextBtn;
     private ImageView lastBtn;
+    private DiscreteSeekBar mDiscreteSeekBar;
+    private TextView currentTime ;
+    private TextView totalTime;
+
+    private boolean mDiscreteSeekBarIsStart = false;
+
 
     playingCallback playingCallbackListener;
 
@@ -103,6 +113,13 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
                     playingCallbackListener.onSongPosition(msg.arg1);
                     Log.d(TAG, "handleMessage: play callback");
                     break;
+
+                case PLAYING_TIME_CALL_BACK:
+                    if (!mDiscreteSeekBarIsStart){
+                        mDiscreteSeekBar.setProgress(msg.arg1);
+                    }
+                    currentTime.setText(FormatTime.secToTime(msg.arg1));
+                    break;
             }
         }
     };
@@ -150,6 +167,9 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
         playerBtn = (MorphButton) view.findViewById(R.id.music_player_playBtn);
         nextBtn = (ImageView) view .findViewById(R.id.music_player_nextBtn);
         lastBtn = (ImageView) view.findViewById(R.id.music_player_lastBtn);
+        mDiscreteSeekBar = (DiscreteSeekBar) view.findViewById(R.id.music_player_discrete);
+        totalTime = (TextView) view.findViewById(R.id.music_player_total_playing_time);
+        currentTime = (TextView) view.findViewById(R.id.music_player_current_playing_time);
 
         nextBtn.setOnClickListener(this);
         lastBtn.setOnClickListener(this);
@@ -178,6 +198,7 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
             }
         });
 
+        initDiscreteSeekBar();
 
         return view;
     }
@@ -224,6 +245,15 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
             playingCallbackListener.getSongList(songList);
         }
 
+        @Override
+        public void playingCurrentTimeCallback(int time) throws RemoteException {
+//            Log.d(TAG, "playingCurrentTimeCallback: " + mFormatTime.secToTime(time/1000));
+            Message msg = new Message();
+            msg.what = PLAYING_TIME_CALL_BACK;
+            msg.arg1 = time / 1000;
+            mHandler.sendMessage(msg);
+        }
+
     };
 
     private void initSongData(int Position){
@@ -232,11 +262,58 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
             int albumId = Integer.parseInt(mSong.song.get(LoadingMusicTask.albumId));
             Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
             musicCover.setImageURI(uri);
+            totalTime.setText(mSong.song.get(LoadingMusicTask.duration));
+            mDiscreteSeekBar.setProgress(0);
+            mDiscreteSeekBar.setMax(Integer
+                    .valueOf(mSong.song.get(LoadingMusicTask.duration_t)) / 1000);
 
             if (playerBtn.getState() == END){
                 playerBtn.setState(START);
             }
         }
+    }
+
+    private void initDiscreteSeekBar(){
+        mDiscreteSeekBar.setNumericTransformer(new DiscreteSeekBar.NumericTransformer() {
+            @Override
+            public int transform(int value) {
+                return 0;
+            }
+
+            @Override
+            public String transformToString(int value) {
+                return FormatTime.secToTime(value);
+            }
+
+            @Override
+            public boolean useStringTransform() {
+                return true;
+            }
+        });
+
+        mDiscreteSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+            int value;
+            @Override
+            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+                this.value = value;
+            }
+
+            @Override
+            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+                mDiscreteSeekBarIsStart = true;
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+                try {
+                    mISongManager.seekTo(value * 1000);
+                    mDiscreteSeekBarIsStart = false;
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 
@@ -294,6 +371,11 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
     }
 
 
+    /**
+     * 回调通知Activity
+    *@author By Dobby Tang
+    *Created on 2016-03-29 14:16
+    */
     public interface playingCallback{
         void onSongPosition(int position);
         void getSongList(ArrayList<Song> SongList);

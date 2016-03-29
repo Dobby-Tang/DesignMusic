@@ -84,7 +84,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@mipmap/queue_music"
+        android:src="@mipmap/music_player_repeat"
         app:layout_anchor="@id/music_player_bottom_layout"
         app:layout_anchorGravity="left"
         app:backgroundTint="#ffea00"/>

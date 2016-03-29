@@ -39,6 +39,12 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
 
     private static final String TAG = "MusicPlayerActivity";
 
+    private static final int PLAYING_REPEAT = 1;               //列表循环
+    private static final int PLAYING_REPEAT_ONE = 2;           //单曲循环
+    private static final int PLAYING_RANDOM  = 3;              //随机播放
+
+    private int playingMode = -1;
+
     private ArrayList<Song> mplayerList;
     private int playerPosition;
 
@@ -73,8 +79,23 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showBottomSheetDialog();
-//                fab.
+                if (mISongManager != null){
+                    try{
+                        switch (playingMode){
+                            case PLAYING_REPEAT:
+                                mISongManager.setPlayingMode(PLAYING_REPEAT_ONE);
+                                break;
+                            case PLAYING_REPEAT_ONE:
+                                mISongManager.setPlayingMode(PLAYING_RANDOM);
+                                break;
+                            case PLAYING_RANDOM:
+                                mISongManager.setPlayingMode(PLAYING_REPEAT);
+                                break;
+                        }
+                    }catch (RemoteException e){
+                        e.printStackTrace();
+                    }
+                }
             }
         });
 
@@ -184,7 +205,11 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
     @Override
     public void getISongManager(ISongManager mISongManager) {
         this.mISongManager = mISongManager;
+        try {
+            playingMode = mISongManager.getPlayingMode();
+            Log.d(TAG, "getISongManager: playingMode = " + playingMode);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
-
-
 }

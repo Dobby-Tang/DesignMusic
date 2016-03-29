@@ -18,6 +18,7 @@ import com.example.android.designmusic.player.Receiver.RemoteControlReceiver;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 public class MusicService extends Service {
 
@@ -52,6 +53,11 @@ public class MusicService extends Service {
     public static final String isPlaying_TRUE = "true";
     public static final String isPlaying_FALSE = "false";
 
+    private static final int PLAYING_REPEAT = 1;               //列表循环
+    private static final int PLAYING_REPEAT_ONE = 2;           //单曲循环
+    private static final int PLAYING_RANDOM  = 3;              //随机播放
+
+    private int mPlayingMode = PLAYING_REPEAT;
 
     public List<Song> mSongList ;
     private MediaPlayer mPlayer;
@@ -110,6 +116,16 @@ public class MusicService extends Service {
         }
 
         @Override
+        public int getPlayingMode() throws RemoteException {
+            return mPlayingMode;
+        }
+
+        @Override
+        public void setPlayingMode(int mode) throws RemoteException {
+            mPlayingMode = mode;
+        }
+
+        @Override
         public void play(int songPosition) throws RemoteException{
             player(songPosition);
         }
@@ -137,6 +153,11 @@ public class MusicService extends Service {
         @Override
         public void last() throws RemoteException {
             lastSong();
+        }
+
+        @Override
+        public void seekTo(int progress) throws RemoteException {
+            mPlayer.seekTo(progress);
         }
 
         @Override
@@ -194,7 +215,18 @@ public class MusicService extends Service {
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                nextSong();
+                switch (mPlayingMode){
+                    case PLAYING_REPEAT:
+                        nextSong();
+                        break;
+                    case PLAYING_REPEAT_ONE:
+                        player(nowPlayingPosition);
+                        break;
+                    case PLAYING_RANDOM:
+                        int songPosition = new Random().nextInt(mSongList.size());
+                        player(songPosition);
+                        break;
+                }
             }
         });
     }
@@ -247,6 +279,7 @@ public class MusicService extends Service {
                 try {
                     setSongIsPlayingFlag(songPosition);
                     listener.playingCallback(songPosition);
+                    new Thread(new getPlayingProgress()).start();
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -396,4 +429,29 @@ public class MusicService extends Service {
         }
         return true;
     }
+
+    class getPlayingProgress implements Runnable {
+
+        @Override
+        public void run() {
+            if (mPlayer != null){
+                IAudioStatusChangeListener listener = getIAudioStatusChangeListener();
+                while (mPlayer.isPlaying()){
+                    try {
+                        if (listener != null){
+                            listener.playingCurrentTimeCallback(mPlayer.getCurrentPosition());
+                            Thread.sleep(1000);
+                        }
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+
+
 }

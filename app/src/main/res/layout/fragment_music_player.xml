@@ -109,6 +109,7 @@
             android:layout_marginBottom="48dp"
             android:orientation="horizontal">
             <TextView
+                android:id="@+id/music_player_current_playing_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00:00"
@@ -117,11 +118,12 @@
                 android:textColor="#ff555555"
                 android:layout_weight="1"/>
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
-                android:id="@+id/discrete2"
+                android:id="@+id/music_player_discrete"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                app:dsb_allowTrackClickToDrag="false"
+                app:dsb_min="0"
+                app:dsb_max="1000"
                 app:dsb_indicatorTextAppearance="@style/CustomFloaterTextAppearance"
                 app:dsb_progressColor="@color/my_progress_color"
                 app:dsb_rippleColor="#FF7788FF"
@@ -129,6 +131,7 @@
                 app:dsb_indicatorFormatter="%d"/>
 
             <TextView
+                android:id="@+id/music_player_total_playing_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="05:00"
