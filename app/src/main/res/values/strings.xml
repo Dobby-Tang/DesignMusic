@@ -16,4 +16,6 @@
     <string name="playing_clear">Clear</string>
     <string name="playing_queue">Queue</string>
     <string name="playing_favorites">Favorites</string>
+    <string name="title_activity_album_song">AlbumSongActivity</string>
+
 </resources>

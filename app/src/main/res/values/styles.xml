@@ -1,7 +1,6 @@
 <resources>
 
-    <style name="Theme.DesignDemo" parent="Base.Theme.DesignDemo">
-    </style>
+    <style name="Theme.DesignDemo" parent="Base.Theme.DesignDemo"></style>
 
     <!-- Base application theme. -->
     <style name="Base.Theme.DesignDemo" parent="Theme.AppCompat.Light.NoActionBar">
@@ -13,11 +12,11 @@
 
 
     <style name="Widget.CardContent" parent="android:Widget">
-    <item name="android:paddingLeft">16dp</item>
-    <item name="android:paddingRight">16dp</item>
-    <item name="android:paddingTop">24dp</item>
-    <item name="android:paddingBottom">24dp</item>
-    <item name="android:orientation">vertical</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">24dp</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
 
@@ -29,5 +28,9 @@
         <item name="android:shadowDx">1</item>
         <item name="android:shadowDy">3</item>
     </style>
+
+    <style name="Theme.DesignDemo.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.DesignDemo.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

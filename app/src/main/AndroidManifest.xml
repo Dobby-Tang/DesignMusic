@@ -21,23 +21,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.activity.MusicPlayerActivity"
-            android:launchMode="singleTask"/>
+        <activity
+            android:name=".ui.activity.MusicPlayerActivity"
+            android:launchMode="singleTask" />
 
         <service
             android:name=".player.service.MusicService"
             android:enabled="true"
             android:exported="true"
-            android:process=":musicService">
-
-        </service>
+            android:process=":musicService"></service>
 
         <receiver android:name=".player.Receiver.RemoteControlReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON"/>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".ui.activity.AlbumSongActivity"
+            android:label="@string/title_activity_album_song"
+            android:theme="@style/Theme.DesignDemo"></activity>
     </application>
 
 </manifest>

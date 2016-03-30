@@ -1,16 +1,13 @@
 package com.example.android.designmusic.ui.fragment;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +15,7 @@ import android.view.ViewGroup;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.task.LoadingMusicTask;
+import com.example.android.designmusic.ui.activity.AlbumSongActivity;
 import com.example.android.designmusic.ui.activity.MusicPlayerActivity;
 import com.example.android.designmusic.ui.adapter.AlbumListAdapter;
 import com.example.android.designmusic.ui.adapter.ArtistListAdapter;
@@ -25,6 +23,7 @@ import com.example.android.designmusic.ui.adapter.BaseListAdapter;
 import com.example.android.designmusic.ui.adapter.SongListAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,8 +42,11 @@ public class HomeFragment extends Fragment{
     public static final String TYPE_ARTIST = "artist";    //艺术家
     public static final String TYPE_ALBUM = "album";      //专辑
 
-    public static final String PLAYIONG_LIST = "Playing_list";
-    public static final String PLAYIONG_POSITION = "Playing_position";
+    public static final String PLAYIONG_LIST = "Playing_list";             //所有本地歌曲
+    public static final String PLAYIONG_POSITION = "Playing_position";     //播放歌曲序号
+
+//    public static final String
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -114,18 +116,18 @@ public class HomeFragment extends Fragment{
             case TYPE_SONG:
                 if(songListAdapter == null){
                     songListAdapter = new SongListAdapter();
-                    songListAdapter.setOnItemClickListener(
-                            new BaseListAdapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(int position, Object data) {
-                            Intent intent = new Intent(getActivity(), MusicPlayerActivity.class);
-                            intent.putExtra(HomeFragment.PLAYIONG_POSITION,position);
-                            intent.putExtra(HomeFragment.PLAYIONG_LIST
-                                    ,(ArrayList<Song>) songListAdapter.getData());
-                            getActivity().startActivity(intent);
-                        }
-                    });
                 }
+                songListAdapter.setOnItemClickListener(
+                        new BaseListAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(int position, Object data) {
+                                Intent intent = new Intent(getActivity(), MusicPlayerActivity.class);
+                                intent.putExtra(HomeFragment.PLAYIONG_POSITION,position);
+                                intent.putExtra(HomeFragment.PLAYIONG_LIST
+                                        ,(ArrayList<Song>) songListAdapter.getData());
+                                getActivity().startActivity(intent);
+                            }
+                        });
                 mHomeList.setLayoutManager(new LinearLayoutManager(getActivity()));
                 mHomeList.setAdapter(songListAdapter);
                 break;
@@ -140,6 +142,18 @@ public class HomeFragment extends Fragment{
                 if(albumListAdapter == null){
                     albumListAdapter = new AlbumListAdapter();
                 }
+                albumListAdapter.setOnItemClickListener(new BaseListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position, Object data) {
+                        HashMap<String,String> album = (HashMap<String,String>) data;
+                                Intent intent = new Intent(getActivity(), AlbumSongActivity.class);
+                        intent.putExtra(LoadingMusicTask.albumId
+                                , album.get(LoadingMusicTask.albumId));
+                        intent.putExtra(LoadingMusicTask.albumName
+                                ,album.get(LoadingMusicTask.albumName));
+                        getActivity().startActivity(intent);
+                    }
+                });
                 mHomeList.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
                 mHomeList.setAdapter(albumListAdapter);
                 break;
