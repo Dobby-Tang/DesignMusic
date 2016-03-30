@@ -49,6 +49,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
     private int playerPosition;
 
     private ISongManager mISongManager;
+    private FloatingActionButton fab;
 
     private CoordinatorLayout mCoordinatorLayout;
 
@@ -74,7 +75,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
         setSupportActionBar(toolbar);
 
 
-        final FloatingActionButton fab = (FloatingActionButton)
+        fab = (FloatingActionButton)
                 findViewById(R.id.show_playing_queue_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,6 +96,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
                     }catch (RemoteException e){
                         e.printStackTrace();
                     }
+                    setFabSrc();
                 }
             }
         });
@@ -184,6 +186,26 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
     }
 
 
+    private void setFabSrc(){
+        try {
+            playingMode = mISongManager.getPlayingMode();
+            switch (playingMode){
+                case PLAYING_REPEAT:
+                    fab.setImageResource(R.mipmap.music_player_repeat);
+                    break;
+                case PLAYING_REPEAT_ONE:
+                    fab.setImageResource(R.mipmap.music_player_repeat_one);
+                    break;
+                case PLAYING_RANDOM:
+                    fab.setImageResource(R.mipmap.music_player_arrow_shuffle);
+                    break;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     @Override
     public void onSongPosition(int position) {
@@ -205,11 +227,8 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
     @Override
     public void getISongManager(ISongManager mISongManager) {
         this.mISongManager = mISongManager;
-        try {
-            playingMode = mISongManager.getPlayingMode();
-            Log.d(TAG, "getISongManager: playingMode = " + playingMode);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        setFabSrc();
     }
+
+
 }

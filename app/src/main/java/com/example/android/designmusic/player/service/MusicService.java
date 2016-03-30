@@ -220,9 +220,12 @@ public class MusicService extends Service {
                         nextSong();
                         break;
                     case PLAYING_REPEAT_ONE:
+                        state = STOP;
+                        mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
                         player(nowPlayingPosition);
                         break;
                     case PLAYING_RANDOM:
+                        state = STOP;
                         int songPosition = new Random().nextInt(mSongList.size());
                         player(songPosition);
                         break;
