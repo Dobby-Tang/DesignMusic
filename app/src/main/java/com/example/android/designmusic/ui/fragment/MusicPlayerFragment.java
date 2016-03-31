@@ -82,7 +82,7 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
                 mHandler.sendMessage(msg);
                 Log.d(TAG,"select positon is " + position + " get service now playing position = "
                         + mISongManager.getSongItem());
-                    mISongManager.play(position);
+                mISongManager.play(position);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

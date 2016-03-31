@@ -21,6 +21,7 @@ interface ISongManager {
      void seekTo(in int progress);
 
      boolean isPlaying();
+     boolean isEqualsSongList(in List<Song> songList);
 
      void registerCallBack(IAudioStatusChangeListener mListener);
      void unregisterCallBack(IAudioStatusChangeListener mListener);

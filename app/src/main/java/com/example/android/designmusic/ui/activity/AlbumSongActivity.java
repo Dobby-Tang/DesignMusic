@@ -1,13 +1,17 @@
 package com.example.android.designmusic.ui.activity;
 
+import android.content.ComponentName;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
+import android.os.RemoteException;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,8 +19,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.android.designmusic.ISongManager;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
+import com.example.android.designmusic.player.service.MusicService;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.ui.adapter.BaseListAdapter;
 import com.example.android.designmusic.ui.adapter.DetailSongListAdapter;
@@ -29,6 +35,8 @@ public class AlbumSongActivity extends AppCompatActivity {
 
     private static final int ALBUM_SONG_LIST = 1;
 
+    private boolean isPlaying = false;
+
     private String albumName;
     private String albumId;
     private String artistName;
@@ -40,8 +48,24 @@ public class AlbumSongActivity extends AppCompatActivity {
     private SimpleDraweeView albumCover;
     private TextView artistNameTextView;
     private TextView songNumberTextView;
+    private FloatingActionButton fab;
 
     private DetailSongListAdapter mDetailSongListAdapter;
+    private ISongManager mISongManager;
+
+
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mISongManager = ISongManager.Stub.asInterface(service);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mISongManager = null;
+        }
+    };
+
 
     private Handler mHandler = new Handler(){
         @Override
@@ -63,6 +87,8 @@ public class AlbumSongActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_song);
 
+        Intent intent = new Intent(AlbumSongActivity.this, MusicService.class);
+        bindService(intent,mServiceConnection, Context.BIND_AUTO_CREATE);
         albumCover = (SimpleDraweeView)findViewById(R.id.album_cover);
         mDetailList = (RecyclerView)findViewById(R.id.detail_list);
         artistNameTextView = (TextView)findViewById(R.id.detail_artist_name);
@@ -106,14 +132,53 @@ public class AlbumSongActivity extends AppCompatActivity {
         toolbar.setTitle(albumName);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if (mISongManager != null && mDetailSongListAdapter.getData() != null){
+                    try {
+                        if (isPlaying) {
+                            fab.setImageResource(R.mipmap.play);
+                            mISongManager.pause();
+                            if (!mISongManager.isPlaying()){
+                                isPlaying = false;
+                            }
+                        } else {
+                            fab.setImageResource(R.mipmap.pause);
+                            ArrayList<Song> mSongList = mDetailSongListAdapter.getData();
+                            mISongManager.initSongList(mDetailSongListAdapter.getData());
+                            mISongManager.play(0);
+                            if (mISongManager.isPlaying()){
+                                isPlaying = true;
+                            }
+                        }
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+
+                }
             }
         });
+
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mISongManager != null && mDetailSongListAdapter.getData() != null){
+            try {
+                if (!mISongManager.isPlaying() && mISongManager
+                        .isEqualsSongList(mDetailSongListAdapter.getData())){
+                    fab.setImageResource(R.mipmap.play);
+                }else {
+                    fab.setImageResource(R.mipmap.pause);
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
@@ -127,12 +192,13 @@ public class AlbumSongActivity extends AppCompatActivity {
             }
         }
 
-        Message msg = new Message();
+        Message msg = Message.obtain();
         msg.what = ALBUM_SONG_LIST;
         msg.obj = albumSongList;
         mHandler.sendMessage(msg);
 
     }
+
 
 
 }

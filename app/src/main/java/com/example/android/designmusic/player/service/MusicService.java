@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.IBinder;
+import android.os.Parcel;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
@@ -171,6 +173,11 @@ public class MusicService extends Service {
         }
 
         @Override
+        public boolean isEqualsSongList(List<Song> songList) throws RemoteException {
+            return songListEquals(mSongList,songList);
+        }
+
+        @Override
         public void registerCallBack(IAudioStatusChangeListener mListener) throws RemoteException {
             mStatusListener.register(mListener);
 
@@ -187,20 +194,20 @@ public class MusicService extends Service {
          *@author By Dobby Tang
          *Created on 2016-03-14 10:52
          */
-//        @Override
-//        public boolean onTransact(int code, Parcel data,Parcel reply,int flags)throws RemoteException{
-//            String packageName = null;
-//            String[] packages = MusicService.this.getPackageManager().
-//                    getPackagesForUid(Binder.getCallingUid());
-//            if (packages != null && packages.length > 0){
-//                packageName = packages[0];
-//            }
-//            Log.d(TAG,"onTransact:" + packageName);
-//            if(!PACKAGE_SAYHI.equals(packageName)){
-//                return false;
-//            }
-//            return super.onTransact(code, data, reply, flags);
-//        }
+        @Override
+        public boolean onTransact(int code, Parcel data, Parcel reply, int flags)throws RemoteException{
+            String packageName = null;
+            String[] packages = MusicService.this.getPackageManager().
+                    getPackagesForUid(Binder.getCallingUid());
+            if (packages != null && packages.length > 0){
+                packageName = packages[0];
+            }
+            Log.d(TAG,"onTransact:" + packageName);
+            if(!PACKAGE_SAYHI.equals(packageName)){
+                return false;
+            }
+            return super.onTransact(code, data, reply, flags);
+        }
     };
 
 
@@ -275,6 +282,7 @@ public class MusicService extends Service {
                 state = PLAYING;
                 mPlayer.reset();
                 playingSetting(nowPlayingPosition);
+                mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_TRUE);
                 mPlayer.start();
             }
             IAudioStatusChangeListener listener = getIAudioStatusChangeListener();
@@ -443,7 +451,7 @@ public class MusicService extends Service {
                     try {
                         if (listener != null){
                             listener.playingCurrentTimeCallback(mPlayer.getCurrentPosition());
-                            Thread.sleep(1000);
+                            Thread.sleep(500);
                         }
                     } catch (RemoteException e) {
                         e.printStackTrace();
