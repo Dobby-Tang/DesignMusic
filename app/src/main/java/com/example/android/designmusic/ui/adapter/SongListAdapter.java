@@ -1,8 +1,6 @@
 package com.example.android.designmusic.ui.adapter;
 
 import android.content.ContentUris;
-import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,11 +12,7 @@ import android.widget.TextView;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.task.LoadingMusicTask;
-import com.example.android.designmusic.ui.activity.MusicPlayerActivity;
-import com.example.android.designmusic.ui.fragment.HomeFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
-
-import java.util.ArrayList;
 
 /**
 *@author By Dobby Tang
@@ -31,24 +25,24 @@ public class SongListAdapter extends BaseListAdapter<Song>{
     public RecyclerView.ViewHolder onCreate(ViewGroup parent, int viewType) {
         View musicItem = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.home_music_list_item,parent,false);
-        return new MusicListHolder(musicItem,parent.getContext());
+        return new SongListHolder(musicItem);
     }
 
     @Override
     public void onBind(RecyclerView.ViewHolder holder, int Realposition, Song data) {
         int albumId = Integer.parseInt(data.song.get(LoadingMusicTask.albumId));
 
-        ((MusicListHolder)holder).musicName.setText(data.song.get(LoadingMusicTask.songName));
-        ((MusicListHolder)holder).artistName.setText(data.song.get(LoadingMusicTask.artistName));
+        ((SongListHolder)holder).musicName.setText(data.song.get(LoadingMusicTask.songName));
+        ((SongListHolder)holder).artistName.setText(data.song.get(LoadingMusicTask.artistName));
 
         Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
-        ((MusicListHolder)holder).musicImage.setImageURI(uri);
+        ((SongListHolder)holder).musicImage.setImageURI(uri);
 
     }
 
 
 
-    public static class MusicListHolder extends RecyclerView.ViewHolder{
+    public static class SongListHolder extends RecyclerView.ViewHolder{
 
         TextView musicName;
         TextView artistName;
@@ -56,7 +50,7 @@ public class SongListAdapter extends BaseListAdapter<Song>{
         ImageView itemMore;
 
 
-        public MusicListHolder(final View itemView, final Context context) {
+        public SongListHolder(final View itemView) {
             super(itemView);
             musicName = (TextView) itemView.findViewById(R.id.music_item_music_name);
             artistName = (TextView) itemView.findViewById(R.id.music_item_artist_name);

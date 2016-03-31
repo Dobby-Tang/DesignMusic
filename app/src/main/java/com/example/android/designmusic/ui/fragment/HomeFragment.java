@@ -44,6 +44,7 @@ public class HomeFragment extends Fragment{
 
     public static final String PLAYIONG_LIST = "Playing_list";             //所有本地歌曲
     public static final String PLAYIONG_POSITION = "Playing_position";     //播放歌曲序号
+    public static final String SONG_LIST = "album_song_list" ;        //专辑歌曲列表
 
 //    public static final String
 
@@ -151,8 +152,17 @@ public class HomeFragment extends Fragment{
                                 , album.get(LoadingMusicTask.albumId));
                         intent.putExtra(LoadingMusicTask.albumName
                                 ,album.get(LoadingMusicTask.albumName));
+                        intent.putExtra(LoadingMusicTask.artistName
+                                ,album.get(LoadingMusicTask.artistName));
+                        intent.putExtra(LoadingMusicTask.songNumber
+                                ,album.get(LoadingMusicTask.songNumber));
+                        if (songListAdapter != null){
+                            ArrayList<Song> songList = songListAdapter.getData();
+                            intent.putExtra(SONG_LIST,songList);
+                        }
                         getActivity().startActivity(intent);
                     }
+
                 });
                 mHomeList.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
                 mHomeList.setAdapter(albumListAdapter);
@@ -164,6 +174,8 @@ public class HomeFragment extends Fragment{
 
 
     }
+
+
 
 
     /**
