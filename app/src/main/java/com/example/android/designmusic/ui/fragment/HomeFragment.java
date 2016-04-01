@@ -16,6 +16,7 @@ import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.ui.activity.AlbumSongActivity;
+import com.example.android.designmusic.ui.activity.ArtistSongActivity;
 import com.example.android.designmusic.ui.activity.MusicPlayerActivity;
 import com.example.android.designmusic.ui.adapter.AlbumListAdapter;
 import com.example.android.designmusic.ui.adapter.ArtistListAdapter;
@@ -136,6 +137,22 @@ public class HomeFragment extends Fragment{
                 if (artistListAdapter == null){
                     artistListAdapter = new ArtistListAdapter();
                 }
+
+                artistListAdapter.setOnItemClickListener(new BaseListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position, Object data) {
+                        HashMap<String,String> artist = (HashMap<String,String>) data;
+                        Intent intent = new Intent(getActivity(), ArtistSongActivity.class);
+                        intent.putExtra(LoadingMusicTask.artistId
+                                ,artist.get(LoadingMusicTask.artistId));
+                        if (songListAdapter != null){
+                            ArrayList<Song> songList = songListAdapter.getData();
+                            intent.putExtra(SONG_LIST,songList);
+                        }
+                        getActivity().startActivity(intent);
+                    }
+                });
+
                 mHomeList.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
                 mHomeList.setAdapter(artistListAdapter);
                 break;

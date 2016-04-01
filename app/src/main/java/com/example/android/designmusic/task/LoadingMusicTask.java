@@ -121,6 +121,7 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
 
                 item.put(songName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
                 item.put(artistName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+                item.put(artistId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
                 item.put(albumName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
                 item.put(albumId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
                 item.put(duration,FormatTime.secToTime(time));
