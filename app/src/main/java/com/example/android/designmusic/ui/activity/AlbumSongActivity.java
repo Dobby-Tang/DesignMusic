@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -32,6 +33,8 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import java.util.ArrayList;
 
 public class AlbumSongActivity extends AppCompatActivity {
+
+    private static final String TAG = "AlbumSongActivity";
 
     private static final int ALBUM_SONG_LIST = 1;
 
@@ -77,6 +80,29 @@ public class AlbumSongActivity extends AppCompatActivity {
                         mDetailSongListAdapter.setDatas(albumSongList);
                         mDetailSongListAdapter.notifyDataSetChanged();
                     }
+                    if (mISongManager != null && mDetailSongListAdapter.getData() != null){
+                        try {
+                            ArrayList<Song> mSongList = mDetailSongListAdapter.getData();
+                            if (mISongManager.isEqualsSongList(mSongList)){
+                                Log.d(TAG, "mServiceConnection: now playing is mSongList");
+                                if (mISongManager.isPlaying()){
+                                    Log.d(TAG, "mServiceConnection: playing is true");
+                                    fab.setImageResource(R.mipmap.pause);
+                                    isPlaying = true;
+                                }else{
+                                    Log.d(TAG, "mServiceConnection: playing is false");
+                                    fab.setImageResource(R.mipmap.play);
+                                    isPlaying = false;
+                                }
+                            }else {
+                                Log.d(TAG, "mServiceConnection: now playing list is not mSongList");
+                                fab.setImageResource(R.mipmap.play);
+                                isPlaying = false;
+                            }
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     break;
             }
         }
@@ -89,6 +115,7 @@ public class AlbumSongActivity extends AppCompatActivity {
 
         Intent intent = new Intent(AlbumSongActivity.this, MusicService.class);
         bindService(intent,mServiceConnection, Context.BIND_AUTO_CREATE);
+
         albumCover = (SimpleDraweeView)findViewById(R.id.album_cover);
         mDetailList = (RecyclerView)findViewById(R.id.detail_list);
         artistNameTextView = (TextView)findViewById(R.id.detail_artist_name);
@@ -167,20 +194,15 @@ public class AlbumSongActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (mISongManager != null && mDetailSongListAdapter.getData() != null){
-            try {
-                if (!mISongManager.isPlaying() && mISongManager
-                        .isEqualsSongList(mDetailSongListAdapter.getData())){
-                    fab.setImageResource(R.mipmap.play);
-                }else {
-                    fab.setImageResource(R.mipmap.pause);
-                }
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
+        Log.d(TAG, "onStart: ");
+
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(mServiceConnection);
+    }
 
     public void initAlbumSongList(ArrayList<Song> songList, String albumId){
         ArrayList<Song> albumSongList = new ArrayList<>();

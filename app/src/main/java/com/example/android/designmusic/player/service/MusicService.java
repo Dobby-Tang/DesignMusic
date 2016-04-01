@@ -194,7 +194,7 @@ public class MusicService extends Service {
          *@author By Dobby Tang
          *Created on 2016-03-14 10:52
          */
-        @Override
+//        @Override
         public boolean onTransact(int code, Parcel data, Parcel reply, int flags)throws RemoteException{
             String packageName = null;
             String[] packages = MusicService.this.getPackageManager().
@@ -224,6 +224,7 @@ public class MusicService extends Service {
             public void onCompletion(MediaPlayer mp) {
                 switch (mPlayingMode){
                     case PLAYING_REPEAT:
+                        mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
                         nextSong();
                         break;
                     case PLAYING_REPEAT_ONE:
@@ -233,6 +234,7 @@ public class MusicService extends Service {
                         break;
                     case PLAYING_RANDOM:
                         state = STOP;
+                        mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
                         int songPosition = new Random().nextInt(mSongList.size());
                         player(songPosition);
                         break;
@@ -426,19 +428,22 @@ public class MusicService extends Service {
 
 
     public boolean songListEquals(List<Song> thisList,List<Song> newList) {
-        if (thisList.size() != newList.size()) {
-            Log.e(TAG,"songListEquals : " + "size is Unequal" );
-            return false;
-        }
-        for (int i = 0; i < thisList.size(); i++) {
-            Log.d(TAG,"thisList ID : " + thisList.get(i).song.get(songId)
-            + "newList ID : " + newList.get(i).song.get(songId));
-            if (!thisList.get(i).song.get(songId).equals(newList.get(i).song.get(songId))) {
-                Log.d(TAG, "songListEquals: unequal id is " + thisList.get(i).song.get(songId));
+        if (thisList != null){
+            if (thisList.size() != newList.size()) {
+                Log.d(TAG,"songListEquals : " + "size is Unequal" );
                 return false;
             }
+            for (int i = 0; i < thisList.size(); i++) {
+                Log.d(TAG,"thisList ID : " + thisList.get(i).song.get(songId)
+                        + "newList ID : " + newList.get(i).song.get(songId));
+                if (!thisList.get(i).song.get(songId).equals(newList.get(i).song.get(songId))) {
+                    Log.d(TAG, "songListEquals: unequal id is " + thisList.get(i).song.get(songId));
+                    return false;
+                }
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     class getPlayingProgress implements Runnable {
