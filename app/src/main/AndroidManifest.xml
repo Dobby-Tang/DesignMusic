@@ -29,7 +29,7 @@
             android:name=".player.service.MusicService"
             android:enabled="true"
             android:exported="true"
-            android:process=":musicService"></service>
+            android:process=":musicService" />
 
         <receiver android:name=".player.Receiver.RemoteControlReceiver">
             <intent-filter>
@@ -40,6 +40,10 @@
         <activity
             android:name=".ui.activity.AlbumSongActivity"
             android:label="@string/title_activity_album_song"
+            android:theme="@style/Theme.DesignDemo" />
+        <activity
+            android:name=".ui.activity.ArtistSongActivity"
+            android:label="@string/title_activity_artist_song"
             android:theme="@style/Theme.DesignDemo"></activity>
     </application>
 
