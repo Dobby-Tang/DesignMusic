@@ -85,6 +85,9 @@ public abstract class BaseListAdapter<T> extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public int getItemCount() {
+        if(mDatas == null){
+            return 0;
+        }
         return mHeaderView == null ? mDatas.size() : mDatas.size()+1 ;
     }
 
