@@ -71,14 +71,14 @@ public class DividerGridItemDecoration extends RecyclerView.ItemDecoration
     public void getItemOffsets(Rect outRect, int itemPosition,
                                RecyclerView parent) {
 
-        int spanCount = getSpanCount(parent);
-        int childCount = parent.getAdapter().getItemCount();
-
-        outRect.bottom = space;
-        outRect.left = space;
-        if (parent.getChildAdapterPosition(view) == 0){
-            outRect.top = space;
-        }
-        if (isLastColum(parent, itemPosition, spanCount, childCount))
+//        int spanCount = getSpanCount(parent);
+//        int childCount = parent.getAdapter().getItemCount();
+//
+//        outRect.bottom = space;
+//        outRect.left = space;
+//        if (parent.getChildAdapterPosition(view) == 0){
+//            outRect.top = space;
+//        }
+//        if (isLastColum(parent, itemPosition, spanCount, childCount))
     }
 }

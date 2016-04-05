@@ -19,6 +19,7 @@ import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.player.Receiver.RemoteControlReceiver;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -61,6 +62,7 @@ public class MusicService extends Service {
 
     private int mPlayingMode = PLAYING_REPEAT;
 
+    public List<Song> historyList;
     public List<Song> mSongList ;
     private MediaPlayer mPlayer;
 
@@ -124,6 +126,17 @@ public class MusicService extends Service {
 
         @Override
         public void setPlayingMode(int mode) throws RemoteException {
+            if (mPlayingMode != mode){
+                if (mode == PLAYING_RANDOM){
+                    historyList = mSongList;
+                    Random rnd = new Random(2);
+                    Collections.shuffle(mSongList,rnd);
+                    Log.d(TAG, "setPlayingMode: shuffle list ...");
+                }else if (mode == PLAYING_REPEAT){
+                    mSongList = historyList;
+                }
+            }
+
             mPlayingMode = mode;
         }
 
