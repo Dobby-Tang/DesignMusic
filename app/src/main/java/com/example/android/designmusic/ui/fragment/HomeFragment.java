@@ -22,6 +22,7 @@ import com.example.android.designmusic.ui.adapter.AlbumListAdapter;
 import com.example.android.designmusic.ui.adapter.ArtistListAdapter;
 import com.example.android.designmusic.ui.adapter.BaseListAdapter;
 import com.example.android.designmusic.ui.adapter.SongListAdapter;
+import com.example.android.designmusic.utils.DividerGridItemDecoration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -155,6 +156,8 @@ public class HomeFragment extends Fragment{
 
                 mHomeList.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
                 mHomeList.setAdapter(artistListAdapter);
+                DividerGridItemDecoration artistDecoration = new DividerGridItemDecoration(getActivity());
+                mHomeList.addItemDecoration(artistDecoration);
                 break;
             case TYPE_ALBUM:
                 if(albumListAdapter == null){
@@ -183,6 +186,8 @@ public class HomeFragment extends Fragment{
                 });
                 mHomeList.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
                 mHomeList.setAdapter(albumListAdapter);
+                DividerGridItemDecoration alubmDecoration = new DividerGridItemDecoration(getActivity());
+                mHomeList.addItemDecoration(alubmDecoration);
                 break;
         }
 

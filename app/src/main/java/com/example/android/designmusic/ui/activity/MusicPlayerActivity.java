@@ -1,7 +1,6 @@
 package com.example.android.designmusic.ui.activity;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.design.widget.BottomSheetDialog;
@@ -69,7 +68,6 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
         Fresco.initialize(MusicPlayerActivity.this);
         setContentView(R.layout.activity_music_player);
 
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.music_player_toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -103,12 +101,12 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
 
 
         initfindView();
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            initMusicPlayerFragmentV21();
-        }else{
-            initMusicPlayerFragment();
-        }
+        initMusicPlayerFragment();
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+//            initMusicPlayerFragmentV21();
+//        }else{
+//
+//        }
 
     }
 

@@ -119,19 +119,22 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
 
                 time = Integer.parseInt(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)))/1000;
 
-                item.put(songName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-                item.put(artistName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-                item.put(artistId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
-                item.put(albumName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
-                item.put(albumId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
-                item.put(duration,FormatTime.secToTime(time));
-                item.put(duration_t,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
-                item.put(songPath,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
+                if (time > 30){
+                    item.put(songName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+                    item.put(artistName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+                    item.put(artistId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
+                    item.put(albumName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
+                    item.put(albumId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+                    item.put(duration,FormatTime.secToTime(time));
+                    item.put(duration_t,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
+                    item.put(songPath,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
 
-                item.put(isPlaying,isPlaying_FALSE);
-                Song song = new Song(item);
+                    item.put(isPlaying,isPlaying_FALSE);
 
-                songList.add(song);
+                    Song song = new Song(item);
+                    songList.add(song);
+                }
+
             }
             return  songList;
         }catch (Exception e){
