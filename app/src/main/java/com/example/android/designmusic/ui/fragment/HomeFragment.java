@@ -156,8 +156,8 @@ public class HomeFragment extends Fragment{
 
                 mHomeList.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
                 mHomeList.setAdapter(artistListAdapter);
-//                DividerGridItemDecoration artistDecoration = new DividerGridItemDecoration(getActivity());
-//                mHomeList.addItemDecoration(artistDecoration);
+                DividerGridItemDecoration artistDecoration = new DividerGridItemDecoration(16);
+                mHomeList.addItemDecoration(artistDecoration);
                 break;
             case TYPE_ALBUM:
                 if(albumListAdapter == null){
@@ -186,8 +186,8 @@ public class HomeFragment extends Fragment{
                 });
                 mHomeList.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
                 mHomeList.setAdapter(albumListAdapter);
-//                DividerGridItemDecoration alubmDecoration = new DividerGridItemDecoration(getActivity());
-//                mHomeList.addItemDecoration(alubmDecoration);
+                DividerGridItemDecoration alubmDecoration = new DividerGridItemDecoration(16);
+                mHomeList.addItemDecoration(alubmDecoration);
                 break;
         }
 

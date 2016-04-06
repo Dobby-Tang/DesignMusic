@@ -400,7 +400,6 @@ public class MusicService extends Service {
         public void onAudioFocusChange(int focusChange) {
             IAudioStatusChangeListener listener = getIAudioStatusChangeListener();
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
-                state = PAUSED;
                 mPlayer.pause();
                 if (listener != null){
                     try {
@@ -410,15 +409,18 @@ public class MusicService extends Service {
                     }
                 }
             }else if (focusChange == AudioManager.AUDIOFOCUS_GAIN){
-                state = PLAYING;
-                mPlayer.start();
-                if (listener != null){
-                    try {
-                        listener.AudioIsPlaying();
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+                if(state != PAUSED){
+                    state = PLAYING;
+                    mPlayer.start();
+                    if (listener != null){
+                        try {
+                            listener.AudioIsPlaying();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
+
             }else if (focusChange== AudioManager.AUDIOFOCUS_LOSS){
                 state = STOP;
                 nowPlayingPosition = -1;
