@@ -128,7 +128,6 @@ public class MusicService extends Service {
         public void setPlayingMode(int mode) throws RemoteException {
             if (mPlayingMode != mode){
                 if (mode == PLAYING_RANDOM){
-                    historyList = mSongList;
                     Random rnd = new Random(2);
                     Collections.shuffle(mSongList,rnd);
                     Log.d(TAG, "setPlayingMode: shuffle list ...");
@@ -400,6 +399,7 @@ public class MusicService extends Service {
         public void onAudioFocusChange(int focusChange) {
             IAudioStatusChangeListener listener = getIAudioStatusChangeListener();
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
+                state = PAUSED;
                 mPlayer.pause();
                 if (listener != null){
                     try {
@@ -422,16 +422,25 @@ public class MusicService extends Service {
                 }
 
             }else if (focusChange== AudioManager.AUDIOFOCUS_LOSS){
-                state = STOP;
-                nowPlayingPosition = -1;
-                audioManager.unregisterMediaButtonEventReceiver(mComponentName);
-                audioManager.abandonAudioFocus(afChangeListener);
-                mPlayer.stop();
-                mPlayer.reset();
-//                mPlayer.release();
+//                state = STOP;
+//                mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
+//                nowPlayingPosition = -1;
+//                audioManager.unregisterMediaButtonEventReceiver(mComponentName);
+//                audioManager.abandonAudioFocus(afChangeListener);
+//                mPlayer.stop();
+//                mPlayer.reset();
+//                if (listener != null){
+//                    try {
+//                        listener.AudioIsStop();
+//                    } catch (RemoteException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+                state = PAUSED;
+                mPlayer.pause();
                 if (listener != null){
                     try {
-                        listener.AudioIsStop();
+                        listener.AudioIsPause();
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }

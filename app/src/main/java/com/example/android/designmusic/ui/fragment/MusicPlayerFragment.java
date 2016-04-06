@@ -109,8 +109,8 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
                     break;
 
                 case PLAYING_CALL_BACK:
-                    initSongData(msg.arg1);
-                    playingCallbackListener.onSongPosition(msg.arg1);
+                    initSongData(msg.arg2);
+                    playingCallbackListener.onSongPosition(msg.arg2);
                     Log.d(TAG, "handleMessage: play callback");
                     break;
 
@@ -237,7 +237,7 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
         public void playingCallback(int position) throws RemoteException {
             Log.d(TAG, "playingCallback: " + "play song is: "+ position);
             Message msg = Message.obtain();
-            msg.arg1 = position;
+            msg.arg2 = position;
             msg.what = PLAYING_CALL_BACK;
             mHandler.sendMessage(msg);
             ArrayList<Song> songList = new ArrayList<>();
