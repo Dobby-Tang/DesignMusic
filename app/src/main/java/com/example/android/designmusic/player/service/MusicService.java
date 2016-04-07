@@ -19,6 +19,7 @@ import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.player.Receiver.RemoteControlReceiver;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -62,11 +63,12 @@ public class MusicService extends Service {
 
     private int mPlayingMode = PLAYING_REPEAT;
 
-    public List<Song> historyList;
-    public List<Song> mSongList ;
+    public List<Song> mSongList ;                  //内部播放器播放顺序
+    public List<Song> mPlayList;                  //播放列表
     private MediaPlayer mPlayer;
 
     private int nowPlayingPosition = -1;
+//    private int historyPlayingPosition = -1;       //切换模式时的播放序号
 
 //    private SharedPreferences shared ;
 //    private SharedPreferences.Editor editor;
@@ -82,21 +84,25 @@ public class MusicService extends Service {
 
         @Override
         public List<Song> getSongList() throws RemoteException {
-            return mSongList;
+            return mPlayList;
         }
 
         @Override
         public void initSongList(List<Song> songList) throws RemoteException {
-
-
             if (mSongList == null) {
                 Log.d(TAG,"-----> init Song list is mSonglist == null");
-                mSongList = songList;
+                mSongList = new ArrayList<>();
+                mPlayList = new ArrayList<>();
+                mSongList.addAll(songList);
+                mPlayList.addAll(songList);
                 isSameList = true;
             }else{
                 if (!songListEquals(mSongList,songList)){
                     Log.d(TAG,"-----> init Song list is mSonglist != songList");
-                    mSongList = songList;
+                    mSongList = new ArrayList<>();
+                    mPlayList = new ArrayList<>();
+                    mSongList.addAll(songList);
+                    mPlayList.addAll(songList);
                     isSameList = false;
                 }else{
                     Log.d(TAG,"-----> init Song list is mSonglist == songList");
@@ -126,16 +132,20 @@ public class MusicService extends Service {
 
         @Override
         public void setPlayingMode(int mode) throws RemoteException {
-            if (mPlayingMode != mode){
-                if (mode == PLAYING_RANDOM){
-                    Random rnd = new Random(2);
-                    Collections.shuffle(mSongList,rnd);
-                    Log.d(TAG, "setPlayingMode: shuffle list ...");
-                }else if (mode == PLAYING_REPEAT){
-                    mSongList = historyList;
-                }
+            if (mode == PLAYING_RANDOM){
+                mSongList = new ArrayList<>();
+                mSongList.addAll(mPlayList);
+                Random rnd = new Random(2);
+                Collections.shuffle(mSongList,rnd);
+                Log.d(TAG, "setPlayingMode: shuffle list ...");
+            }else if (mode == PLAYING_REPEAT){
+                mSongList = new ArrayList<>();
+                mSongList.addAll(mPlayList);
+            }else if (mode == PLAYING_REPEAT_ONE){
+                mSongList = new ArrayList<>();
+                mSongList.add(mPlayList.get(nowPlayingPosition));
             }
-
+            nowPlayingPosition = getPlayListPos();
             mPlayingMode = mode;
         }
 
@@ -234,23 +244,7 @@ public class MusicService extends Service {
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                switch (mPlayingMode){
-                    case PLAYING_REPEAT:
-                        mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
-                        nextSong();
-                        break;
-                    case PLAYING_REPEAT_ONE:
-                        state = STOP;
-                        mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
-                        player(nowPlayingPosition);
-                        break;
-                    case PLAYING_RANDOM:
-                        state = STOP;
-                        mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
-                        int songPosition = new Random().nextInt(mSongList.size());
-                        player(songPosition);
-                        break;
-                }
+                nextSong();
             }
         });
     }
@@ -286,11 +280,11 @@ public class MusicService extends Service {
             Log.d(TAG,"now playingPosition is : "+nowPlayingPosition+" songPosition is : "+
                     songPosition);
             Log.d(TAG,"state :" + state);
-            if(state == PAUSED && mSongList.get(songPosition).song.get(isPlaying)
+            if(state == PAUSED && mPlayList.get(songPosition).song.get(isPlaying)
                     .equals(isPlaying_TRUE)){
                 state = PLAYING;
                 mPlayer.start();
-            }else if(!isSameList || mSongList.get(songPosition).song.get(isPlaying)
+            }else if(!isSameList || mPlayList.get(songPosition).song.get(isPlaying)
                     .equals(isPlaying_FALSE)) {
                 nowPlayingPosition = songPosition;
                 state = PLAYING;
@@ -303,7 +297,7 @@ public class MusicService extends Service {
             if (listener != null){
                 try {
                     setSongIsPlayingFlag(songPosition);
-                    listener.playingCallback(songPosition);
+                    listener.playingCallback(getPlayListPos());
                     new Thread(new getPlayingProgress()).start();
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -468,6 +462,15 @@ public class MusicService extends Service {
             return true;
         }
         return false;
+    }
+
+    public int getPlayListPos(){
+        for (int i = 0;i<mPlayList.size();i++){
+            if (mPlayList.get(i).song.get(isPlaying).equals(isPlaying_TRUE)){
+                return i;
+            }
+        }
+        return 0;
     }
 
     class getPlayingProgress implements Runnable {

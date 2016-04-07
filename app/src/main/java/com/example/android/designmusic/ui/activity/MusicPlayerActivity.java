@@ -198,6 +198,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
                     fab.setImageResource(R.mipmap.music_player_arrow_shuffle);
                     break;
             }
+            mISongManager.setPlayingMode(playingMode);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
