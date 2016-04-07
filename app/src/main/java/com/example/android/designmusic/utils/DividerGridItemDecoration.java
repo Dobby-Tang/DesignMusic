@@ -73,7 +73,9 @@ public class DividerGridItemDecoration extends RecyclerView.ItemDecoration {
                 if (pos < spanCount){
                     return true;
                 }
-            }else{
+            }else if(spanCount == 1){
+                return true;
+            } else {
                 if ((pos + 1) % spanCount == 1){
                     return true;
                 }

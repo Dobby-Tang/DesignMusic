@@ -5,9 +5,6 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.android.designmusic.IAudioStatusChangeListener;
 import com.example.android.designmusic.ISongManager;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
@@ -40,7 +38,9 @@ public class AlbumSongActivity extends AppCompatActivity {
 
     private static final String TAG = "AlbumSongActivity";
 
-    private static final int ALBUM_SONG_LIST = 1;
+    private static final int IS_PLAYING = 0;
+    private static final int IS_UN_PLAYING = 1;
+    private static final int ALBUM_SONG_LIST = 5;
 
     private boolean isPlaying = false;
 
@@ -65,6 +65,11 @@ public class AlbumSongActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mISongManager = ISongManager.Stub.asInterface(service);
+            try {
+                mISongManager.registerCallBack(mListener);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -106,6 +111,28 @@ public class AlbumSongActivity extends AppCompatActivity {
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
+                    }
+                    break;
+
+                case IS_PLAYING:
+                    fab.setImageResource(R.mipmap.pause);
+                    try {
+                        if (!mISongManager.isPlaying()){
+                            isPlaying = true;
+                        }
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
+                case IS_UN_PLAYING:
+                    fab.setImageResource(R.mipmap.play);
+                    try {
+                        if (!mISongManager.isPlaying()){
+                            isPlaying = false;
+                        }
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
                     }
                     break;
             }
@@ -196,6 +223,7 @@ public class AlbumSongActivity extends AppCompatActivity {
     }
 
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
@@ -209,15 +237,78 @@ public class AlbumSongActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart: ");
+        try{
+            if (mISongManager != null){
+                if (mISongManager.isPlaying()){
+                    fab.setImageResource(R.mipmap.pause);
+                    if (!mISongManager.isPlaying()){
+                        isPlaying = true;
+                    }
+                }else {
+                    fab.setImageResource(R.mipmap.play);
+                    if (!mISongManager.isPlaying()){
+                        isPlaying = false;
+                    }
+                }
+            }
+        }catch (RemoteException e){
+            e.printStackTrace();
+        }
+
 
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        try {
+            mISongManager.registerCallBack(mListener);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         unbindService(mServiceConnection);
     }
+
+    IAudioStatusChangeListener mListener = new IAudioStatusChangeListener.Stub() {
+        @Override
+        public void AudioIsStop() throws RemoteException {
+            Message msg = Message.obtain();
+            msg.what = IS_UN_PLAYING;
+            mHandler.sendMessage(msg);
+        }
+
+        @Override
+        public void AudioIsPause() throws RemoteException {
+            Message msg = Message.obtain();
+            msg.what = IS_UN_PLAYING;
+            mHandler.sendMessage(msg);
+        }
+
+        @Override
+        public void AudioIsPlaying() throws RemoteException {
+            Message msg = Message.obtain();
+            msg.what = IS_PLAYING;
+            mHandler.sendMessage(msg);
+        }
+
+        @Override
+        public void playingCallback(int position) throws RemoteException {
+            if (mISongManager.isPlaying()){
+                Message msg = Message.obtain();
+                msg.what = IS_PLAYING;
+                mHandler.sendMessage(msg);
+            }else{
+                Message msg = Message.obtain();
+                msg.what = IS_UN_PLAYING;
+                mHandler.sendMessage(msg);
+            }
+        }
+
+        @Override
+        public void playingCurrentTimeCallback(int time) throws RemoteException {
+
+        }
+    };
 
     public void initAlbumSongList(ArrayList<Song> songList, String albumId){
         ArrayList<Song> albumSongList = new ArrayList<>();

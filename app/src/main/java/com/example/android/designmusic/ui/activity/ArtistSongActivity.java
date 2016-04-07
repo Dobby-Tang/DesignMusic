@@ -8,16 +8,19 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.task.LoadingMusicTask;
-import com.example.android.designmusic.ui.adapter.AlbumListAdapter;
+import com.example.android.designmusic.ui.adapter.ArtistAlbumListAdapter;
 import com.example.android.designmusic.ui.adapter.DetailSongListAdapter;
 import com.example.android.designmusic.ui.fragment.HomeFragment;
+import com.example.android.designmusic.utils.DividerGridItemDecoration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,12 +34,12 @@ public class ArtistSongActivity extends AppCompatActivity {
 
     private ArrayList<Song> songList;
 
-    private String artistId;
+    private String artistName;
 
     private RecyclerView albumListView;
     private RecyclerView songListView;
 
-    private AlbumListAdapter mAlbumListAdapter;
+    private ArtistAlbumListAdapter mAlbumListAdapter;
     private DetailSongListAdapter mDetailSongListAdapter;
 
     public Handler mHandler = new Handler(){
@@ -44,18 +47,18 @@ public class ArtistSongActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case TYPE_ARTIST_ALBUM_LIST:
-                    ArrayList<Song> songList = (ArrayList<Song>) msg.obj;
-                    if (mDetailSongListAdapter != null){
-                        mDetailSongListAdapter.setDatas(songList);
-                        mDetailSongListAdapter.notifyDataSetChanged();
-                    }
-                    break;
-                case TYPE_ARTIST_SONG_LIST:
                     ArrayList<HashMap<String,String>> albumList
                             = (ArrayList<HashMap<String,String>>) msg.obj;
                     if (mAlbumListAdapter != null){
                         mAlbumListAdapter.setDatas(albumList);
                         mAlbumListAdapter.notifyDataSetChanged();
+                    }
+                    break;
+                case TYPE_ARTIST_SONG_LIST:
+                    ArrayList<Song> songList = (ArrayList<Song>) msg.obj;
+                    if (mDetailSongListAdapter != null){
+                        mDetailSongListAdapter.setDatas(songList);
+                        mDetailSongListAdapter.notifyDataSetChanged();
                     }
                     break;
             }
@@ -69,18 +72,20 @@ public class ArtistSongActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         songList = intent.getParcelableArrayListExtra(HomeFragment.SONG_LIST);
-        artistId = intent.getStringExtra(LoadingMusicTask.artistId);
+        artistName = intent.getStringExtra(LoadingMusicTask.artistName);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         albumListView = (RecyclerView)findViewById(R.id.detail_album_list) ;
-        songListView = (RecyclerView)findViewById(R.id.detail_song_list);
+        albumListView.setLayoutManager(new StaggeredGridLayoutManager(1, OrientationHelper.HORIZONTAL));
+        DividerGridItemDecoration artistDecoration = new DividerGridItemDecoration(16);
+        albumListView.addItemDecoration(artistDecoration);
 
-        albumListView.setLayoutManager(new LinearLayoutManager(this));
+        songListView = (RecyclerView)findViewById(R.id.detail_song_list);
         songListView.setLayoutManager(new LinearLayoutManager(this));
 
-        mAlbumListAdapter = new AlbumListAdapter();
+        mAlbumListAdapter = new ArtistAlbumListAdapter();
         albumListView.setAdapter(mAlbumListAdapter);
 
         mDetailSongListAdapter = new DetailSongListAdapter();
@@ -89,7 +94,7 @@ public class ArtistSongActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                initArtistDetailList(songList,artistId);
+                initArtistDetailList(songList,artistName);
             }
         }).start();
 
@@ -106,13 +111,13 @@ public class ArtistSongActivity extends AppCompatActivity {
 
 
 
-    public void initArtistDetailList(ArrayList<Song> songList, String artistId){
+    public void initArtistDetailList(ArrayList<Song> songList, String artistName){
         ArrayList<Song> artistSongList = new ArrayList<>();
         ArrayList<HashMap<String,String>> artistAlbumList= new ArrayList<>();
         HashMap<String ,String> item;
-        if (songList != null && artistId != null){
+        if (songList != null && artistName != null){
             for (int i = 0; i< songList.size();i++){
-                if (songList.get(i).song.get(LoadingMusicTask.artistId).equals(artistId)){
+                if (songList.get(i).song.get(LoadingMusicTask.artistName).equals(artistName)){
                     Song song = songList.get(i);
                     artistSongList.add(song);
 
@@ -125,7 +130,9 @@ public class ArtistSongActivity extends AppCompatActivity {
                     item.put(LoadingMusicTask.songNumber
                             ,song.song.get(LoadingMusicTask.songNumber));
                     item.put(LoadingMusicTask.albumArt,song.song.get(LoadingMusicTask.albumArt));
-                    artistAlbumList.add(item);
+                    if (!artistAlbumList.contains(item)){
+                        artistAlbumList.add(item);
+                    }
                 }
             }
         }

@@ -196,7 +196,7 @@ public class MusicService extends Service {
 
         @Override
         public boolean isEqualsSongList(List<Song> songList) throws RemoteException {
-            return songListEquals(mSongList,songList);
+            return songListEquals(mPlayList,songList);
         }
 
         @Override

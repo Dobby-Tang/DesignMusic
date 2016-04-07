@@ -28,7 +28,8 @@
         <service
             android:name=".player.service.MusicService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:process=":MusicService"/>
 
         <receiver android:name=".player.Receiver.RemoteControlReceiver">
             <intent-filter>

@@ -144,8 +144,8 @@ public class HomeFragment extends Fragment{
                     public void onItemClick(int position, Object data) {
                         HashMap<String,String> artist = (HashMap<String,String>) data;
                         Intent intent = new Intent(getActivity(), ArtistSongActivity.class);
-                        intent.putExtra(LoadingMusicTask.artistId
-                                ,artist.get(LoadingMusicTask.artistId));
+                        intent.putExtra(LoadingMusicTask.artistName
+                                ,artist.get(LoadingMusicTask.artistName));
                         if (songListAdapter != null){
                             ArrayList<Song> songList = songListAdapter.getData();
                             intent.putExtra(SONG_LIST,songList);
