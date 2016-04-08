@@ -42,7 +42,6 @@ public class AlbumSongActivity extends AppCompatActivity {
     private static final int IS_UN_PLAYING = 1;
     private static final int ALBUM_SONG_LIST = 5;
 
-    private boolean isPlaying = false;
 
     private String albumName;
     private String albumId;
@@ -97,16 +96,13 @@ public class AlbumSongActivity extends AppCompatActivity {
                                 if (mISongManager.isPlaying()){
                                     Log.d(TAG, "mServiceConnection: playing is true");
                                     fab.setImageResource(R.mipmap.pause);
-                                    isPlaying = true;
                                 }else{
                                     Log.d(TAG, "mServiceConnection: playing is false");
                                     fab.setImageResource(R.mipmap.play);
-                                    isPlaying = false;
                                 }
                             }else {
                                 Log.d(TAG, "mServiceConnection: now playing list is not mSongList");
                                 fab.setImageResource(R.mipmap.play);
-                                isPlaying = false;
                             }
                         } catch (RemoteException e) {
                             e.printStackTrace();
@@ -116,24 +112,9 @@ public class AlbumSongActivity extends AppCompatActivity {
 
                 case IS_PLAYING:
                     fab.setImageResource(R.mipmap.pause);
-                    try {
-                        if (!mISongManager.isPlaying()){
-                            isPlaying = true;
-                        }
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
                     break;
-
                 case IS_UN_PLAYING:
                     fab.setImageResource(R.mipmap.play);
-                    try {
-                        if (!mISongManager.isPlaying()){
-                            isPlaying = false;
-                        }
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
                     break;
             }
         }
@@ -197,20 +178,28 @@ public class AlbumSongActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mISongManager != null && mDetailSongListAdapter.getData() != null){
                     try {
-                        if (isPlaying) {
-                            fab.setImageResource(R.mipmap.play);
-                            mISongManager.pause();
-                            if (!mISongManager.isPlaying()){
-                                isPlaying = false;
+                        if (mISongManager.isPlaying()) {
+                            if (mISongManager.isEqualsSongList(mDetailSongListAdapter.getData())){
+                                fab.setImageResource(R.mipmap.play);
+                                mISongManager.pause();
+                            }else {
+                                fab.setImageResource(R.mipmap.pause);
+                                mISongManager.initSongList(mDetailSongListAdapter.getData());
+                                mISongManager.setPlayingMode(MusicPlayerActivity.PLAYING_REPEAT);
+                                if (mISongManager.getSongItem() != -1){
+                                    mISongManager.play(mISongManager.getSongItem(),false);
+                                }else {
+                                    mISongManager.play(0,false);
+                                }
                             }
                         } else {
                             fab.setImageResource(R.mipmap.pause);
-                            ArrayList<Song> mSongList = mDetailSongListAdapter.getData();
                             mISongManager.initSongList(mDetailSongListAdapter.getData());
                             mISongManager.setPlayingMode(MusicPlayerActivity.PLAYING_REPEAT);
-                            mISongManager.play(0,false);
-                            if (mISongManager.isPlaying()){
-                                isPlaying = true;
+                            if (mISongManager.getSongItem() != -1){
+                                mISongManager.play(mISongManager.getSongItem(),false);
+                            }else {
+                                mISongManager.play(0,false);
                             }
                         }
                     } catch (RemoteException e) {
@@ -242,14 +231,8 @@ public class AlbumSongActivity extends AppCompatActivity {
             if (mISongManager != null){
                 if (mISongManager.isPlaying()){
                     fab.setImageResource(R.mipmap.pause);
-                    if (!mISongManager.isPlaying()){
-                        isPlaying = true;
-                    }
                 }else {
                     fab.setImageResource(R.mipmap.play);
-                    if (!mISongManager.isPlaying()){
-                        isPlaying = false;
-                    }
                 }
             }
         }catch (RemoteException e){
