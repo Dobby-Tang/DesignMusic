@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.designmusic.IAudioStatusChangeListener;
+import com.example.android.designmusic.IRefreshCurrentTimeListener;
 import com.example.android.designmusic.ISongManager;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
@@ -73,7 +74,8 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
         public void onServiceConnected(ComponentName name, IBinder service) {
             mISongManager = ISongManager.Stub.asInterface(service);
             try {
-                mISongManager.registerCallBack(mListener);
+                mISongManager.registerAudioCallBack(mAudioListener);
+                mISongManager.registerCurrentTimeCallBack(mRefreshListener);
                 mISongManager.initSongList(mPlayingList);
                 playingCallbackListener.getISongManager(mISongManager);
                 Message msg = Message.obtain();
@@ -82,7 +84,7 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
                 mHandler.sendMessage(msg);
                 Log.d(TAG,"select positon is " + position + " get service now playing position = "
                         + mISongManager.getSongItem());
-                mISongManager.play(position);
+                mISongManager.play(position,true);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -181,7 +183,7 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
                     case START:
                         try {
                             position = mISongManager.getSongItem();
-                            mISongManager.play(position);
+                            mISongManager.play(position,false);
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
@@ -209,7 +211,7 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
     *@author Dobby-Tang
     *created at 16/3/20  下午12:31
     */
-    private IAudioStatusChangeListener mListener = new IAudioStatusChangeListener.Stub() {
+    private IAudioStatusChangeListener mAudioListener = new IAudioStatusChangeListener.Stub() {
         @Override
         public void AudioIsStop() throws RemoteException {
             Log.d(TAG,"Audio is stop");
@@ -244,16 +246,17 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
             songList.addAll(mISongManager.getSongList());
             playingCallbackListener.getSongList(songList);
         }
+    };
+
+    private IRefreshCurrentTimeListener mRefreshListener = new IRefreshCurrentTimeListener.Stub(){
 
         @Override
         public void playingCurrentTimeCallback(int time) throws RemoteException {
-//            Log.d(TAG, "playingCurrentTimeCallback: " + mFormatTime.secToTime(time/1000));
             Message msg = new Message();
             msg.what = PLAYING_TIME_CALL_BACK;
             msg.arg1 = time / 1000;
             mHandler.sendMessage(msg);
         }
-
     };
 
     private void initSongData(int Position){
@@ -342,7 +345,8 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
     public void onDestroy() {
         super.onDestroy();
         try {
-            mISongManager.unregisterCallBack(mListener);
+            mISongManager.unregisterAudioCallBack(mAudioListener);
+            mISongManager.unregisterCurrentTimeCallBack(mRefreshListener);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

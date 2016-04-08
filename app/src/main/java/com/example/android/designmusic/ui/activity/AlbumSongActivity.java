@@ -66,7 +66,7 @@ public class AlbumSongActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             mISongManager = ISongManager.Stub.asInterface(service);
             try {
-                mISongManager.registerCallBack(mListener);
+                mISongManager.registerAudioCallBack(mListener);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -207,7 +207,8 @@ public class AlbumSongActivity extends AppCompatActivity {
                             fab.setImageResource(R.mipmap.pause);
                             ArrayList<Song> mSongList = mDetailSongListAdapter.getData();
                             mISongManager.initSongList(mDetailSongListAdapter.getData());
-                            mISongManager.play(0);
+                            mISongManager.setPlayingMode(MusicPlayerActivity.PLAYING_REPEAT);
+                            mISongManager.play(0,false);
                             if (mISongManager.isPlaying()){
                                 isPlaying = true;
                             }
@@ -262,7 +263,7 @@ public class AlbumSongActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         try {
-            mISongManager.registerCallBack(mListener);
+            mISongManager.registerAudioCallBack(mListener);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -304,10 +305,6 @@ public class AlbumSongActivity extends AppCompatActivity {
             }
         }
 
-        @Override
-        public void playingCurrentTimeCallback(int time) throws RemoteException {
-
-        }
     };
 
     public void initAlbumSongList(ArrayList<Song> songList, String albumId){

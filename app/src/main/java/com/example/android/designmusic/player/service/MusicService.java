@@ -14,6 +14,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.example.android.designmusic.IAudioStatusChangeListener;
+import com.example.android.designmusic.IRefreshCurrentTimeListener;
 import com.example.android.designmusic.ISongManager;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.player.Receiver.RemoteControlReceiver;
@@ -74,6 +75,9 @@ public class MusicService extends Service {
 //    private SharedPreferences.Editor editor;
 
     private RemoteCallbackList<IAudioStatusChangeListener> mStatusListener
+            = new RemoteCallbackList<>();
+
+    private RemoteCallbackList<IRefreshCurrentTimeListener> mRefreshTimeListener
             = new RemoteCallbackList<>();
 
     private final ISongManager.Stub mBinder = new ISongManager.Stub() {
@@ -150,8 +154,19 @@ public class MusicService extends Service {
         }
 
         @Override
-        public void play(int songPosition) throws RemoteException{
-            player(songPosition);
+        public void play(int songPosition,boolean isListClick) throws RemoteException{
+            Log.d(TAG, "play: songPosition is " + songPosition);
+            if (isListClick){
+                if (mPlayingMode == PLAYING_RANDOM || mPlayingMode == PLAYING_REPEAT){
+                    player(getSongListPos(songPosition));
+                }else if(mPlayingMode == PLAYING_REPEAT_ONE){
+                    mSongList = new ArrayList<>();
+                    mSongList.add(mPlayList.get(songPosition));
+                    player(0);
+                }
+            }else {
+                player(songPosition);
+            }
         }
 
         @Override
@@ -200,15 +215,24 @@ public class MusicService extends Service {
         }
 
         @Override
-        public void registerCallBack(IAudioStatusChangeListener mListener) throws RemoteException {
+        public void registerAudioCallBack(IAudioStatusChangeListener mListener) throws RemoteException {
             mStatusListener.register(mListener);
 
         }
 
         @Override
-        public void unregisterCallBack(IAudioStatusChangeListener mListener) throws RemoteException {
+        public void unregisterAudioCallBack(IAudioStatusChangeListener mListener) throws RemoteException {
             mStatusListener.unregister(mListener);
-//            state = STOP;
+        }
+
+        @Override
+        public void registerCurrentTimeCallBack(IRefreshCurrentTimeListener mListener) throws RemoteException {
+            mRefreshTimeListener.register(mListener);
+        }
+
+        @Override
+        public void unregisterCurrentTimeCallBack(IRefreshCurrentTimeListener mListener) throws RemoteException {
+            mRefreshTimeListener.unregister(mListener);
         }
 
         /**
@@ -293,16 +317,20 @@ public class MusicService extends Service {
                 mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_TRUE);
                 mPlayer.start();
             }
-            IAudioStatusChangeListener listener = getIAudioStatusChangeListener();
-            if (listener != null){
-                try {
-                    setSongIsPlayingFlag(songPosition);
-                    listener.playingCallback(getPlayListPos());
-                    new Thread(new getPlayingProgress()).start();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+            int listenerNum = mStatusListener.beginBroadcast();
+            for (int i = 0;i < listenerNum;i++){
+                IAudioStatusChangeListener listener = getIAudioStatusChangeListener(i);
+                if (listener != null){
+                    try {
+                        setSongIsPlayingFlag(songPosition);
+                        listener.playingCallback(getPlayListPos());
+                        new Thread(new getPlayingProgress()).start();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+            mStatusListener.finishBroadcast();
 
         }
     }
@@ -365,20 +393,25 @@ public class MusicService extends Service {
     }
 
 
-    private IAudioStatusChangeListener getIAudioStatusChangeListener(){
-        int listenerNum = mStatusListener.beginBroadcast();
+    private IAudioStatusChangeListener getIAudioStatusChangeListener(int listenerNum){
         IAudioStatusChangeListener listener = null;
-        if(listenerNum > 0) {
-            listener = mStatusListener.getBroadcastItem(0);
-            mStatusListener.finishBroadcast();
+        if(listenerNum >= 0) {
+            listener = mStatusListener.getBroadcastItem(listenerNum);
             return listener;
         }
-        mStatusListener.finishBroadcast();
         return null;
     }
 
-    private AudioManager audioManager;
-    private ComponentName mComponentName ;
+    private IRefreshCurrentTimeListener getIRefreshCurrentTimeListener(int listenerNum){
+        IRefreshCurrentTimeListener listener = null ;
+        int num = mRefreshTimeListener.beginBroadcast();
+        if (listenerNum >= 0 && num > 0){
+            listener = mRefreshTimeListener.getBroadcastItem(listenerNum);
+            mRefreshTimeListener.finishBroadcast();
+            return listener;
+        }
+        return null;
+    }
 
 
 
@@ -387,60 +420,54 @@ public class MusicService extends Service {
     *@author By Dobby Tang
     *Created on 2016-03-18 15:08
     */
+    private AudioManager audioManager;
+    private ComponentName mComponentName ;
+
     private AudioManager.OnAudioFocusChangeListener afChangeListener = new
             AudioManager.OnAudioFocusChangeListener() {
         @Override
         public void onAudioFocusChange(int focusChange) {
-            IAudioStatusChangeListener listener = getIAudioStatusChangeListener();
-            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
-                state = PAUSED;
-                mPlayer.pause();
-                if (listener != null){
-                    try {
-                        listener.AudioIsPause();
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }else if (focusChange == AudioManager.AUDIOFOCUS_GAIN){
-                if(state != PAUSED){
-                    state = PLAYING;
-                    mPlayer.start();
+            int listenerNum = mStatusListener.beginBroadcast();
+            for (int i = 0;i < listenerNum;i++){
+                IAudioStatusChangeListener listener = getIAudioStatusChangeListener(i);
+                if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
+                    state = PAUSED;
+                    mPlayer.pause();
                     if (listener != null){
                         try {
-                            listener.AudioIsPlaying();
+                            listener.AudioIsPause();
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
                     }
-                }
-
-            }else if (focusChange== AudioManager.AUDIOFOCUS_LOSS){
-//                state = STOP;
-//                mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
-//                nowPlayingPosition = -1;
-//                audioManager.unregisterMediaButtonEventReceiver(mComponentName);
-//                audioManager.abandonAudioFocus(afChangeListener);
-//                mPlayer.stop();
-//                mPlayer.reset();
-//                if (listener != null){
-//                    try {
-//                        listener.AudioIsStop();
-//                    } catch (RemoteException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-                state = PAUSED;
-                mPlayer.pause();
-                if (listener != null){
-                    try {
-                        listener.AudioIsPause();
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+                }else if (focusChange == AudioManager.AUDIOFOCUS_GAIN){
+                    if(state != PAUSED){
+                        state = PLAYING;
+                        mPlayer.start();
+                        if (listener != null){
+                            try {
+                                listener.AudioIsPlaying();
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
-                }
 
+                }else if (focusChange== AudioManager.AUDIOFOCUS_LOSS){
+                    state = PAUSED;
+                    mPlayer.pause();
+                    if (listener != null){
+                        try {
+                            listener.AudioIsPause();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
             }
+            mStatusListener.finishBroadcast();
+
         }
     };
 
@@ -473,17 +500,32 @@ public class MusicService extends Service {
         return 0;
     }
 
+    public int getSongListPos(int position){
+        for (int i = 0;i < mSongList.size();i++){
+            if (mPlayList.get(position).song.get(songName)
+                    .equals(mSongList.get(i).song.get(songName))){
+                Log.d(TAG, "getSongListPos: " + i );
+                return i;
+            }
+        }
+        return 0;
+    }
+
     class getPlayingProgress implements Runnable {
 
         @Override
         public void run() {
             if (mPlayer != null){
-                IAudioStatusChangeListener listener = getIAudioStatusChangeListener();
+                int listenerNum = mRefreshTimeListener.beginBroadcast();
+                mRefreshTimeListener.finishBroadcast();
                 while (mPlayer.isPlaying()){
                     try {
-                        if (listener != null){
-                            listener.playingCurrentTimeCallback(mPlayer.getCurrentPosition());
-                            Thread.sleep(500);
+                        for (int i = 0;i < listenerNum;i++){
+                            IRefreshCurrentTimeListener listener = getIRefreshCurrentTimeListener(i);
+                            if (listener != null){
+                                listener.playingCurrentTimeCallback(mPlayer.getCurrentPosition());
+                                Thread.sleep(500);
+                            }
                         }
                     } catch (RemoteException e) {
                         e.printStackTrace();

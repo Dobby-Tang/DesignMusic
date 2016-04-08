@@ -38,9 +38,9 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
 
     private static final String TAG = "MusicPlayerActivity";
 
-    private static final int PLAYING_REPEAT = 1;               //列表循环
-    private static final int PLAYING_REPEAT_ONE = 2;           //单曲循环
-    private static final int PLAYING_RANDOM  = 3;              //随机播放
+    public static final int PLAYING_REPEAT = 1;               //列表循环
+    public static final int PLAYING_REPEAT_ONE = 2;           //单曲循环
+    public static final int PLAYING_RANDOM  = 3;              //随机播放
 
     private int playingMode = -1;
 
@@ -145,7 +145,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
             @Override
             public void onItemClick(int position, Object data) {
                 try {
-                    mISongManager.play(position);
+                    mISongManager.play(position,true);
                     bottomSheetDialog.dismiss();
                 } catch (RemoteException e) {
                     e.printStackTrace();

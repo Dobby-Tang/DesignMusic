@@ -9,6 +9,4 @@ interface IAudioStatusChangeListener {
      void AudioIsPlaying();
 
      void playingCallback(in int position);
-     void playingCurrentTimeCallback(in int time);
-
 }

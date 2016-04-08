@@ -3,6 +3,7 @@ package com.example.android.designmusic;
 
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.IAudioStatusChangeListener;
+import com.example.android.designmusic.IRefreshCurrentTimeListener;
 
 interface ISongManager {
      List<Song> getSongList();
@@ -12,7 +13,7 @@ interface ISongManager {
      int getPlayingMode();
      void setPlayingMode(int mode);
 
-     void play(in int songPosition);
+     void play(in int songPosition,in boolean isListClick);
      void stop();
      void pause();
      void next();
@@ -23,6 +24,9 @@ interface ISongManager {
      boolean isPlaying();
      boolean isEqualsSongList(in List<Song> songList);
 
-     void registerCallBack(IAudioStatusChangeListener mListener);
-     void unregisterCallBack(IAudioStatusChangeListener mListener);
+     void registerAudioCallBack(IAudioStatusChangeListener mListener);
+     void unregisterAudioCallBack(IAudioStatusChangeListener mListener);
+
+     void registerCurrentTimeCallBack(IRefreshCurrentTimeListener mListener);
+     void unregisterCurrentTimeCallBack(IRefreshCurrentTimeListener mListener);
 }
