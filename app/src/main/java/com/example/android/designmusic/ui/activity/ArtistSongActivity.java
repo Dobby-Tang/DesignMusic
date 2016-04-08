@@ -77,18 +77,18 @@ public class ArtistSongActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+//        View heard = LayoutInflater.from(this).inflate(R.layout.artist_album_list_heard,null);
         albumListView = (RecyclerView)findViewById(R.id.detail_album_list) ;
         albumListView.setLayoutManager(new StaggeredGridLayoutManager(1, OrientationHelper.HORIZONTAL));
         DividerGridItemDecoration artistDecoration = new DividerGridItemDecoration(16);
         albumListView.addItemDecoration(artistDecoration);
-
-        songListView = (RecyclerView)findViewById(R.id.detail_song_list);
-        songListView.setLayoutManager(new LinearLayoutManager(this));
-
         mAlbumListAdapter = new ArtistAlbumListAdapter();
         albumListView.setAdapter(mAlbumListAdapter);
 
+        songListView = (RecyclerView)findViewById(R.id.detail_song_list);
+        songListView.setLayoutManager(new LinearLayoutManager(this));
         mDetailSongListAdapter = new DetailSongListAdapter();
+//        mDetailSongListAdapter.setHeaderView(heard);
         songListView.setAdapter(mDetailSongListAdapter);
 
         new Thread(new Runnable() {
