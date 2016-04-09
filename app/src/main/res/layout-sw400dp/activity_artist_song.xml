@@ -11,7 +11,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="332dp"
+        android:layout_height="364dp"
         android:fitsSystemWindows="true"
         android:theme="@style/Theme.DesignDemo.AppBarOverlay">
 
@@ -62,7 +62,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/artist_song_list"
         android:layout_width="match_parent"
-        android:layout_height="284dp"
+        android:layout_height="320dp"
         android:background="#ffffff"
         android:fitsSystemWindows="true"
         app:behavior_hideable="true"
