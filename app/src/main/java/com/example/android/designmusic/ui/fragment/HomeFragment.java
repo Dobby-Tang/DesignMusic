@@ -2,6 +2,7 @@ package com.example.android.designmusic.ui.fragment;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -156,8 +157,10 @@ public class HomeFragment extends Fragment{
 
                 mHomeList.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
                 mHomeList.setAdapter(artistListAdapter);
-                DividerGridItemDecoration artistDecoration = new DividerGridItemDecoration(16);
-                mHomeList.addItemDecoration(artistDecoration);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    DividerGridItemDecoration artistDecoration = new DividerGridItemDecoration(16);
+                    mHomeList.addItemDecoration(artistDecoration);
+                }
                 break;
             case TYPE_ALBUM:
                 if(albumListAdapter == null){
@@ -186,8 +189,10 @@ public class HomeFragment extends Fragment{
                 });
                 mHomeList.setLayoutManager(new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL));
                 mHomeList.setAdapter(albumListAdapter);
-                DividerGridItemDecoration alubmDecoration = new DividerGridItemDecoration(16);
-                mHomeList.addItemDecoration(alubmDecoration);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    DividerGridItemDecoration alubmDecoration = new DividerGridItemDecoration(16);
+                    mHomeList.addItemDecoration(alubmDecoration);
+                }
                 break;
         }
 

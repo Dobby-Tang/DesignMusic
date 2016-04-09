@@ -46,7 +46,6 @@ public class AlbumSongActivity extends AppCompatActivity {
     private String albumName;
     private String albumId;
     private String artistName;
-    private String songNumber;
 
     private ArrayList<Song> SongList;
 
@@ -84,6 +83,7 @@ public class AlbumSongActivity extends AppCompatActivity {
             switch (msg.what){
                 case ALBUM_SONG_LIST:
                     ArrayList<Song> albumSongList = (ArrayList<Song>) msg.obj;
+                    songNumberTextView.setText("曲目: " + msg.arg1);
                     if (mDetailSongListAdapter != null){
                         mDetailSongListAdapter.setDatas(albumSongList);
                         mDetailSongListAdapter.notifyDataSetChanged();
@@ -137,11 +137,9 @@ public class AlbumSongActivity extends AppCompatActivity {
         albumName = getIntent().getStringExtra(LoadingMusicTask.albumName);
         albumId = getIntent().getStringExtra(LoadingMusicTask.albumId);
         artistName = getIntent().getStringExtra(LoadingMusicTask.artistName);
-        songNumber = getIntent().getStringExtra(LoadingMusicTask.songNumber);
 
 
         artistNameTextView.setText(artistName);
-        songNumberTextView.setText("曲目: " + songNumber);
         Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri
                 ,Integer.valueOf(albumId));
         albumCover.setImageURI(uri);
@@ -293,16 +291,19 @@ public class AlbumSongActivity extends AppCompatActivity {
 
     public void initAlbumSongList(ArrayList<Song> songList, String albumId){
         ArrayList<Song> albumSongList = new ArrayList<>();
+        int songNumber = 0;
         if (songList != null){
             for (int i = 0; i< songList.size();i++){
                 if (songList.get(i).song.get(LoadingMusicTask.albumId).equals(albumId)){
                     albumSongList.add(songList.get(i));
+                    songNumber++;
                 }
             }
         }
 
         Message msg = Message.obtain();
         msg.what = ALBUM_SONG_LIST;
+        msg.arg1 = songNumber;
         msg.obj = albumSongList;
         mHandler.sendMessage(msg);
 
