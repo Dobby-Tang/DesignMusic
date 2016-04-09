@@ -16,7 +16,8 @@ import com.example.android.designmusic.task.LoadingMusicTask;
 *@author By Dobby Tang
 *Created on 2016-03-31 10:46
 */
-public class DetailSongListAdapter extends BaseListAdapter<Song>{
+public class ArtistSongListAdapter extends BaseListAdapter<Song>{
+
     @Override
     public RecyclerView.ViewHolder onCreate(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())

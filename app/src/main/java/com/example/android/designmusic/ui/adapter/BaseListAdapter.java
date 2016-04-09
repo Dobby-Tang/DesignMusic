@@ -17,7 +17,8 @@ public abstract class BaseListAdapter<T> extends RecyclerView.Adapter<RecyclerVi
 
     private View mHeaderView;
 
-    private ArrayList<T> mDatas = new ArrayList<>();
+    private ArrayList<T> mFirstDatas = new ArrayList<>();
+    private ArrayList<T> mSecondDatas = new ArrayList<>();
 
     private OnItemClickListener mListener;
 
@@ -30,13 +31,14 @@ public abstract class BaseListAdapter<T> extends RecyclerView.Adapter<RecyclerVi
     }
 
     public void setDatas(ArrayList<T> datas){
-        mDatas = datas;
+        mFirstDatas = datas;
         notifyDataSetChanged();
     }
 
     public ArrayList<T> getData(){
-        return  mDatas;
+        return  mFirstDatas;
     }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -64,7 +66,7 @@ public abstract class BaseListAdapter<T> extends RecyclerView.Adapter<RecyclerVi
         }
 
         final int pos = getRealPosition(holder);
-        final T data = mDatas.get(pos);
+        final T data = mFirstDatas.get(pos);
         onBind(holder,pos,data);
 
         if (mListener != null){
@@ -85,10 +87,11 @@ public abstract class BaseListAdapter<T> extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public int getItemCount() {
-        if(mDatas == null){
+        if(mFirstDatas == null){
             return 0;
         }
-        return mHeaderView == null ? mDatas.size() : mDatas.size()+1 ;
+        return mHeaderView == null ? mFirstDatas.size() + mSecondDatas.size()
+                : mFirstDatas.size() + mSecondDatas.size() + 1 ;
     }
 
 

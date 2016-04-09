@@ -12,13 +12,14 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.ui.adapter.ArtistAlbumListAdapter;
-import com.example.android.designmusic.ui.adapter.DetailSongListAdapter;
+import com.example.android.designmusic.ui.adapter.ArtistSongListAdapter;
 import com.example.android.designmusic.ui.fragment.HomeFragment;
 import com.example.android.designmusic.utils.DividerGridItemDecoration;
 
@@ -40,7 +41,7 @@ public class ArtistSongActivity extends AppCompatActivity {
     private RecyclerView songListView;
 
     private ArtistAlbumListAdapter mAlbumListAdapter;
-    private DetailSongListAdapter mDetailSongListAdapter;
+    private ArtistSongListAdapter mDetailSongListAdapter;
 
     public Handler mHandler = new Handler(){
         @Override
@@ -77,8 +78,8 @@ public class ArtistSongActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        View heard = LayoutInflater.from(this).inflate(R.layout.artist_album_list_heard,null);
-        albumListView = (RecyclerView)findViewById(R.id.detail_album_list) ;
+        View heard = LayoutInflater.from(this).inflate(R.layout.artist_album_list_heard,null);
+        albumListView = (RecyclerView)heard.findViewById(R.id.detail_album_list) ;
         albumListView.setLayoutManager(new StaggeredGridLayoutManager(1, OrientationHelper.HORIZONTAL));
         DividerGridItemDecoration artistDecoration = new DividerGridItemDecoration(16);
         albumListView.addItemDecoration(artistDecoration);
@@ -87,8 +88,8 @@ public class ArtistSongActivity extends AppCompatActivity {
 
         songListView = (RecyclerView)findViewById(R.id.detail_song_list);
         songListView.setLayoutManager(new LinearLayoutManager(this));
-        mDetailSongListAdapter = new DetailSongListAdapter();
-//        mDetailSongListAdapter.setHeaderView(heard);
+        mDetailSongListAdapter = new ArtistSongListAdapter();
+        mDetailSongListAdapter.setHeaderView(heard);
         songListView.setAdapter(mDetailSongListAdapter);
 
         new Thread(new Runnable() {

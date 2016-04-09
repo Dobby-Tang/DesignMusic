@@ -28,7 +28,7 @@ import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.player.service.MusicService;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.ui.adapter.BaseListAdapter;
-import com.example.android.designmusic.ui.adapter.DetailSongListAdapter;
+import com.example.android.designmusic.ui.adapter.ArtistSongListAdapter;
 import com.example.android.designmusic.ui.fragment.HomeFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -56,7 +56,7 @@ public class AlbumSongActivity extends AppCompatActivity {
     private TextView songNumberTextView;
     private FloatingActionButton fab;
 
-    private DetailSongListAdapter mDetailSongListAdapter;
+    private ArtistSongListAdapter mDetailSongListAdapter;
     private ISongManager mISongManager;
 
 
@@ -146,7 +146,7 @@ public class AlbumSongActivity extends AppCompatActivity {
                 ,Integer.valueOf(albumId));
         albumCover.setImageURI(uri);
 
-        mDetailSongListAdapter = new DetailSongListAdapter();
+        mDetailSongListAdapter = new ArtistSongListAdapter();
         mDetailSongListAdapter.setOnItemClickListener(new BaseListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position, Object data) {
@@ -179,7 +179,8 @@ public class AlbumSongActivity extends AppCompatActivity {
                 if (mISongManager != null && mDetailSongListAdapter.getData() != null){
                     try {
                         if (mISongManager.isPlaying()) {
-                            if (mISongManager.isEqualsSongList(mDetailSongListAdapter.getData())){
+                            if (mISongManager.isEqualsSongList(
+                                    mDetailSongListAdapter.getData())){
                                 fab.setImageResource(R.mipmap.play);
                                 mISongManager.pause();
                             }else {
