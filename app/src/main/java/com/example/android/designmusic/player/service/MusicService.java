@@ -145,11 +145,11 @@ public class MusicService extends Service {
             }else if (mode == PLAYING_REPEAT){
                 mSongList = new ArrayList<>();
                 mSongList.addAll(mPlayList);
-            }else if (mode == PLAYING_REPEAT_ONE){
-                mSongList = new ArrayList<>();
-                mSongList.add(mPlayList.get(nowPlayingPosition));
+//            }else if (mode == PLAYING_REPEAT_ONE){
+//                mSongList = new ArrayList<>();
+//                mSongList.add(mPlayList.get(nowPlayingPosition));
             }
-            nowPlayingPosition = getPlayListPos();
+            nowPlayingPosition = getSongListPos(getPlayListPos());
             mPlayingMode = mode;
         }
 
@@ -160,12 +160,14 @@ public class MusicService extends Service {
                 if (mPlayingMode == PLAYING_RANDOM || mPlayingMode == PLAYING_REPEAT){
                     player(getSongListPos(songPosition));
                 }else if(mPlayingMode == PLAYING_REPEAT_ONE){
-                    mSongList = new ArrayList<>();
-                    mSongList.add(mPlayList.get(songPosition));
-                    player(0);
+                    player(songPosition);
                 }
             }else {
-                player(songPosition);
+                if (mPlayingMode == PLAYING_REPEAT_ONE){
+                    player(nowPlayingPosition);
+                }else{
+                    player(getSongListPos(songPosition));
+                }
             }
         }
 
@@ -186,12 +188,16 @@ public class MusicService extends Service {
 
         @Override
         public void next() throws RemoteException {
-            nextSong();
+            if (mPlayingMode != PLAYING_REPEAT_ONE){
+                nextSong();
+            }
         }
 
         @Override
         public void last() throws RemoteException {
-            lastSong();
+            if (mPlayingMode != PLAYING_REPEAT_ONE){
+                lastSong();
+            }
         }
 
         @Override
@@ -268,7 +274,9 @@ public class MusicService extends Service {
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                nextSong();
+                if (mPlayingMode != PLAYING_REPEAT_ONE){
+                    nextSong();
+                }
             }
         });
     }
@@ -304,12 +312,13 @@ public class MusicService extends Service {
             Log.d(TAG,"now playingPosition is : "+nowPlayingPosition+" songPosition is : "+
                     songPosition);
             Log.d(TAG,"state :" + state);
-            if(state == PAUSED && mPlayList.get(songPosition).song.get(isPlaying)
+            if(state == PAUSED && mSongList.get(songPosition).song.get(isPlaying)
                     .equals(isPlaying_TRUE)){
                 state = PLAYING;
                 mPlayer.start();
-            }else if(!isSameList || mPlayList.get(songPosition).song.get(isPlaying)
+            }else if(!isSameList || mSongList.get(songPosition).song.get(isPlaying)
                     .equals(isPlaying_FALSE)) {
+                mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
                 nowPlayingPosition = songPosition;
                 state = PLAYING;
                 mPlayer.reset();
