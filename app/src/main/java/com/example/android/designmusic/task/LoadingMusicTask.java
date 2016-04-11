@@ -33,7 +33,7 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
     public static final String artistId = "artistId";             //艺术家ID
     public static final String songNumber = "songNumber";        //音乐序号
     public static final String albumNum = "albumNum";            //专辑数量
-    public static final String artistImgPath = "artistImgPath";   //艺术家图片
+    public static final String artistImgPathID = "artistImgPath";   //艺术家图片
 
     public static final String albumId = "albumId";               //专辑ID
     public static final String albumArt = "albumArt";             //专辑图片
@@ -60,11 +60,16 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
         this.context = context;
     }
 
+    public HashMap<String,String> getArtistImgPathMap(){
+        return artistImgPathMap;
+    }
+
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         if(aBoolean){
             switch (Type){
                 case SongFragment.TYPE_SONG:
+                    SongFragment.artistImgPathMap = artistImgPathMap;
                     SongFragment.songListAdapter.setDatas(songList);
                     SongFragment.songListAdapter.notifyDataSetChanged();
                     break;
@@ -142,7 +147,8 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
                     item.put(isPlaying,isPlaying_FALSE);
 
                     if (!artistImgPathMap.containsKey(item.get(artistName))){
-                        artistImgPathMap.put(item.get(artistName),item.get(albumId));
+                        artistImgPathMap.put(albumId,item.get(albumId));
+                        artistImgPathMap.put(artistName,item.get(artistName));
                     }
 
                     Song song = new Song(item);
@@ -208,6 +214,10 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
                         MediaStore.Audio.Artists.ARTIST)));
                 item.put(albumNum,cursor.getString(cursor.getColumnIndex(
                         MediaStore.Audio.Artists.NUMBER_OF_ALBUMS)));
+                if (SongFragment.artistImgPathMap != null &&
+                        item.get(artistName).equals(artistImgPathMap.get(artistName))){
+                    item.put(artistImgPathID,artistImgPathMap.get(albumId));
+                }
                 artistsList.add(item);
             }
             return  artistsList;

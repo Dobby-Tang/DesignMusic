@@ -18,6 +18,7 @@ import com.example.android.designmusic.ui.adapter.BaseListAdapter;
 import com.example.android.designmusic.ui.adapter.SongListAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
 *@author By Dobby Tang
@@ -28,6 +29,8 @@ public class SongFragment extends Fragment{
     public static final String TYPE_SONG = "music";      //音乐队列
 
     public static SongListAdapter songListAdapter;
+
+    public static HashMap<String,String> artistImgPathMap;
 
     public static SongFragment newInstance(String Type) {
         Bundle args = new Bundle();
