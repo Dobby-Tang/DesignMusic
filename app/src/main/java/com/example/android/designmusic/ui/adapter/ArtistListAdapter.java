@@ -23,22 +23,25 @@ public class ArtistListAdapter extends BaseListAdapter<HashMap<String,String>> {
     public RecyclerView.ViewHolder onCreate(ViewGroup parent, int viewType) {
         View artistItem = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.home_artist_list_item,parent,false);
-        return new ArtisstListHolder(artistItem);
+        return new ArtistListHolder(artistItem);
     }
 
     @Override
     public void onBind(RecyclerView.ViewHolder holder, int Realposition
             , HashMap<String, String> data) {
-        ((ArtisstListHolder)holder).title.setText(data.get(LoadingMusicTask.artistName));
-        ((ArtisstListHolder)holder).subTitle.setText(data.get(LoadingMusicTask.songNumber));
+        ((ArtistListHolder)holder).title.setText(data.get(LoadingMusicTask.artistName));
+        ((ArtistListHolder)holder).subTitle.setText(data.get(LoadingMusicTask.albumNum));
+//        Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri
+//                ,Integer.valueOf(data.get(LoadingMusicTask.albumId)));
+//        ((ArtistListHolder)holder).artistImg.setImageURI(uri);
     }
 
-    public class ArtisstListHolder extends RecyclerView.ViewHolder {
+    public class ArtistListHolder extends RecyclerView.ViewHolder {
         SimpleDraweeView artistImg;
         TextView title;
         TextView subTitle;
         ImageView itemMore;
-        public ArtisstListHolder(View itemView) {
+        public ArtistListHolder(View itemView) {
             super(itemView);
             artistImg = (SimpleDraweeView) itemView.findViewById(R.id.home_artist_item_img);
             title = (TextView) itemView.findViewById(R.id.home_artist_item_title);

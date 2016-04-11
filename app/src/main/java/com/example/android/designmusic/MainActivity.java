@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -15,11 +16,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.support.design.widget.TabLayout;
 
 import com.example.android.designmusic.player.service.MusicService;
 import com.example.android.designmusic.ui.adapter.HomeFragmentPagerAdapter;
-import com.example.android.designmusic.ui.fragment.HomeFragment;
+import com.example.android.designmusic.ui.fragment.AlbumFragment;
+import com.example.android.designmusic.ui.fragment.ArtistFragment;
+import com.example.android.designmusic.ui.fragment.SongFragment;
 import com.facebook.drawee.backends.pipeline.Fresco;
 
 
@@ -28,6 +30,10 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 *Created on 2016-03-04 15:36
 */
 public class MainActivity extends AppCompatActivity {
+
+    public static final String PLAYIONG_LIST = "Playing_list";             //所有本地歌曲
+    public static final String PLAYIONG_POSITION = "Playing_position";     //播放歌曲序号
+    public static final String SONG_LIST = "album_song_list" ;        //专辑歌曲列表
 
     private DrawerLayout mDrawerLayout;
     private Resources resources;
@@ -94,19 +100,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupViewPager(ViewPager viewPager){
-        HomeFragmentPagerAdapter homeFragmentPagerAdapter = new HomeFragmentPagerAdapter(getSupportFragmentManager());
-//        HomeFragment homeFragment1 = new HomeFragment();
-//        HomeFragment homeFragment2 = new HomeFragment();
-//        HomeFragment homeFragment3 = new HomeFragment();
+        HomeFragmentPagerAdapter homeFragmentPagerAdapter =
+                new HomeFragmentPagerAdapter(getSupportFragmentManager());
 
+        SongFragment songFragment = SongFragment.newInstance(SongFragment.TYPE_SONG);
         homeFragmentPagerAdapter.addFragment(
-                HomeFragment.newInstance(HomeFragment.TYPE_SONG),resources.getString(R.string.local_song));
+                songFragment,resources.getString(R.string.local_song));
 
+        ArtistFragment artistFragment = ArtistFragment.newInstance(ArtistFragment.TYPE_ARTIST);
         homeFragmentPagerAdapter.addFragment(
-                HomeFragment.newInstance(HomeFragment.TYPE_ARTIST),resources.getString(R.string.local_artist));
+                artistFragment,resources.getString(R.string.local_artist));
 
+        AlbumFragment albumFragment = AlbumFragment.newInstance(AlbumFragment.TYPE_ALBUM);
         homeFragmentPagerAdapter.addFragment(
-                HomeFragment.newInstance(HomeFragment.TYPE_ALBUM),resources.getString(R.string.local_album));
+                albumFragment,resources.getString(R.string.local_album));
 
         viewPager.setAdapter(homeFragmentPagerAdapter);
     }

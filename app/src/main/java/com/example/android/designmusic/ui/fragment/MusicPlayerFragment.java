@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.example.android.designmusic.IAudioStatusChangeListener;
 import com.example.android.designmusic.IRefreshCurrentTimeListener;
 import com.example.android.designmusic.ISongManager;
+import com.example.android.designmusic.MainActivity;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.player.service.MusicService;
@@ -142,8 +143,8 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
     public static MusicPlayerFragment newInstance(ArrayList<Song> mPlayingList, int position) {
 
         Bundle args = new Bundle();
-        args.putParcelableArrayList(HomeFragment.PLAYIONG_LIST,mPlayingList);
-        args.putInt(HomeFragment.PLAYIONG_POSITION,position);
+        args.putParcelableArrayList(MainActivity.PLAYIONG_LIST,mPlayingList);
+        args.putInt(MainActivity.PLAYIONG_POSITION,position);
         MusicPlayerFragment fragment = new MusicPlayerFragment();
         fragment.setArguments(args);
         return fragment;
@@ -153,8 +154,8 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null){
-            mPlayingList = getArguments().getParcelableArrayList(HomeFragment.PLAYIONG_LIST);
-            position = getArguments().getInt(HomeFragment.PLAYIONG_POSITION,0);
+            mPlayingList = getArguments().getParcelableArrayList(MainActivity.PLAYIONG_LIST);
+            position = getArguments().getInt(MainActivity.PLAYIONG_POSITION,0);
 
         }
     }

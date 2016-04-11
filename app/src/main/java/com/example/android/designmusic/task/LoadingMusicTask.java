@@ -8,7 +8,9 @@ import android.os.AsyncTask;
 import android.provider.MediaStore;
 
 import com.example.android.designmusic.entity.Song;
-import com.example.android.designmusic.ui.fragment.HomeFragment;
+import com.example.android.designmusic.ui.fragment.AlbumFragment;
+import com.example.android.designmusic.ui.fragment.ArtistFragment;
+import com.example.android.designmusic.ui.fragment.SongFragment;
 import com.example.android.designmusic.utils.FormatTime;
 
 import java.util.ArrayList;
@@ -30,6 +32,8 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
 
     public static final String artistId = "artistId";             //艺术家ID
     public static final String songNumber = "songNumber";        //音乐序号
+    public static final String albumNum = "albumNum";            //专辑数量
+    public static final String artistImgPath = "artistImgPath";   //艺术家图片
 
     public static final String albumId = "albumId";               //专辑ID
     public static final String albumArt = "albumArt";             //专辑图片
@@ -47,32 +51,30 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
     private String Type;
     private Context context;
 
+    private HashMap<String,String> artistImgPathMap;
+
     private static final String TAG = "LoadingMusicTask";
 
     public LoadingMusicTask(String Type, Context context){
         this.Type = Type;
         this.context = context;
-
     }
-
-
-
 
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         if(aBoolean){
             switch (Type){
-                case HomeFragment.TYPE_SONG:
-                    HomeFragment.songListAdapter.setDatas(songList);
-                    HomeFragment.songListAdapter.notifyDataSetChanged();
+                case SongFragment.TYPE_SONG:
+                    SongFragment.songListAdapter.setDatas(songList);
+                    SongFragment.songListAdapter.notifyDataSetChanged();
                     break;
-                case HomeFragment.TYPE_ARTIST:
-                    HomeFragment.artistListAdapter.setDatas(List);
-                    HomeFragment.artistListAdapter.notifyDataSetChanged();
+                case ArtistFragment.TYPE_ARTIST:
+                    ArtistFragment.artistListAdapter.setDatas(List);
+                    ArtistFragment.artistListAdapter.notifyDataSetChanged();
                     break;
-                case HomeFragment.TYPE_ALBUM:
-                    HomeFragment.albumListAdapter.setDatas(List);
-                    HomeFragment.albumListAdapter.notifyDataSetChanged();
+                case AlbumFragment.TYPE_ALBUM:
+                    AlbumFragment.albumListAdapter.setDatas(List);
+                    AlbumFragment.albumListAdapter.notifyDataSetChanged();
                     break;
 
             }
@@ -85,13 +87,13 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
     protected Boolean doInBackground(Void... params) {
         List = new ArrayList<>();
         switch(Type){
-            case HomeFragment.TYPE_SONG:
+            case SongFragment.TYPE_SONG:
                 songList = getMusicFromProvider();
                 break;
-            case HomeFragment.TYPE_ARTIST:
+            case ArtistFragment.TYPE_ARTIST:
                 List = getArtistFromProvider();
                 break;
-            case HomeFragment.TYPE_ALBUM:
+            case AlbumFragment.TYPE_ALBUM:
                 List = getAlbumFromProvider();
                 break;
             default:
@@ -113,23 +115,35 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
             Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,
                     MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
             HashMap<String,String> item;
+            artistImgPathMap = new HashMap<>();
             while (cursor.moveToNext()){
                 item = new HashMap<>();
-                item.put(songId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
-
-                time = Integer.parseInt(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)))/1000;
+                item.put(songId,cursor.getString(cursor.getColumnIndex(
+                        MediaStore.Audio.Media._ID)));
+                time = Integer.parseInt(cursor.getString(
+                        cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)))/1000;
 
                 if (time > 30){
-                    item.put(songName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-                    item.put(artistName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-                    item.put(artistId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
-                    item.put(albumName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
-                    item.put(albumId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+                    item.put(songName,cursor.getString(
+                            cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+                    item.put(artistName,cursor.getString(
+                            cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+                    item.put(artistId,cursor.getString(
+                            cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
+                    item.put(albumName,cursor.getString(
+                            cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
+                    item.put(albumId,cursor.getString(
+                            cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
                     item.put(duration,FormatTime.secToTime(time));
-                    item.put(duration_t,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
-                    item.put(songPath,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
-
+                    item.put(duration_t,cursor.getString(
+                            cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
+                    item.put(songPath,cursor.getString(
+                            cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
                     item.put(isPlaying,isPlaying_FALSE);
+
+                    if (!artistImgPathMap.containsKey(item.get(artistName))){
+                        artistImgPathMap.put(item.get(artistName),item.get(albumId));
+                    }
 
                     Song song = new Song(item);
                     songList.add(song);
@@ -149,18 +163,23 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
         ArrayList<HashMap<String,String>> albumsList = new ArrayList<>();
         ContentResolver resolver = context.getContentResolver();
         try{
-            Cursor cursor = resolver.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,null,null,null,
-                    MediaStore.Audio.Albums.DEFAULT_SORT_ORDER);
+            Cursor cursor = resolver.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,null,null
+                    ,null,MediaStore.Audio.Albums.DEFAULT_SORT_ORDER);
             HashMap<String ,String> item;
 
             while(cursor.moveToNext()){
                 item = new HashMap<>();
 
-                item.put(albumId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums._ID)));
-                item.put(albumName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM)));
-                item.put(artistName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST)));
-                item.put(songNumber,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS)));
-                item.put(albumArt,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)));
+                item.put(albumId,cursor.getString(cursor.getColumnIndex(
+                        MediaStore.Audio.Albums._ID)));
+                item.put(albumName,cursor.getString(cursor.getColumnIndex(
+                        MediaStore.Audio.Albums.ALBUM)));
+                item.put(artistName,cursor.getString(cursor.getColumnIndex(
+                        MediaStore.Audio.Albums.ARTIST)));
+                item.put(songNumber,cursor.getString(cursor.getColumnIndex(
+                        MediaStore.Audio.Albums.NUMBER_OF_SONGS)));
+                item.put(albumArt,cursor.getString(cursor.getColumnIndex(
+                        MediaStore.Audio.Albums.ALBUM_ART)));
 
                 albumsList.add(item);
             }
@@ -177,15 +196,18 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
         ArrayList<HashMap<String,String>> artistsList= new ArrayList<>();
         ContentResolver resolver = context.getContentResolver();
         try{
-            Cursor cursor = resolver.query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,null,null,null,
-                    MediaStore.Audio.Artists.DEFAULT_SORT_ORDER);
+            Cursor cursor = resolver.query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,null,null
+                    ,null,MediaStore.Audio.Artists.DEFAULT_SORT_ORDER);
             HashMap<String,String> item;
             while (cursor.moveToNext()){
                 item = new HashMap<>();
 
-                item.put(artistId,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
-                item.put(artistName,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST)));
-                item.put(songNumber,cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.NUMBER_OF_ALBUMS)));
+                item.put(artistId,cursor.getString(cursor.getColumnIndex(
+                        MediaStore.Audio.Artists._ID)));
+                item.put(artistName,cursor.getString(cursor.getColumnIndex(
+                        MediaStore.Audio.Artists.ARTIST)));
+                item.put(albumNum,cursor.getString(cursor.getColumnIndex(
+                        MediaStore.Audio.Artists.NUMBER_OF_ALBUMS)));
                 artistsList.add(item);
             }
             return  artistsList;

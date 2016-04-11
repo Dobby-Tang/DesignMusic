@@ -233,7 +233,10 @@ public class MusicService extends Service {
 
         @Override
         public void registerCurrentTimeCallBack(IRefreshCurrentTimeListener mListener) throws RemoteException {
-            mRefreshTimeListener.register(mListener);
+            int listenerNum = mRefreshTimeListener.beginBroadcast();
+            if (listenerNum >1){
+                mRefreshTimeListener.register(mListener);
+            }
         }
 
         @Override
@@ -276,6 +279,9 @@ public class MusicService extends Service {
             public void onCompletion(MediaPlayer mp) {
                 if (mPlayingMode != PLAYING_REPEAT_ONE){
                     nextSong();
+                }else {
+                    mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
+                    player(nowPlayingPosition);
                 }
             }
         });
@@ -525,16 +531,12 @@ public class MusicService extends Service {
         @Override
         public void run() {
             if (mPlayer != null){
-                int listenerNum = mRefreshTimeListener.beginBroadcast();
-                mRefreshTimeListener.finishBroadcast();
                 while (mPlayer.isPlaying()){
                     try {
-                        for (int i = 0;i < listenerNum;i++){
-                            IRefreshCurrentTimeListener listener = getIRefreshCurrentTimeListener(i);
-                            if (listener != null){
-                                listener.playingCurrentTimeCallback(mPlayer.getCurrentPosition());
-                                Thread.sleep(500);
-                            }
+                        IRefreshCurrentTimeListener listener = getIRefreshCurrentTimeListener(0);
+                        if (listener != null){
+                            listener.playingCurrentTimeCallback(mPlayer.getCurrentPosition());
+                            Thread.sleep(500);
                         }
                     } catch (RemoteException e) {
                         e.printStackTrace();

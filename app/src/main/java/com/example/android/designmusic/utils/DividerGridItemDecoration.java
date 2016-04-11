@@ -38,7 +38,7 @@ public class DividerGridItemDecoration extends RecyclerView.ItemDecoration {
                                 int childCount) {
         LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof GridLayoutManager) {
-            if ((pos + 1) % spanCount == 0)// 如果是最后一列，则不需要绘制右边
+            if ((pos + 1) % spanCount == 0)
             {
                 return true;
             }
@@ -46,13 +46,13 @@ public class DividerGridItemDecoration extends RecyclerView.ItemDecoration {
             int orientation = ((StaggeredGridLayoutManager) layoutManager)
                     .getOrientation();
             if (orientation == StaggeredGridLayoutManager.VERTICAL) {
-                if ((pos + 1) % spanCount == 0)// 如果是最后一列，则不需要绘制右边
+                if ((pos + 1) % spanCount == 0)
                 {
                     return true;
                 }
             } else {
                 childCount = childCount - childCount % spanCount;
-                if (pos >= childCount)// 如果是最后一列，则不需要绘制右边
+                if (pos >= childCount - 1)
                     return true;
             }
         }

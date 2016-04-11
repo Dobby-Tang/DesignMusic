@@ -59,6 +59,13 @@
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right|end"/>
 
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical">-->
+        <!---->
+    <!--</LinearLayout>-->
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/artist_song_list"
         android:layout_width="match_parent"
