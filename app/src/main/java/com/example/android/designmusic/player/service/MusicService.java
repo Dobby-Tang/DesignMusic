@@ -158,7 +158,7 @@ public class MusicService extends Service {
             Log.d(TAG, "play: songPosition is " + songPosition);
             if (isListClick){
                 if (mPlayingMode == PLAYING_RANDOM || mPlayingMode == PLAYING_REPEAT){
-                    player(getSongListPos(songPosition));
+                    player(songPosition);
                 }else if(mPlayingMode == PLAYING_REPEAT_ONE){
                     player(songPosition);
                 }
@@ -166,7 +166,7 @@ public class MusicService extends Service {
                 if (mPlayingMode == PLAYING_REPEAT_ONE){
                     player(nowPlayingPosition);
                 }else{
-                    player(getSongListPos(songPosition));
+                    player(songPosition);
                 }
             }
         }
@@ -277,7 +277,6 @@ public class MusicService extends Service {
                 if (mPlayingMode != PLAYING_REPEAT_ONE){
                     nextSong();
                 }else {
-                    mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
                     player(nowPlayingPosition);
                 }
             }
