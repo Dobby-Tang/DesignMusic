@@ -214,10 +214,10 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
                         MediaStore.Audio.Artists.ARTIST)));
                 item.put(albumNum,cursor.getString(cursor.getColumnIndex(
                         MediaStore.Audio.Artists.NUMBER_OF_ALBUMS)));
-                if (SongFragment.artistImgPathMap != null &&
-                        item.get(artistName).equals(artistImgPathMap.get(artistName))){
-                    item.put(artistImgPathID,artistImgPathMap.get(albumId));
-                }
+//                if (SongFragment.artistImgPathMap != null &&
+//                        item.get(artistName).equals(artistImgPathMap.get(artistName))){
+//                    item.put(artistImgPathID,artistImgPathMap.get(albumId));
+//                }
                 artistsList.add(item);
             }
             return  artistsList;

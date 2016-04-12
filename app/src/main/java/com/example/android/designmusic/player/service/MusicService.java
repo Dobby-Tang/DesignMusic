@@ -233,10 +233,7 @@ public class MusicService extends Service {
 
         @Override
         public void registerCurrentTimeCallBack(IRefreshCurrentTimeListener mListener) throws RemoteException {
-            int listenerNum = mRefreshTimeListener.beginBroadcast();
-            if (listenerNum >1){
-                mRefreshTimeListener.register(mListener);
-            }
+            mRefreshTimeListener.register(mListener);
         }
 
         @Override
@@ -417,15 +414,14 @@ public class MusicService extends Service {
         return null;
     }
 
-    private IRefreshCurrentTimeListener getIRefreshCurrentTimeListener(int listenerNum){
+    private IRefreshCurrentTimeListener getIRefreshCurrentTimeListener(){
         IRefreshCurrentTimeListener listener = null ;
         int num = mRefreshTimeListener.beginBroadcast();
-        if (listenerNum >= 0 && num > 0){
-            listener = mRefreshTimeListener.getBroadcastItem(listenerNum);
-            mRefreshTimeListener.finishBroadcast();
-            return listener;
+        if(num > 0 ){
+            listener = mRefreshTimeListener.getBroadcastItem(0);
         }
-        return null;
+        mRefreshTimeListener.finishBroadcast();
+        return listener;
     }
 
 
@@ -531,9 +527,9 @@ public class MusicService extends Service {
         @Override
         public void run() {
             if (mPlayer != null){
+                IRefreshCurrentTimeListener listener = getIRefreshCurrentTimeListener();
                 while (mPlayer.isPlaying()){
                     try {
-                        IRefreshCurrentTimeListener listener = getIRefreshCurrentTimeListener(0);
                         if (listener != null){
                             listener.playingCurrentTimeCallback(mPlayer.getCurrentPosition());
                             Thread.sleep(500);

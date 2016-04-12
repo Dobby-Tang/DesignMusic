@@ -326,6 +326,7 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
         super.onStart();
         if (mISongManager != null){
             try {
+                mISongManager.registerCurrentTimeCallBack(mRefreshListener);
                 if (mISongManager.isPlaying()){
                     playerBtn.setState(START);
                 }else {
@@ -340,6 +341,11 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStop() {
         super.onStop();
+        try {
+            mISongManager.unregisterCurrentTimeCallBack(mRefreshListener);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -347,7 +353,6 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
         super.onDestroy();
         try {
             mISongManager.unregisterAudioCallBack(mAudioListener);
-            mISongManager.unregisterCurrentTimeCallBack(mRefreshListener);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
