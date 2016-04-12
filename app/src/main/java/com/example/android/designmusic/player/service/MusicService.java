@@ -157,10 +157,12 @@ public class MusicService extends Service {
         public void play(int songPosition,boolean isListClick) throws RemoteException{
             Log.d(TAG, "play: songPosition is " + songPosition);
             if (isListClick){
-                if (mPlayingMode == PLAYING_RANDOM || mPlayingMode == PLAYING_REPEAT){
+                if ( mPlayingMode == PLAYING_REPEAT){
                     player(songPosition);
                 }else if(mPlayingMode == PLAYING_REPEAT_ONE){
                     player(songPosition);
+                }else if (mPlayingMode == PLAYING_RANDOM ){
+                    player(getSongListPos(songPosition));
                 }
             }else {
                 if (mPlayingMode == PLAYING_REPEAT_ONE){
