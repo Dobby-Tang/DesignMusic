@@ -101,7 +101,7 @@ public class MusicService extends Service {
                 mPlayList.addAll(songList);
                 isSameList = true;
             }else{
-                if (!songListEquals(mSongList,songList)){
+                if (!songListEquals(mPlayList,songList)){
                     Log.d(TAG,"-----> init Song list is mSonglist != songList");
                     mSongList = new ArrayList<>();
                     mPlayList = new ArrayList<>();

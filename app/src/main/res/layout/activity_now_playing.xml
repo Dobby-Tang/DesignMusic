@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="@color/window_background">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/music_item_album_img"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        fresco:placeholderImage="@drawable/hd_default_artwork"
+        fresco:failureImage="@drawable/hd_default_artwork" />
+
+    <TextView
+        android:id="@+id/music_item_music_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="#333333"
+        android:textStyle="bold"
+        android:text="lsadjflk"
+        android:layout_alignTop="@id/music_item_album_img"
+        android:layout_marginLeft="72dp" />
+
+    <TextView
+        android:id="@+id/music_item_artist_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-regular"
+        android:layout_below="@id/music_item_music_name"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="72dp"
+        android:text="lsadjflk"/>
+
+    <com.wnafee.vector.MorphButton
+        android:id="@+id/music_player_playBtn"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:padding="16dp"
+        android:layout_gravity="center"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        app:vc_foregroundTint="#333333"
+        app:vc_startDrawable="@drawable/ic_play_to_pause"
+        app:vc_endDrawable="@drawable/ic_pause_to_play"/>
+
+</RelativeLayout>
