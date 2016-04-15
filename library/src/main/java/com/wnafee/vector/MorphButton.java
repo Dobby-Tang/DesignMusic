@@ -65,7 +65,7 @@ public class MorphButton extends CompoundButton {
     TintInfo mBackgroundTint;
     TintInfo mForegroundTint;
 
-    MorphState mState = MorphState.START;
+    MorphState mState = MorphState.END;
 
     Drawable mStartDrawable = null;
     Drawable mEndDrawable = null;
