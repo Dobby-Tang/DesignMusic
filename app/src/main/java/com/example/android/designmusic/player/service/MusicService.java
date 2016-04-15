@@ -16,6 +16,7 @@ import android.util.Log;
 import com.example.android.designmusic.IAudioStatusChangeListener;
 import com.example.android.designmusic.IRefreshCurrentTimeListener;
 import com.example.android.designmusic.ISongManager;
+import com.example.android.designmusic.MedicalApp;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.player.Receiver.RemoteControlReceiver;
 
@@ -67,6 +68,8 @@ public class MusicService extends Service {
     public List<Song> mSongList ;                  //内部播放器播放顺序
     public List<Song> mPlayList;                  //播放列表
     private MediaPlayer mPlayer;
+
+    MedicalApp medicalApp;
 
     private int nowPlayingPosition = -1;
 //    private int historyPlayingPosition = -1;       //切换模式时的播放序号
@@ -268,6 +271,7 @@ public class MusicService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        medicalApp = (MedicalApp)getApplication();
         mPlayer = new MediaPlayer();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mComponentName = new ComponentName(getPackageName()
@@ -279,6 +283,7 @@ public class MusicService extends Service {
                 if (mPlayingMode != PLAYING_REPEAT_ONE){
                     nextSong();
                 }else {
+                    mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
                     player(nowPlayingPosition);
                 }
             }
@@ -337,7 +342,7 @@ public class MusicService extends Service {
                     try {
                         setSongIsPlayingFlag(songPosition);
                         listener.playingCallback(getPlayListPos());
-                        new Thread(new getPlayingProgress()).start();
+                        medicalApp.execute(new getPlayingProgress());
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -415,15 +420,15 @@ public class MusicService extends Service {
         return null;
     }
 
-    private IRefreshCurrentTimeListener getIRefreshCurrentTimeListener(){
-        IRefreshCurrentTimeListener listener = null ;
-        int num = mRefreshTimeListener.beginBroadcast();
-        if(num > 0 ){
-            listener = mRefreshTimeListener.getBroadcastItem(0);
-        }
-        mRefreshTimeListener.finishBroadcast();
-        return listener;
-    }
+//    private IRefreshCurrentTimeListener getIRefreshCurrentTimeListener(){
+//        IRefreshCurrentTimeListener listener = null ;
+//        int num = mRefreshTimeListener.beginBroadcast();
+//        if(num > 0 ){
+//            listener = mRefreshTimeListener.getBroadcastItem(0);
+//        }
+//        mRefreshTimeListener.finishBroadcast();
+//        return listener;
+//    }
 
 
 
@@ -528,13 +533,18 @@ public class MusicService extends Service {
         @Override
         public void run() {
             if (mPlayer != null){
-                IRefreshCurrentTimeListener listener = getIRefreshCurrentTimeListener();
+                ArrayList<IRefreshCurrentTimeListener> listener = new ArrayList<>();
+                int listenerNum = mRefreshTimeListener.beginBroadcast();
+                for (int i = 0;i < listenerNum;i++){
+                    listener.add(mRefreshTimeListener.getBroadcastItem(i));
+                }
+                mRefreshTimeListener.finishBroadcast();
                 while (mPlayer.isPlaying()){
                     try {
-                        if (listener != null){
-                            listener.playingCurrentTimeCallback(mPlayer.getCurrentPosition());
-                            Thread.sleep(500);
+                        for (int i = 0;i < listenerNum;i++){
+                            listener.get(i).playingCurrentTimeCallback(mPlayer.getCurrentPosition());
                         }
+                        Thread.sleep(500);
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     } catch (InterruptedException e) {

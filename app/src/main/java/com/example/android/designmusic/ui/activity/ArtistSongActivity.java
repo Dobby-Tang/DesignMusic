@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.android.designmusic.MainActivity;
+import com.example.android.designmusic.MedicalApp;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.task.LoadingMusicTask;
@@ -44,6 +45,8 @@ public class ArtistSongActivity extends AppCompatActivity {
 
     private RecyclerView albumListView;
     private RecyclerView songListView;
+
+    private MedicalApp medicalApp;
 
     private ArtistAlbumListAdapter mAlbumListAdapter;
     private ArtistSongListAdapter mDetailSongListAdapter;
@@ -76,6 +79,7 @@ public class ArtistSongActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_artist_song);
 
+        medicalApp = (MedicalApp)getApplication();
         Intent intent = getIntent();
         songList = intent.getParcelableArrayListExtra(MainActivity.SONG_LIST);
         artistName = intent.getStringExtra(LoadingMusicTask.artistName);
@@ -143,12 +147,12 @@ public class ArtistSongActivity extends AppCompatActivity {
         });
 
 
-        new Thread(new Runnable() {
+        medicalApp.execute(new Runnable() {
             @Override
             public void run() {
                 initArtistDetailList(songList,artistName);
             }
-        }).start();
+        });
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);

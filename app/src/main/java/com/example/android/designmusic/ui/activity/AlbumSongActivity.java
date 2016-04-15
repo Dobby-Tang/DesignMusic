@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.example.android.designmusic.IAudioStatusChangeListener;
 import com.example.android.designmusic.ISongManager;
 import com.example.android.designmusic.MainActivity;
+import com.example.android.designmusic.MedicalApp;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.player.service.MusicService;
@@ -58,6 +59,8 @@ public class AlbumSongActivity extends AppCompatActivity {
 
     private ArtistSongListAdapter mDetailSongListAdapter;
     private ISongManager mISongManager;
+
+    private MedicalApp medicalApp;
 
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -126,6 +129,8 @@ public class AlbumSongActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_song);
 
+        medicalApp = (MedicalApp)getApplication();
+
         Intent intent = new Intent(AlbumSongActivity.this, MusicService.class);
         bindService(intent,mServiceConnection, Context.BIND_AUTO_CREATE);
 
@@ -159,12 +164,12 @@ public class AlbumSongActivity extends AppCompatActivity {
         mDetailList.setLayoutManager(new LinearLayoutManager(this));
         mDetailList.setAdapter(mDetailSongListAdapter);
 
-        new Thread(new Runnable() {
+        medicalApp.execute(new Runnable() {
             @Override
             public void run() {
                 initAlbumSongList(SongList,albumId);
             }
-        }).start();
+        });
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(albumName);
