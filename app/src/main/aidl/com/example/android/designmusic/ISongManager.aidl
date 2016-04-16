@@ -9,11 +9,13 @@ interface ISongManager {
      List<Song> getSongList();
      void initSongList(in List<Song> songList);
      void addSong(in Song song);
-     int getSongItem();
+     int getSongPosition();
+     int setSongPosition(in int position);
+     Song getSongItem();
      int getPlayingMode();
      void setPlayingMode(int mode);
 
-     void play(in int songPosition,in boolean isListClick);
+     void play(in int songPosition);
      void stop();
      void pause();
      void next();

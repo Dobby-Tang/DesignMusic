@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.provider.MediaStore;
 
 import com.example.android.designmusic.entity.Song;
+import com.example.android.designmusic.player.Constant;
 import com.example.android.designmusic.ui.fragment.AlbumFragment;
 import com.example.android.designmusic.ui.fragment.ArtistFragment;
 import com.example.android.designmusic.ui.fragment.SongFragment;
@@ -178,8 +179,9 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
 
                 item.put(albumId,cursor.getString(cursor.getColumnIndex(
                         MediaStore.Audio.Albums._ID)));
-                item.put(albumName,cursor.getString(cursor.getColumnIndex(
-                        MediaStore.Audio.Albums.ALBUM)));
+                String name = cursor.getString(cursor.getColumnIndex(
+                        MediaStore.Audio.Albums.ALBUM));
+                item.put(albumName,name);
                 item.put(artistName,cursor.getString(cursor.getColumnIndex(
                         MediaStore.Audio.Albums.ARTIST)));
                 item.put(songNumber,cursor.getString(cursor.getColumnIndex(
@@ -187,7 +189,9 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
                 item.put(albumArt,cursor.getString(cursor.getColumnIndex(
                         MediaStore.Audio.Albums.ALBUM_ART)));
 
-                albumsList.add(item);
+                if (!name.equals(Constant.UN_ALBUM)){
+                    albumsList.add(item);
+                }
             }
             return albumsList;
         }catch (Exception e){
@@ -210,15 +214,18 @@ public class LoadingMusicTask extends AsyncTask<Void,Void,Boolean>{
 
                 item.put(artistId,cursor.getString(cursor.getColumnIndex(
                         MediaStore.Audio.Artists._ID)));
-                item.put(artistName,cursor.getString(cursor.getColumnIndex(
-                        MediaStore.Audio.Artists.ARTIST)));
+                String name = cursor.getString(cursor.getColumnIndex(
+                        MediaStore.Audio.Artists.ARTIST));
+                item.put(artistName,name);
                 item.put(albumNum,cursor.getString(cursor.getColumnIndex(
                         MediaStore.Audio.Artists.NUMBER_OF_ALBUMS)));
 //                if (SongFragment.artistImgPathMap != null &&
 //                        item.get(artistName).equals(artistImgPathMap.get(artistName))){
 //                    item.put(artistImgPathID,artistImgPathMap.get(albumId));
 //                }
-                artistsList.add(item);
+                if (!name.equals(Constant.UN_ARTIST)){
+                    artistsList.add(item);
+                }
             }
             return  artistsList;
         }catch (Exception e){

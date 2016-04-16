@@ -1,6 +1,9 @@
 package com.example.android.designmusic;
 
 import android.app.Application;
+import android.content.Intent;
+
+import com.example.android.designmusic.player.service.MusicService;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,6 +17,8 @@ public class MedicalApp extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
+        Intent intent = new Intent(MedicalApp.this, MusicService.class);
+        startService(intent);
         cachedThreadPool = Executors.newCachedThreadPool();
     }
 

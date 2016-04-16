@@ -18,6 +18,7 @@ import com.example.android.designmusic.IRefreshCurrentTimeListener;
 import com.example.android.designmusic.ISongManager;
 import com.example.android.designmusic.MedicalApp;
 import com.example.android.designmusic.entity.Song;
+import com.example.android.designmusic.player.Constant;
 import com.example.android.designmusic.player.Receiver.RemoteControlReceiver;
 
 import java.io.IOException;
@@ -59,11 +60,7 @@ public class MusicService extends Service {
     public static final String isPlaying_TRUE = "true";
     public static final String isPlaying_FALSE = "false";
 
-    private static final int PLAYING_REPEAT = 1;               //列表循环
-    private static final int PLAYING_REPEAT_ONE = 2;           //单曲循环
-    private static final int PLAYING_RANDOM  = 3;              //随机播放
-
-    private int mPlayingMode = PLAYING_REPEAT;
+    private int mPlayingMode = Constant.PLAYING_REPEAT;
 
     public List<Song> mSongList ;                  //内部播放器播放顺序
     public List<Song> mPlayList;                  //播放列表
@@ -128,8 +125,18 @@ public class MusicService extends Service {
         }
 
         @Override
-        public int getSongItem() throws RemoteException {
+        public int getSongPosition() throws RemoteException {
             return nowPlayingPosition;
+        }
+
+        @Override
+        public int setSongPosition(int position) throws RemoteException {
+            return getSongListPos(position);
+        }
+
+        @Override
+        public Song getSongItem() throws RemoteException {
+            return null;
         }
 
         @Override
@@ -139,13 +146,13 @@ public class MusicService extends Service {
 
         @Override
         public void setPlayingMode(int mode) throws RemoteException {
-            if (mode == PLAYING_RANDOM){
+            if (mode == Constant.PLAYING_RANDOM){
                 mSongList = new ArrayList<>();
                 mSongList.addAll(mPlayList);
                 Random rnd = new Random(2);
                 Collections.shuffle(mSongList,rnd);
                 Log.d(TAG, "setPlayingMode: shuffle list ...");
-            }else if (mode == PLAYING_REPEAT){
+            }else if (mode == Constant.PLAYING_REPEAT){
                 mSongList = new ArrayList<>();
                 mSongList.addAll(mPlayList);
 //            }else if (mode == PLAYING_REPEAT_ONE){
@@ -157,22 +164,14 @@ public class MusicService extends Service {
         }
 
         @Override
-        public void play(int songPosition,boolean isListClick) throws RemoteException{
+        public void play(int songPosition) throws RemoteException{
             Log.d(TAG, "play: songPosition is " + songPosition);
-            if (isListClick){
-                if ( mPlayingMode == PLAYING_REPEAT){
-                    player(songPosition);
-                }else if(mPlayingMode == PLAYING_REPEAT_ONE){
-                    player(songPosition);
-                }else if (mPlayingMode == PLAYING_RANDOM ){
-                    player(getSongListPos(songPosition));
-                }
-            }else {
-                if (mPlayingMode == PLAYING_REPEAT_ONE){
-                    player(nowPlayingPosition);
-                }else{
-                    player(songPosition);
-                }
+            if ( mPlayingMode == Constant.PLAYING_REPEAT){
+                player(songPosition);
+            }else if(mPlayingMode == Constant.PLAYING_REPEAT_ONE){
+                player(songPosition);
+            }else if (mPlayingMode == Constant.PLAYING_RANDOM ){
+                player(songPosition);
             }
         }
 
@@ -193,14 +192,14 @@ public class MusicService extends Service {
 
         @Override
         public void next() throws RemoteException {
-            if (mPlayingMode != PLAYING_REPEAT_ONE){
+            if (mPlayingMode != Constant.PLAYING_REPEAT_ONE){
                 nextSong();
             }
         }
 
         @Override
         public void last() throws RemoteException {
-            if (mPlayingMode != PLAYING_REPEAT_ONE){
+            if (mPlayingMode != Constant.PLAYING_REPEAT_ONE){
                 lastSong();
             }
         }
@@ -280,7 +279,7 @@ public class MusicService extends Service {
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if (mPlayingMode != PLAYING_REPEAT_ONE){
+                if (mPlayingMode != Constant.PLAYING_REPEAT_ONE){
                     nextSong();
                 }else {
                     mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
@@ -320,14 +319,13 @@ public class MusicService extends Service {
         if (requestAudioFocus() == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
             Log.d(TAG,"now playingPosition is : "+nowPlayingPosition+" songPosition is : "+
                     songPosition);
-            Log.d(TAG,"state :" + state);
             if(state == PAUSED && mSongList.get(songPosition).song.get(isPlaying)
                     .equals(isPlaying_TRUE)){
                 state = PLAYING;
                 mPlayer.start();
             }else if(!isSameList || mSongList.get(songPosition).song.get(isPlaying)
                     .equals(isPlaying_FALSE)) {
-                mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
+                mSongList.get(songPosition).song.put(isPlaying,isPlaying_FALSE);
                 nowPlayingPosition = songPosition;
                 state = PLAYING;
                 mPlayer.reset();
@@ -337,11 +335,11 @@ public class MusicService extends Service {
             }
             int listenerNum = mStatusListener.beginBroadcast();
             for (int i = 0;i < listenerNum;i++){
-                IAudioStatusChangeListener listener = getIAudioStatusChangeListener(i);
+                IAudioStatusChangeListener listener = mStatusListener.getBroadcastItem(i);
                 if (listener != null){
                     try {
                         setSongIsPlayingFlag(songPosition);
-                        listener.playingCallback(getPlayListPos());
+                        listener.playingCallback(getPlayListPos(),mSongList.get(songPosition));
                         medicalApp.execute(new getPlayingProgress());
                     } catch (RemoteException e) {
                         e.printStackTrace();
@@ -364,6 +362,7 @@ public class MusicService extends Service {
             }
             if (songPosition >= 0){
                 state = STOP;
+//                mSongList.get(songPosition).song.put(isPlaying,isPlaying_FALSE);
                 player(songPosition);
             }
 
@@ -380,6 +379,7 @@ public class MusicService extends Service {
             }
             if (songPosition >= 0){
                 state = STOP;
+//                mSongList.get(songPosition).song.put(isPlaying,isPlaying_FALSE);
                 player(songPosition);
             }
 
@@ -411,14 +411,14 @@ public class MusicService extends Service {
     }
 
 
-    private IAudioStatusChangeListener getIAudioStatusChangeListener(int listenerNum){
-        IAudioStatusChangeListener listener = null;
-        if(listenerNum >= 0) {
-            listener = mStatusListener.getBroadcastItem(listenerNum);
-            return listener;
-        }
-        return null;
-    }
+//    private IAudioStatusChangeListener getIAudioStatusChangeListener(int listenerNum){
+//        IAudioStatusChangeListener listener = null;
+//        if(listenerNum >= 0) {
+//            listener = mStatusListener.getBroadcastItem(listenerNum);
+//            return listener;
+//        }
+//        return null;
+//    }
 
 //    private IRefreshCurrentTimeListener getIRefreshCurrentTimeListener(){
 //        IRefreshCurrentTimeListener listener = null ;
@@ -446,7 +446,7 @@ public class MusicService extends Service {
         public void onAudioFocusChange(int focusChange) {
             int listenerNum = mStatusListener.beginBroadcast();
             for (int i = 0;i < listenerNum;i++){
-                IAudioStatusChangeListener listener = getIAudioStatusChangeListener(i);
+                IAudioStatusChangeListener listener = mStatusListener.getBroadcastItem(i);
                 if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
                     state = PAUSED;
                     mPlayer.pause();
@@ -458,7 +458,7 @@ public class MusicService extends Service {
                         }
                     }
                 }else if (focusChange == AudioManager.AUDIOFOCUS_GAIN){
-                    if(state != PAUSED){
+                    if(state == PAUSED){
                         state = PLAYING;
                         mPlayer.start();
                         if (listener != null){

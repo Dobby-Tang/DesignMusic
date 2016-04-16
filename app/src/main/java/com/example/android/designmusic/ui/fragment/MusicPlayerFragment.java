@@ -29,6 +29,7 @@ import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.player.service.MusicService;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.utils.FormatTime;
+import com.example.android.designmusic.player.Constant;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.wnafee.vector.MorphButton;
 
@@ -44,10 +45,7 @@ import java.util.ArrayList;
 public class MusicPlayerFragment extends Fragment implements View.OnClickListener{
     private static final String TAG = "MusicPlayerFragment";
 
-    private static final int AUDIO_PAUSE_CALL_BACK = 0;         //音频焦点暂停播放
-    private static final int AUDIO_PLAYING_CALL_BACK = 1;       //音频焦点开始播放
-    private static final int PLAYING_CALL_BACK = 2;             //service开始播放回调
-    private static final int PLAYING_TIME_CALL_BACK = 4;        //播放进度回调
+
 
     private MorphButton playerBtn;
     private SimpleDraweeView musicCover;
@@ -65,9 +63,6 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
     int position;
     private static ArrayList<Song> mPlayingList;
 
-    static MorphButton.MorphState START = MorphButton.MorphState.START;
-    static MorphButton.MorphState END = MorphButton.MorphState.END;
-
     public ISongManager mISongManager = null;
 
     private ServiceConnection songPlayerServiceConnection = new ServiceConnection() {
@@ -80,12 +75,16 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
                 mISongManager.initSongList(mPlayingList);
                 playingCallbackListener.getISongManager(mISongManager);
                 Message msg = Message.obtain();
-                msg.arg1 = mISongManager.getSongItem();
-                msg.what = PLAYING_CALL_BACK;
+                msg.arg1 = mISongManager.getSongPosition();
+                msg.what = Constant.PLAYING_CALL_BACK;
                 mHandler.sendMessage(msg);
                 Log.d(TAG,"select positon is " + position + " get service now playing position = "
                         + mISongManager.getSongItem());
-                mISongManager.play(position,true);
+                if (mISongManager.getPlayingMode() != Constant.PLAYING_RANDOM){
+                    mISongManager.play(position);
+                }else {
+                    mISongManager.play(mISongManager.setSongPosition(position));
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -101,23 +100,24 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case AUDIO_PLAYING_CALL_BACK:
-                    playerBtn.setState(START);
-                    Log.d(TAG, "setState START");
+                case Constant.AUDIO_PLAYING_CALL_BACK:
+                    playerBtn.setState(MorphButton.MorphState.START);
                     break;
 
-                case AUDIO_PAUSE_CALL_BACK:
-                    playerBtn.setState(END);
-                    Log.d(TAG, "setState END");
+                case Constant.AUDIO_PAUSE_CALL_BACK:
+                    playerBtn.setState(MorphButton.MorphState.END);
                     break;
 
-                case PLAYING_CALL_BACK:
-                    initSongData(msg.arg2);
-                    playingCallbackListener.onSongPosition(msg.arg2);
-                    Log.d(TAG, "handleMessage: play callback");
+                case Constant.PLAYING_CALL_BACK:
+                    Song song = (Song)msg.obj;
+                    if (song != null){
+                        initSongData(song);
+                    }
+                    position = msg.arg2;
+                    playingCallbackListener.onSongPosition(position);
                     break;
 
-                case PLAYING_TIME_CALL_BACK:
+                case Constant.PLAYING_TIME_CALL_BACK:
                     if (!mDiscreteSeekBarIsStart){
                         mDiscreteSeekBar.setProgress(msg.arg1);
                     }
@@ -180,22 +180,18 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
         playerBtn.setOnStateChangedListener(new MorphButton.OnStateChangedListener() {
             @Override
             public void onStateChanged(MorphButton.MorphState changedTo, boolean isAnimating) {
-                switch (changedTo){
-                    case START:
-                        try {
-                            position = mISongManager.getSongItem();
-                            mISongManager.play(position,false);
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case END:
-                        try {
+                try {
+                    switch (changedTo){
+                        case START:
+                            position = mISongManager.getSongPosition();
+                            mISongManager.play(position);
+                            break;
+                        case END:
                             mISongManager.pause();
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                        break;
+                            break;
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
                 }
 
             }
@@ -223,7 +219,7 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
         public void AudioIsPause() throws RemoteException {
             Log.d(TAG,"Audio is pause");
             Message msg = Message.obtain();
-            msg.what = AUDIO_PAUSE_CALL_BACK;
+            msg.what = Constant.AUDIO_PAUSE_CALL_BACK;
             mHandler.sendMessage(msg);
         }
 
@@ -231,17 +227,18 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
         public void AudioIsPlaying() throws RemoteException {
             Log.d(TAG,"Audio is playing");
             Message msg = Message.obtain();
-            msg.what = AUDIO_PLAYING_CALL_BACK;
+            msg.what = Constant.AUDIO_PLAYING_CALL_BACK;
             mHandler.sendMessage(msg);
         }
 
 
         @Override
-        public void playingCallback(int position) throws RemoteException {
+        public void playingCallback(int position,Song song) throws RemoteException {
             Log.d(TAG, "playingCallback: " + "play song is: "+ position);
             Message msg = Message.obtain();
+            msg.what = Constant.PLAYING_CALL_BACK;
             msg.arg2 = position;
-            msg.what = PLAYING_CALL_BACK;
+            msg.obj = song;
             mHandler.sendMessage(msg);
             ArrayList<Song> songList = new ArrayList<>();
             songList.addAll(mISongManager.getSongList());
@@ -254,26 +251,23 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
         @Override
         public void playingCurrentTimeCallback(int time) throws RemoteException {
             Message msg = new Message();
-            msg.what = PLAYING_TIME_CALL_BACK;
+            msg.what = Constant.PLAYING_TIME_CALL_BACK;
             msg.arg1 = time / 1000;
             mHandler.sendMessage(msg);
         }
     };
 
-    private void initSongData(int Position){
-        if (Position >= 0){
-            Song mSong = mPlayingList.get(Position);
-            int albumId = Integer.parseInt(mSong.song.get(LoadingMusicTask.albumId));
-            Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
-            musicCover.setImageURI(uri);
-            totalTime.setText(mSong.song.get(LoadingMusicTask.duration));
-            mDiscreteSeekBar.setProgress(0);
-            mDiscreteSeekBar.setMax(Integer
-                    .valueOf(mSong.song.get(LoadingMusicTask.duration_t)) / 1000);
+    private void initSongData(Song mSong){
+        int albumId = Integer.parseInt(mSong.song.get(LoadingMusicTask.albumId));
+        Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri,albumId);
+        musicCover.setImageURI(uri);
+        totalTime.setText(mSong.song.get(LoadingMusicTask.duration));
+        mDiscreteSeekBar.setProgress(0);
+        mDiscreteSeekBar.setMax(Integer
+                .valueOf(mSong.song.get(LoadingMusicTask.duration_t)) / 1000);
 
-            if (playerBtn.getState() == END){
-                playerBtn.setState(START);
-            }
+        if (playerBtn.getState() == MorphButton.MorphState.END){
+            playerBtn.setState(MorphButton.MorphState.START);
         }
     }
 
@@ -328,9 +322,9 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
             try {
                 mISongManager.registerCurrentTimeCallBack(mRefreshListener);
                 if (mISongManager.isPlaying()){
-                    playerBtn.setState(START);
+                    playerBtn.setState(MorphButton.MorphState.START);
                 }else {
-                    playerBtn.setState(END);
+                    playerBtn.setState(MorphButton.MorphState.END);
                 }
             } catch (RemoteException e) {
                 e.printStackTrace();

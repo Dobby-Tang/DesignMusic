@@ -27,10 +27,11 @@ import com.example.android.designmusic.MainActivity;
 import com.example.android.designmusic.MedicalApp;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
+import com.example.android.designmusic.player.Constant;
 import com.example.android.designmusic.player.service.MusicService;
 import com.example.android.designmusic.task.LoadingMusicTask;
-import com.example.android.designmusic.ui.adapter.BaseListAdapter;
 import com.example.android.designmusic.ui.adapter.ArtistSongListAdapter;
+import com.example.android.designmusic.ui.adapter.BaseListAdapter;
 import com.example.android.designmusic.ui.fragment.AlbumFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -39,12 +40,6 @@ import java.util.ArrayList;
 public class AlbumSongActivity extends AppCompatActivity {
 
     private static final String TAG = "AlbumSongActivity";
-
-    private static final int IS_PLAYING = 0;
-    private static final int IS_UN_PLAYING = 1;
-    private static final int ALBUM_SONG_LIST = 5;
-
-
     private String albumName;
     private String albumId;
     private String artistName;
@@ -85,7 +80,7 @@ public class AlbumSongActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
-                case ALBUM_SONG_LIST:
+                case Constant.ALBUM_SONG_LIST:
                     ArrayList<Song> albumSongList = (ArrayList<Song>) msg.obj;
                     songNumberTextView.setText("曲目: " + msg.arg1);
                     if (mDetailSongListAdapter != null){
@@ -114,10 +109,10 @@ public class AlbumSongActivity extends AppCompatActivity {
                     }
                     break;
 
-                case IS_PLAYING:
+                case Constant.IS_PLAYING:
                     fab.setImageResource(R.mipmap.pause);
                     break;
-                case IS_UN_PLAYING:
+                case Constant.IS_UN_PLAYING:
                     fab.setImageResource(R.mipmap.play);
                     break;
             }
@@ -190,21 +185,21 @@ public class AlbumSongActivity extends AppCompatActivity {
                             }else {
                                 fab.setImageResource(R.mipmap.pause);
                                 mISongManager.initSongList(mDetailSongListAdapter.getData());
-                                mISongManager.setPlayingMode(MusicPlayerActivity.PLAYING_REPEAT);
-                                if (mISongManager.getSongItem() != -1){
-                                    mISongManager.play(mISongManager.getSongItem(),false);
+                                mISongManager.setPlayingMode(Constant.PLAYING_REPEAT);
+                                if (mISongManager.getSongPosition() != -1){
+                                    mISongManager.play(mISongManager.getSongPosition());
                                 }else {
-                                    mISongManager.play(0,false);
+                                    mISongManager.play(0);
                                 }
                             }
                         } else {
                             fab.setImageResource(R.mipmap.pause);
                             mISongManager.initSongList(mDetailSongListAdapter.getData());
-                            mISongManager.setPlayingMode(MusicPlayerActivity.PLAYING_REPEAT);
-                            if (mISongManager.getSongItem() != -1){
-                                mISongManager.play(mISongManager.getSongItem(),false);
+                            mISongManager.setPlayingMode(Constant.PLAYING_REPEAT);
+                            if (mISongManager.getSongPosition() != -1){
+                                mISongManager.play(mISongManager.getSongPosition());
                             }else {
-                                mISongManager.play(0,false);
+                                mISongManager.play(0);
                             }
                         }
                     } catch (RemoteException e) {
@@ -262,35 +257,35 @@ public class AlbumSongActivity extends AppCompatActivity {
         @Override
         public void AudioIsStop() throws RemoteException {
             Message msg = Message.obtain();
-            msg.what = IS_UN_PLAYING;
+            msg.what = Constant.IS_UN_PLAYING;
             mHandler.sendMessage(msg);
         }
 
         @Override
         public void AudioIsPause() throws RemoteException {
             Message msg = Message.obtain();
-            msg.what = IS_UN_PLAYING;
+            msg.what = Constant.IS_UN_PLAYING;
             mHandler.sendMessage(msg);
         }
 
         @Override
         public void AudioIsPlaying() throws RemoteException {
             Message msg = Message.obtain();
-            msg.what = IS_PLAYING;
+            msg.what = Constant.IS_PLAYING;
             mHandler.sendMessage(msg);
         }
 
         @Override
-        public void playingCallback(int position) throws RemoteException {
-            if (mISongManager.isPlaying()){
-                Message msg = Message.obtain();
-                msg.what = IS_PLAYING;
-                mHandler.sendMessage(msg);
-            }else{
-                Message msg = Message.obtain();
-                msg.what = IS_UN_PLAYING;
-                mHandler.sendMessage(msg);
-            }
+        public void playingCallback(int position,Song song) throws RemoteException {
+//            if (mISongManager.isPlaying()){
+//                Message msg = Message.obtain();
+//                msg.what = IS_PLAYING;
+//                mHandler.sendMessage(msg);
+//            }else{
+//                Message msg = Message.obtain();
+//                msg.what = IS_UN_PLAYING;
+//                mHandler.sendMessage(msg);
+//            }
         }
 
     };
@@ -308,7 +303,7 @@ public class AlbumSongActivity extends AppCompatActivity {
         }
 
         Message msg = Message.obtain();
-        msg.what = ALBUM_SONG_LIST;
+        msg.what = Constant.ALBUM_SONG_LIST;
         msg.arg1 = songNumber;
         msg.obj = albumSongList;
         mHandler.sendMessage(msg);

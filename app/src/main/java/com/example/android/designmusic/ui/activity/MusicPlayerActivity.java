@@ -21,6 +21,7 @@ import com.example.android.designmusic.ISongManager;
 import com.example.android.designmusic.MainActivity;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
+import com.example.android.designmusic.player.Constant;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.ui.adapter.BaseListAdapter;
 import com.example.android.designmusic.ui.adapter.PlayingListAdapter;
@@ -38,11 +39,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
 
     private static final String TAG = "MusicPlayerActivity";
 
-    public static final int PLAYING_REPEAT = 1;               //列表循环
-    public static final int PLAYING_REPEAT_ONE = 2;           //单曲循环
-    public static final int PLAYING_RANDOM  = 3;              //随机播放
-
-    private int playingMode = -1;
+    private int playingMode = Constant.PLAYING_REPEAT;
 
     private ArrayList<Song> mplayerList;
     private int playerPosition;
@@ -81,14 +78,14 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
                 if (mISongManager != null){
                     try{
                         switch (playingMode){
-                            case PLAYING_REPEAT:
-                                mISongManager.setPlayingMode(PLAYING_REPEAT_ONE);
+                            case Constant.PLAYING_REPEAT:
+                                mISongManager.setPlayingMode(Constant.PLAYING_REPEAT_ONE);
                                 break;
-                            case PLAYING_REPEAT_ONE:
-                                mISongManager.setPlayingMode(PLAYING_RANDOM);
+                            case Constant.PLAYING_REPEAT_ONE:
+                                mISongManager.setPlayingMode(Constant.PLAYING_RANDOM);
                                 break;
-                            case PLAYING_RANDOM:
-                                mISongManager.setPlayingMode(PLAYING_REPEAT);
+                            case Constant.PLAYING_RANDOM:
+                                mISongManager.setPlayingMode(Constant.PLAYING_REPEAT);
                                 break;
                         }
                     }catch (RemoteException e){
@@ -145,7 +142,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
             @Override
             public void onItemClick(int position, Object data) {
                 try {
-                    mISongManager.play(position,true);
+                    mISongManager.play(position);
                     bottomSheetDialog.dismiss();
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -188,13 +185,13 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
         try {
             playingMode = mISongManager.getPlayingMode();
             switch (playingMode){
-                case PLAYING_REPEAT:
+                case Constant.PLAYING_REPEAT:
                     fab.setImageResource(R.mipmap.music_player_repeat);
                     break;
-                case PLAYING_REPEAT_ONE:
+                case Constant.PLAYING_REPEAT_ONE:
                     fab.setImageResource(R.mipmap.music_player_repeat_one);
                     break;
-                case PLAYING_RANDOM:
+                case Constant.PLAYING_RANDOM:
                     fab.setImageResource(R.mipmap.music_player_arrow_shuffle);
                     break;
             }
