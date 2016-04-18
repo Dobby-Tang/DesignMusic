@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent(MainActivity.this, MusicPlayerActivity.class);
-                    intent.putExtra(PLAYIONG_POSITION,mISongManager.getSongPosition());
+                    intent.putExtra(PLAYIONG_POSITION,mISongManager.getPlayingListPosition());
                     intent.putExtra(PLAYIONG_LIST
                             ,(ArrayList<Song>) mISongManager.getSongList());
                     startActivity(intent);

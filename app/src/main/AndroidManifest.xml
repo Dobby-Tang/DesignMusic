@@ -13,18 +13,32 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.DesignDemo">
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:name=".MainActivityTest"
+            android:label="@string/app_name"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.activity.MusicPlayerActivity"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize"/>
+
+        <activity
+            android:name=".ui.activity.AlbumSongActivity"
+            android:label="@string/title_activity_album_song"
+            android:theme="@style/Theme.DesignDemo"
+            android:configChanges="orientation|screenSize"/>
+
+        <activity
+            android:name=".ui.activity.ArtistSongActivity"
+            android:label="@string/title_activity_artist_song"
+            android:theme="@style/Theme.DesignDemo"
+            android:configChanges="orientation|screenSize"/>
 
         <service
             android:name=".player.service.MusicService"
@@ -39,14 +53,6 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".ui.activity.AlbumSongActivity"
-            android:label="@string/title_activity_album_song"
-            android:theme="@style/Theme.DesignDemo" />
-        <activity
-            android:name=".ui.activity.ArtistSongActivity"
-            android:label="@string/title_activity_artist_song"
-            android:theme="@style/Theme.DesignDemo"></activity>
     </application>
 
 </manifest>

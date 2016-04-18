@@ -72,10 +72,6 @@ public class MusicService extends Service {
     MedicalApp medicalApp;
 
     private int nowPlayingPosition = -1;
-//    private int historyPlayingPosition = -1;       //切换模式时的播放序号
-
-//    private SharedPreferences shared ;
-//    private SharedPreferences.Editor editor;
 
     private RemoteCallbackList<IAudioStatusChangeListener> mStatusListener
             = new RemoteCallbackList<>();
@@ -157,7 +153,8 @@ public class MusicService extends Service {
             if (mode == Constant.PLAYING_RANDOM){
                 mSongList = new ArrayList<>();
                 mSongList.addAll(mPlayList);
-                Random rnd = new Random(2);
+                Random random = new Random();
+                Random rnd = new Random(random.nextInt(mSongList.size()));
                 Collections.shuffle(mSongList,rnd);
                 Log.d(TAG, "setPlayingMode: shuffle list ...");
             }else if (mode == Constant.PLAYING_REPEAT){
@@ -528,7 +525,7 @@ public class MusicService extends Service {
                 return i;
             }
         }
-        return 0;
+        return -1;
     }
 
     class getPlayingProgress implements Runnable {

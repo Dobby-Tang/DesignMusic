@@ -19,6 +19,10 @@ public class Constant {
     public static final int PLAYING_REPEAT_ONE = 8;           //单曲循环
     public static final int PLAYING_RANDOM  = 9;              //随机播放
 
+    public static final String PLAYIONG_LIST = "Playing_list";             //所有本地歌曲
+    public static final String PLAYIONG_POSITION = "Playing_position";     //播放歌曲序号
+    public static final String SONG_LIST = "album_song_list" ;        //专辑歌曲列表
+
     public static final String UN_ARTIST = "<unknown>";   //未知艺术家(不加入音乐库)
     public static final String UN_ALBUM = "Music";     //未知专辑不(加入音乐库)
 }
