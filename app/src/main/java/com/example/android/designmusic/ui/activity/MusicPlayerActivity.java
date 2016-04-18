@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.designmusic.ISongManager;
-import com.example.android.designmusic.MainActivity;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
 import com.example.android.designmusic.player.Constant;
@@ -26,7 +25,6 @@ import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.ui.adapter.BaseListAdapter;
 import com.example.android.designmusic.ui.adapter.PlayingListAdapter;
 import com.example.android.designmusic.ui.fragment.MusicPlayerFragment;
-import com.example.android.designmusic.ui.fragment_v21.MusicPlayerFragmentV21;
 import com.facebook.drawee.backends.pipeline.Fresco;
 
 import java.util.ArrayList;
@@ -120,8 +118,8 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
     private void initfindView(){
 
         Intent intent = getIntent();
-        mplayerList = intent.getParcelableArrayListExtra(MainActivity.PLAYIONG_LIST);
-        playerPosition = intent.getIntExtra(MainActivity.PLAYIONG_POSITION,-1);
+        mplayerList = intent.getParcelableArrayListExtra(Constant.PLAYING_LIST);
+        playerPosition = intent.getIntExtra(Constant.PLAYING_POSITION,-1);
 
         songNum = (TextView)findViewById(R.id.music_player_playing_num);
         songName = (TextView)findViewById(R.id.music_player_playing_songname);
@@ -153,11 +151,6 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
 
     }
 
-    private void initMusicPlayerFragmentV21() {
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.music_player_layout, MusicPlayerFragmentV21.newInstance())
-                .commit();
-    }
 
     private void initMusicPlayerFragment(){
         musicPlayerFragment = new MusicPlayerFragment();

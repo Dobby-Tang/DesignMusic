@@ -23,7 +23,6 @@ import android.widget.TextView;
 
 import com.example.android.designmusic.IAudioStatusChangeListener;
 import com.example.android.designmusic.ISongManager;
-import com.example.android.designmusic.MainActivity;
 import com.example.android.designmusic.MedicalApp;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
@@ -150,8 +149,8 @@ public class AlbumSongActivity extends AppCompatActivity {
             @Override
             public void onItemClick(int position, Object data) {
                 Intent intent = new Intent(AlbumSongActivity.this, MusicPlayerActivity.class);
-                intent.putExtra(MainActivity.PLAYIONG_POSITION,position);
-                intent.putExtra(MainActivity.PLAYIONG_LIST
+                intent.putExtra(Constant.PLAYING_POSITION,position);
+                intent.putExtra(Constant.PLAYING_LIST
                         ,(ArrayList<Song>) mDetailSongListAdapter.getData());
                 startActivity(intent);
             }

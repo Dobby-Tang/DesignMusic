@@ -1,17 +1,17 @@
 package com.example.android.designmusic.ui.fragment;
 
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.android.designmusic.MainActivity;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
+import com.example.android.designmusic.player.Constant;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.ui.activity.MusicPlayerActivity;
 import com.example.android.designmusic.ui.adapter.BaseListAdapter;
@@ -63,8 +63,8 @@ public class SongFragment extends Fragment{
                     @Override
                     public void onItemClick(int position, Object data) {
                         Intent intent = new Intent(getActivity(), MusicPlayerActivity.class);
-                        intent.putExtra(MainActivity.PLAYIONG_POSITION,position);
-                        intent.putExtra(MainActivity.PLAYIONG_LIST
+                        intent.putExtra(Constant.PLAYING_POSITION,position);
+                        intent.putExtra(Constant.PLAYING_LIST
                                 ,(ArrayList<Song>) songListAdapter.getData());
                         getActivity().startActivity(intent);
                     }

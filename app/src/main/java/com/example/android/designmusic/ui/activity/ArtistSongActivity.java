@@ -18,10 +18,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.android.designmusic.MainActivity;
 import com.example.android.designmusic.MedicalApp;
 import com.example.android.designmusic.R;
 import com.example.android.designmusic.entity.Song;
+import com.example.android.designmusic.player.Constant;
 import com.example.android.designmusic.task.LoadingMusicTask;
 import com.example.android.designmusic.ui.adapter.ArtistAlbumListAdapter;
 import com.example.android.designmusic.ui.adapter.ArtistSongListAdapter;
@@ -81,7 +81,7 @@ public class ArtistSongActivity extends AppCompatActivity {
 
         medicalApp = (MedicalApp)getApplication();
         Intent intent = getIntent();
-        songList = intent.getParcelableArrayListExtra(MainActivity.SONG_LIST);
+        songList = intent.getParcelableArrayListExtra(Constant.SONG_LIST);
         artistName = intent.getStringExtra(LoadingMusicTask.artistName);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -127,8 +127,8 @@ public class ArtistSongActivity extends AppCompatActivity {
             @Override
             public void onItemClick(int position, Object data) {
                 Intent intent = new Intent(ArtistSongActivity.this, MusicPlayerActivity.class);
-                intent.putExtra(MainActivity.PLAYIONG_POSITION,position);
-                intent.putExtra(MainActivity.PLAYIONG_LIST
+                intent.putExtra(Constant.PLAYING_POSITION,position);
+                intent.putExtra(Constant.PLAYING_LIST
                         ,(ArrayList<Song>) mDetailSongListAdapter.getData());
                 startActivity(intent);
             }

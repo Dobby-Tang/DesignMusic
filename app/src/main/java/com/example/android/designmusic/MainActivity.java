@@ -15,16 +15,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.example.android.designmusic.ui.activity.BaseActivity;
 import com.example.android.designmusic.ui.adapter.HomeFragmentPagerAdapter;
 import com.example.android.designmusic.ui.fragment.AlbumFragment;
 import com.example.android.designmusic.ui.fragment.ArtistFragment;
 import com.example.android.designmusic.ui.fragment.SongFragment;
-import com.facebook.drawee.view.SimpleDraweeView;
-import com.wnafee.vector.MorphButton;
 
 
 /**
@@ -35,111 +31,15 @@ public class MainActivity extends BaseActivity {
 
     private static final String TAG = "MainActivity";
 
-    public static final String PLAYIONG_LIST = "Playing_list";             //所有本地歌曲
-    public static final String PLAYIONG_POSITION = "Playing_position";     //播放歌曲序号
-    public static final String SONG_LIST = "album_song_list" ;        //专辑歌曲列表
-
     private DrawerLayout mDrawerLayout;
     private Resources resources;
 
-    private TextView songName;
-    private TextView artistName;
-    private MorphButton play;
-    private SimpleDraweeView albumCover;
-    private LinearLayout playingBottomView;
     ViewPager viewPager;
 
-//    private ISongManager mISongManager;
-//    private ServiceConnection serviceConnection = new ServiceConnection() {
-//        @Override
-//        public void onServiceConnected(ComponentName name, IBinder service) {
-//            mISongManager = ISongManager.Stub.asInterface(service);
-//            try {
-//                mISongManager.registerAudioCallBack(mlistener);
-//                if (mISongManager.isPlaying()){
-//                    play.setState(MorphButton.MorphState.START);
-//                }else {
-//                    play.setState(MorphButton.MorphState.END);
-//                }
-//
-//                if (mISongManager.getSongPosition() < 0){
-//                    playingBottomView.setVisibility(View.GONE);
-//                }else {
-//                    updateBottomPlayView(mISongManager.getSongItem());
-//                }
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName name) {
-//
-//        }
-//    };
-
-
-//    private Handler mHandler = new Handler(){
-//        @Override
-//        public void handleMessage(Message msg) {
-//            switch (msg.what){
-//                case Constant.PLAYING_CALL_BACK:
-//                    Song song = (Song)msg.obj;
-//                    try {
-//                        updateBottomPlayView(song);
-//                    } catch (RemoteException e) {
-//                        e.printStackTrace();
-//                    }
-//                    break;
-//                case Constant.IS_PLAYING:
-//                    play.setState(MorphButton.MorphState.START);
-//                    break;
-//                case Constant.IS_UN_PLAYING:
-//                    play.setState(MorphButton.MorphState.END);
-//                    break;
-//            }
-//
-//        }
-//    };
-
-
-//    private IAudioStatusChangeListener mlistener = new IAudioStatusChangeListener.Stub() {
-//        @Override
-//        public void AudioIsStop() throws RemoteException {
-//            Message msg = Message.obtain();
-//            msg.what = Constant.IS_UN_PLAYING;
-//            mHandler.sendMessage(msg);
-//        }
-//
-//        @Override
-//        public void AudioIsPause() throws RemoteException {
-//            Message msg = Message.obtain();
-//            msg.what = Constant.IS_UN_PLAYING;
-//            mHandler.sendMessage(msg);
-//        }
-//
-//        @Override
-//        public void AudioIsPlaying() throws RemoteException {
-//            Message msg = Message.obtain();
-//            msg.what = Constant.IS_PLAYING;
-//            mHandler.sendMessage(msg);
-//        }
-//
-//        @Override
-//        public void playingCallback(int position,Song song) throws RemoteException {
-//            Log.d(TAG, "playingCallback: "+ song.song.get(LoadingMusicTask.songName));
-//            Message msg = Message.obtain();
-//            msg.what = Constant.PLAYING_CALL_BACK;
-//            msg.obj = song;
-//            mHandler.sendMessage(msg);
-//        }
-//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        Fresco.initialize(MainActivity.this);
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         setBottomViewVisibility(true);
         initBottomView();
@@ -187,25 +87,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-//        if (mISongManager != null){
-//            try {
-//                if (mISongManager.isPlaying()){
-//                    play.setState(MorphButton.MorphState.START);
-//                }else {
-//                    play.setState(MorphButton.MorphState.END);
-//                }
-//
-//                if (mISongManager.getSongPosition() < 0){
-//                    playingBottomView.setVisibility(View.GONE);
-//                }else {
-//                    updateBottomPlayView(mISongManager.getSongItem());
-//                }
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
-//        }else{
-//            playingBottomView.setVisibility(View.GONE);
-//        }
     }
 
 
@@ -213,14 +94,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        if (mISongManager != null){
-//            try {
-//                mISongManager.unregisterAudioCallBack(mlistener);
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        unbindService(serviceConnection);
     }
 
     @Override
@@ -241,57 +114,6 @@ public class MainActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    private void initView(){
-//        songName = (TextView)findViewById(R.id.home_music_name);
-//        artistName = (TextView)findViewById(R.id.home_artist_name);
-//        play = (MorphButton)findViewById(R.id.home_music_playBtn);
-//        albumCover = (SimpleDraweeView)findViewById(R.id.home_music_album_img);
-//        playingBottomView = (LinearLayout)findViewById(R.id.playing_bottom_view);
-//
-//        playingBottomView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                try {
-//                    Intent intent = new Intent(MainActivity.this, MusicPlayerActivity.class);
-//                    intent.putExtra(PLAYIONG_POSITION,mISongManager.getSongPosition());
-//                    intent.putExtra(PLAYIONG_LIST
-//                            ,(ArrayList<Song>) mISongManager.getSongList());
-//                    startActivity(intent);
-//                } catch (RemoteException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//
-//        play.setOnStateChangedListener(new MorphButton.OnStateChangedListener() {
-//            @Override
-//            public void onStateChanged(MorphButton.MorphState changedTo, boolean isAnimating) {
-//                switch (changedTo){
-//                    case START:
-//                        try {
-//                            int position = -1;
-//                            position = mISongManager.getSongPosition();
-//                            if (position >= 0){
-//                                mISongManager.play(position);
-//                            }
-//                        } catch (RemoteException e) {
-//                            e.printStackTrace();
-//                        }
-//                        break;
-//                    case END:
-//                        try {
-//                            mISongManager.pause();
-//                        } catch (RemoteException e) {
-//                            e.printStackTrace();
-//                        }
-//                        break;
-//                }
-//
-//            }
-//        });
-
-//    }
-
     private void setupViewPager(ViewPager viewPager){
         HomeFragmentPagerAdapter homeFragmentPagerAdapter =
                 new HomeFragmentPagerAdapter(getSupportFragmentManager());
@@ -311,20 +133,6 @@ public class MainActivity extends BaseActivity {
         viewPager.setAdapter(homeFragmentPagerAdapter);
     }
 
-//    private void updateBottomPlayView(Song song) throws RemoteException {
-//        if (song != null){
-//            int padding_in_dp = 64;  // 6 dps
-//            final float scale = getResources().getDisplayMetrics().density;
-//            int padding_in_px = (int) (padding_in_dp * scale + 0.5f);
-//            viewPager.setPadding(0,0,0,padding_in_px);
-//            playingBottomView.setVisibility(View.VISIBLE);
-//            songName.setText(song.song.get(LoadingMusicTask.songName));
-//            artistName.setText(song.song.get(LoadingMusicTask.artistName));
-//            Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri
-//                    ,Integer.valueOf(song.song.get(LoadingMusicTask.albumId)));
-//            albumCover.setImageURI(uri);
-//        }
-//    }
 
     @Override
     protected void handleMessageCallback(Message msg) {

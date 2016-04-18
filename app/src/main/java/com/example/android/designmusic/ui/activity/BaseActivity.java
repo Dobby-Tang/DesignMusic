@@ -174,8 +174,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     try {
                         Intent intent = new Intent(BaseActivity.this, MusicPlayerActivity.class);
-                        intent.putExtra(Constant.PLAYIONG_POSITION,mISongManager.getPlayingListPosition());
-                        intent.putExtra(Constant.PLAYIONG_LIST
+                        intent.putExtra(Constant.PLAYING_POSITION,mISongManager.getPlayingListPosition());
+                        intent.putExtra(Constant.PLAYING_LIST
                                 ,(ArrayList<Song>) mISongManager.getSongList());
                         startActivity(intent);
                     } catch (RemoteException e) {
