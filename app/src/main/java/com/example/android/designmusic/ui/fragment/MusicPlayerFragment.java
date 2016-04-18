@@ -80,11 +80,10 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
                 mHandler.sendMessage(msg);
                 Log.d(TAG,"select positon is " + position + " get service now playing position = "
                         + mISongManager.getSongItem());
-                if (mISongManager.getPlayingMode() != Constant.PLAYING_RANDOM){
-                    mISongManager.play(position);
-                }else {
+                if (mISongManager.getSongPosition() != position){
                     mISongManager.play(mISongManager.setSongPosition(position));
                 }
+
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

@@ -58,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
     public static final String PLAYIONG_POSITION = "Playing_position";     //播放歌曲序号
     public static final String SONG_LIST = "album_song_list" ;        //专辑歌曲列表
 
-    private boolean startClick = false;   //由于启动时设置按钮状态导致的点击事件
-
     private DrawerLayout mDrawerLayout;
     private Resources resources;
 
@@ -77,6 +75,17 @@ public class MainActivity extends AppCompatActivity {
             mISongManager = ISongManager.Stub.asInterface(service);
             try {
                 mISongManager.registerAudioCallBack(mlistener);
+                if (mISongManager.isPlaying()){
+                    play.setState(MorphButton.MorphState.START);
+                }else {
+                    play.setState(MorphButton.MorphState.END);
+                }
+
+                if (mISongManager.getSongPosition() < 0){
+                    playingBottomView.setVisibility(View.GONE);
+                }else {
+                    updateBottomPlayView(mISongManager.getSongItem());
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -197,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         if (mISongManager != null){
             try {
-                startClick = true;
                 if (mISongManager.isPlaying()){
                     play.setState(MorphButton.MorphState.START);
                 }else {

@@ -66,6 +66,9 @@ public class MusicService extends Service {
     public List<Song> mPlayList;                  //播放列表
     private MediaPlayer mPlayer;
 
+    ArrayList<IRefreshCurrentTimeListener> refreshListenerList
+            = new ArrayList<>();                 //播放进度回调监听器队列
+
     MedicalApp medicalApp;
 
     private int nowPlayingPosition = -1;
@@ -132,6 +135,11 @@ public class MusicService extends Service {
         @Override
         public int setSongPosition(int position) throws RemoteException {
             return getSongListPos(position);
+        }
+
+        @Override
+        public int getPlayingListPosition() throws RemoteException {
+            return getPlayListPos();
         }
 
         @Override
@@ -333,20 +341,8 @@ public class MusicService extends Service {
                 mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_TRUE);
                 mPlayer.start();
             }
-            int listenerNum = mStatusListener.beginBroadcast();
-            for (int i = 0;i < listenerNum;i++){
-                IAudioStatusChangeListener listener = mStatusListener.getBroadcastItem(i);
-                if (listener != null){
-                    try {
-                        setSongIsPlayingFlag(songPosition);
-                        listener.playingCallback(getPlayListPos(),mSongList.get(songPosition));
-                        medicalApp.execute(new getPlayingProgress());
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            mStatusListener.finishBroadcast();
+            setCallbackListener(songPosition);
+            medicalApp.execute(new getPlayingProgress());
 
         }
     }
@@ -411,25 +407,32 @@ public class MusicService extends Service {
     }
 
 
-//    private IAudioStatusChangeListener getIAudioStatusChangeListener(int listenerNum){
-//        IAudioStatusChangeListener listener = null;
-//        if(listenerNum >= 0) {
-//            listener = mStatusListener.getBroadcastItem(listenerNum);
-//            return listener;
-//        }
-//        return null;
-//    }
+    /**
+     * 设置播放回调监听器
+    *@author By Dobby Tang
+    *Created on 2016-04-18 10:34
+    */
+    private void setCallbackListener(int songPosition){
+        int statusListenerNum = mStatusListener.beginBroadcast();
+        for (int i = 0;i < statusListenerNum;i++){
+            IAudioStatusChangeListener listener = mStatusListener.getBroadcastItem(i);
+            if (listener != null){
+                try {
+                    setSongIsPlayingFlag(songPosition);
+                    listener.playingCallback(getPlayListPos(),mSongList.get(songPosition));
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        mStatusListener.finishBroadcast();
 
-//    private IRefreshCurrentTimeListener getIRefreshCurrentTimeListener(){
-//        IRefreshCurrentTimeListener listener = null ;
-//        int num = mRefreshTimeListener.beginBroadcast();
-//        if(num > 0 ){
-//            listener = mRefreshTimeListener.getBroadcastItem(0);
-//        }
-//        mRefreshTimeListener.finishBroadcast();
-//        return listener;
-//    }
-
+        int refreshListenerNum = mRefreshTimeListener.beginBroadcast();
+        for (int i = 0;i < refreshListenerNum;i++){
+            refreshListenerList.add(mRefreshTimeListener.getBroadcastItem(i));
+        }
+        mRefreshTimeListener.finishBroadcast();
+    }
 
 
     /**
@@ -533,16 +536,13 @@ public class MusicService extends Service {
         @Override
         public void run() {
             if (mPlayer != null){
-                ArrayList<IRefreshCurrentTimeListener> listener = new ArrayList<>();
-                int listenerNum = mRefreshTimeListener.beginBroadcast();
-                for (int i = 0;i < listenerNum;i++){
-                    listener.add(mRefreshTimeListener.getBroadcastItem(i));
-                }
-                mRefreshTimeListener.finishBroadcast();
                 while (mPlayer.isPlaying()){
                     try {
-                        for (int i = 0;i < listenerNum;i++){
-                            listener.get(i).playingCurrentTimeCallback(mPlayer.getCurrentPosition());
+                        if (refreshListenerList.size() > 0) {
+                            for (int i = 0;i < refreshListenerList.size();i++){
+                                refreshListenerList.get(i)
+                                        .playingCurrentTimeCallback(mPlayer.getCurrentPosition());
+                            }
                         }
                         Thread.sleep(500);
                     } catch (RemoteException e) {
@@ -550,6 +550,7 @@ public class MusicService extends Service {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
                 }
             }
         }

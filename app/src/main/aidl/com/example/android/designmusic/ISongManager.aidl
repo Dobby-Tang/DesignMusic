@@ -11,6 +11,7 @@ interface ISongManager {
      void addSong(in Song song);
      int getSongPosition();
      int setSongPosition(in int position);
+     int getPlayingListPosition();
      Song getSongItem();
      int getPlayingMode();
      void setPlayingMode(int mode);
