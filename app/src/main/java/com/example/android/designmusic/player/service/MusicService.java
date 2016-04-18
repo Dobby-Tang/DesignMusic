@@ -140,6 +140,9 @@ public class MusicService extends Service {
 
         @Override
         public Song getSongItem() throws RemoteException {
+            if (nowPlayingPosition >= 0){
+                return mSongList.get(nowPlayingPosition);
+            }
             return null;
         }
 
@@ -199,6 +202,9 @@ public class MusicService extends Service {
         public void next() throws RemoteException {
             if (mPlayingMode != Constant.PLAYING_REPEAT_ONE){
                 nextSong();
+            }else {
+                mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
+                player(nowPlayingPosition);
             }
         }
 
@@ -206,6 +212,9 @@ public class MusicService extends Service {
         public void last() throws RemoteException {
             if (mPlayingMode != Constant.PLAYING_REPEAT_ONE){
                 lastSong();
+            }else {
+                mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
+                player(nowPlayingPosition);
             }
         }
 

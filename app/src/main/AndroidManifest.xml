@@ -13,7 +13,7 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.DesignDemo">
         <activity
-            android:name=".MainActivityTest"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:configChanges="orientation|screenSize">
             <intent-filter>

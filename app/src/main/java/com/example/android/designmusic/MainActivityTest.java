@@ -14,7 +14,8 @@ public class MainActivityTest extends BaseActivity{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_album_song);
+        initBottomView();
     }
 
     @Override
@@ -24,6 +25,11 @@ public class MainActivityTest extends BaseActivity{
 
     @Override
     protected void initISongManager(ISongManager mISongManager) {
+
+    }
+
+    @Override
+    protected void bottomIsVisibility(boolean isVisibility, int height) {
 
     }
 }

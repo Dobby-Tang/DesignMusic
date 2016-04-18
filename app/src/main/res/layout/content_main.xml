@@ -46,8 +46,8 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@android:drawable/ic_dialog_email" />
 
-    <include layout="@layout/activity_now_playing"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"/>
+    <!--<include layout="@layout/activity_now_playing"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom"/>-->
 </android.support.design.widget.CoordinatorLayout>
