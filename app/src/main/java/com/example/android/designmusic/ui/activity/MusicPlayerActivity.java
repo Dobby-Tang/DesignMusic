@@ -48,7 +48,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
     private CoordinatorLayout mCoordinatorLayout;
 
     private RecyclerView bottomListView;
-    private TextView songNum;
+    private TextView artistName;
     private TextView songName;
     private ImageView songListBtn;
     private BottomSheetDialog bottomSheetDialog;
@@ -121,7 +121,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
         mplayerList = intent.getParcelableArrayListExtra(Constant.PLAYING_LIST);
         playerPosition = intent.getIntExtra(Constant.PLAYING_POSITION,-1);
 
-        songNum = (TextView)findViewById(R.id.music_player_playing_num);
+        artistName = (TextView)findViewById(R.id.music_player_playing_artistname);
         songName = (TextView)findViewById(R.id.music_player_playing_songname);
         songListBtn = (ImageView)findViewById(R.id.music_player_song_list_btn);
 
@@ -197,11 +197,11 @@ public class MusicPlayerActivity extends AppCompatActivity implements MusicPlaye
 
 
     @Override
-    public void onSongPosition(int position) {
-        if (position >= 0 ){
-            playerPosition = position;
-            songNum.setText(position + 1 + "");
-            songName.setText(mplayerList.get(position).song.get(LoadingMusicTask.songName));
+    public void onSongPosition(Song song,int position) {
+        playerPosition = position;
+        if (song != null){
+            artistName.setText(song.song.get(LoadingMusicTask.artistName));
+            songName.setText(song.song.get(LoadingMusicTask.songName));
         }
     }
 

@@ -44,6 +44,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final boolean BOOTOM_GONE = false;
 
     private boolean bottomViewIsVisibility = false;
+    private boolean existCoordinatorLayout = false;
+
+    int paddingInDP = 48;
 
     private TextView songName;
     private TextView artistName;
@@ -69,7 +72,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             initISongManager(mISongManager);
             try {
                 mISongManager.registerAudioCallBack(mlistener);
-                if (bottomViewIsVisibility){
+                if (bottomViewIsVisibility && existCoordinatorLayout){
                     if (mISongManager.isPlaying()) {
                         play.setState(MorphButton.MorphState.START);
                     } else {
@@ -147,76 +150,91 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
     public void initBottomView(){
+        existCoordinatorLayout = false;
+        if (bottomViewIsVisibility ){
+            View view =((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
+            if (view instanceof CoordinatorLayout){
+                existCoordinatorLayout = true;
+            }else{
+                while (!(view instanceof CoordinatorLayout)){
+                    ViewGroup viewGroup= (ViewGroup)view;
+                    view = viewGroup.getChildAt(0);
+                    if (view instanceof CoordinatorLayout){
+                        existCoordinatorLayout = true;
+                        break;
+                    }
+                }
+            }
 
-        if (bottomViewIsVisibility){
-            bottomViewGroup= (CoordinatorLayout) ((ViewGroup) this
-                    .findViewById(android.R.id.content)).getChildAt(0);
-
-            playingBottomView = LayoutInflater.from(this).inflate(R.layout.activity_now_playing,null);
-            songName = (TextView)playingBottomView.findViewById(R.id.home_music_name);
-            artistName = (TextView)playingBottomView.findViewById(R.id.home_artist_name);
-            play = (MorphButton)playingBottomView.findViewById(R.id.home_music_playBtn);
-            albumCover = (SimpleDraweeView)playingBottomView.findViewById(R.id.home_music_album_img);
+            if(existCoordinatorLayout){
+                bottomViewGroup = (CoordinatorLayout) view;
+                playingBottomView = LayoutInflater.from(this).inflate(R.layout.activity_now_playing,null);
+                songName = (TextView)playingBottomView.findViewById(R.id.home_music_name);
+                artistName = (TextView)playingBottomView.findViewById(R.id.home_artist_name);
+                play = (MorphButton)playingBottomView.findViewById(R.id.home_music_playBtn);
+                albumCover = (SimpleDraweeView)playingBottomView.findViewById(R.id.home_music_album_img);
 //        playingBottomView = (LinearLayout)findViewById(R.id.playing_bottom_view);
 
-            int paddingInDP = 64;  // 64 dps
-            final float scale = getResources().getDisplayMetrics().density;
-            bottomViewHeight = (int) (paddingInDP * scale + 0.5f);
+                final float scale = getResources().getDisplayMetrics().density;
+                bottomViewHeight = (int) (paddingInDP * scale + 0.5f);
 
-            CoordinatorLayout.LayoutParams lp = new CoordinatorLayout
-                    .LayoutParams(CoordinatorLayout.LayoutParams.WRAP_CONTENT,
-                    CoordinatorLayout.LayoutParams.WRAP_CONTENT);
-            lp.gravity = Gravity.BOTTOM;
-            bottomViewGroup.addView(playingBottomView,lp);
 
-            playingBottomView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        Intent intent = new Intent(BaseActivity.this, MusicPlayerActivity.class);
-                        intent.putExtra(Constant.PLAYING_POSITION,mISongManager.getPlayingListPosition());
-                        intent.putExtra(Constant.PLAYING_LIST
-                                ,(ArrayList<Song>) mISongManager.getSongList());
-                        startActivity(intent);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+                CoordinatorLayout.LayoutParams lp = new CoordinatorLayout
+                        .LayoutParams(CoordinatorLayout.LayoutParams.WRAP_CONTENT,
+                        CoordinatorLayout.LayoutParams.WRAP_CONTENT);
+                lp.gravity = Gravity.BOTTOM;
+                bottomViewGroup.addView(playingBottomView,lp);
+
+                playingBottomView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            Intent intent = new Intent(BaseActivity.this, MusicPlayerActivity.class);
+                            intent.putExtra(Constant.PLAYING_POSITION,mISongManager.getPlayingListPosition());
+                            intent.putExtra(Constant.PLAYING_LIST
+                                    ,(ArrayList<Song>) mISongManager.getSongList());
+                            startActivity(intent);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
+                });
 
-            play.setOnStateChangedListener(new MorphButton.OnStateChangedListener() {
-                @Override
-                public void onStateChanged(MorphButton.MorphState changedTo, boolean isAnimating) {
-                    switch (changedTo){
-                        case START:
-                            try {
-                                int position = -1;
-                                position = mISongManager.getSongPosition();
-                                if (position >= 0){
-                                    mISongManager.play(position);
+                play.setOnStateChangedListener(new MorphButton.OnStateChangedListener() {
+                    @Override
+                    public void onStateChanged(MorphButton.MorphState changedTo, boolean isAnimating) {
+                        switch (changedTo){
+                            case START:
+                                try {
+                                    int position = -1;
+                                    position = mISongManager.getSongPosition();
+                                    if (position >= 0){
+                                        mISongManager.play(position);
+                                    }
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                        case END:
-                            try {
-                                mISongManager.pause();
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                    }
+                                break;
+                            case END:
+                                try {
+                                    mISongManager.pause();
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                        }
 
-                }
-            });
+                    }
+                });
+            }
         }
+
 
     }
 
 
     private void updateBottomPlayView(Song song) throws RemoteException {
-        if (bottomViewIsVisibility){
+        if (bottomViewIsVisibility && existCoordinatorLayout){
             if (song != null){
                 bottomIsVisibility(BOOTOM_VISIBILITY,bottomViewHeight);
                 playingBottomView.setVisibility(View.VISIBLE);
@@ -250,7 +268,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (bottomViewIsVisibility){
+        if (bottomViewIsVisibility && existCoordinatorLayout){
             if (mISongManager != null){
                 try {
                     if (mISongManager.isPlaying()){

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.android.designmusic.ui.activity.ArtistSongActivity">
+    tools:context=".ui.activity.ArtistSongActivity1">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -72,7 +72,7 @@
         android:layout_height="284dp"
         android:background="#ffffff"
         android:fitsSystemWindows="true"
-        app:behavior_hideable="true"
+        app:behavior_hideable="false"
         app:behavior_peekHeight="48dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
     </android.support.v7.widget.RecyclerView>

@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class MusicService extends Service {
+public class MusicService extends Service implements MediaPlayer.OnPreparedListener{
 
     public final static int PAUSED = 0;
     public final static int PLAYING = 1;
@@ -174,13 +174,7 @@ public class MusicService extends Service {
         @Override
         public void play(int songPosition) throws RemoteException{
             Log.d(TAG, "play: songPosition is " + songPosition);
-            if ( mPlayingMode == Constant.PLAYING_REPEAT){
-                player(songPosition);
-            }else if(mPlayingMode == Constant.PLAYING_REPEAT_ONE){
-                player(songPosition);
-            }else if (mPlayingMode == Constant.PLAYING_RANDOM ){
-                player(songPosition);
-            }
+            player(songPosition);
         }
 
         @Override
@@ -290,6 +284,7 @@ public class MusicService extends Service {
         mComponentName = new ComponentName(getPackageName()
                 ,RemoteControlReceiver.class.getName());
 
+        mPlayer.setOnPreparedListener(this);
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -312,10 +307,11 @@ public class MusicService extends Service {
 
 
     public void playingSetting(int position){
-        mPlayer.reset();
         try {
+            mPlayer.stop();
+            mPlayer.reset();
             mPlayer.setDataSource(mSongList.get(position).song.get(songPath));
-            mPlayer.prepare();
+            mPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
@@ -331,24 +327,25 @@ public class MusicService extends Service {
 
     public void player(int songPosition){
         if (requestAudioFocus() == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
-            Log.d(TAG,"now playingPosition is : "+nowPlayingPosition+" songPosition is : "+
-                    songPosition);
             if(state == PAUSED && mSongList.get(songPosition).song.get(isPlaying)
                     .equals(isPlaying_TRUE)){
+                Log.d(TAG, "player: is playing");
                 state = PLAYING;
                 mPlayer.start();
-            }else if(!isSameList || mSongList.get(songPosition).song.get(isPlaying)
+            }else if( mSongList.get(songPosition).song.get(isPlaying)
                     .equals(isPlaying_FALSE)) {
-                mSongList.get(songPosition).song.put(isPlaying,isPlaying_FALSE);
+                Log.d(TAG, "player: is un playing"+
+                        String.valueOf(!isSameList)
+                        + String.valueOf(mSongList.get(songPosition).song.get(isPlaying)
+                        .equals(isPlaying_FALSE)));
+                mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_FALSE);
                 nowPlayingPosition = songPosition;
                 state = PLAYING;
-                mPlayer.reset();
                 playingSetting(nowPlayingPosition);
                 mSongList.get(nowPlayingPosition).song.put(isPlaying,isPlaying_TRUE);
-                mPlayer.start();
+//                mPlayer.start();
             }
             setCallbackListener(songPosition);
-            medicalApp.execute(new getPlayingProgress());
 
         }
     }
@@ -361,10 +358,10 @@ public class MusicService extends Service {
                 songPosition = nowPlayingPosition + 1;
             }else {
                 songPosition = 0;
+                mSongList.get(songPosition).song.put(isPlaying,isPlaying_FALSE);
             }
             if (songPosition >= 0){
                 state = STOP;
-//                mSongList.get(songPosition).song.put(isPlaying,isPlaying_FALSE);
                 player(songPosition);
             }
 
@@ -378,6 +375,7 @@ public class MusicService extends Service {
                 songPosition = nowPlayingPosition - 1;
             }else {
                 songPosition = mSongList.size() - 1;
+                mSongList.get(songPosition).song.put(isPlaying,isPlaying_FALSE);
             }
             if (songPosition >= 0){
                 state = STOP;
@@ -535,6 +533,12 @@ public class MusicService extends Service {
             }
         }
         return -1;
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        mp.start();
+        medicalApp.execute(new getPlayingProgress());
     }
 
     class getPlayingProgress implements Runnable {

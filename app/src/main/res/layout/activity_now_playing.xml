@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fitsSystemWindows="true"
-    android:layout_gravity="bottom"
     android:orientation="vertical">
     
     <View
@@ -16,7 +15,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="48dp"
         android:background="@color/window_background">
 
         <com.facebook.drawee.view.SimpleDraweeView
@@ -32,9 +31,8 @@
             android:id="@+id/home_music_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textColor="#333333"
-            android:textStyle="bold"
             android:text="lsadjflk"
             android:layout_alignTop="@id/home_music_album_img"
             android:layout_marginLeft="72dp" />
@@ -43,7 +41,7 @@
             android:id="@+id/home_artist_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:fontFamily="sans-serif-regular"
             android:layout_below="@id/home_music_name"
             android:layout_marginTop="8dp"
@@ -52,9 +50,9 @@
 
         <com.wnafee.vector.MorphButton
             android:id="@+id/home_music_playBtn"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:padding="16dp"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:padding="8dp"
             android:layout_gravity="center"
             app:vc_foregroundTint="#333333"
             app:vc_startDrawable="@drawable/ic_play_to_pause"

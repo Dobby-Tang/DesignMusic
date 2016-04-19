@@ -110,7 +110,7 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
                         initSongData(song);
                     }
                     position = msg.arg2;
-                    playingCallbackListener.onSongPosition(position);
+                    playingCallbackListener.onSongPosition(song,msg.arg2);
                     break;
 
                 case Constant.PLAYING_TIME_CALL_BACK:
@@ -377,7 +377,7 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
     *Created on 2016-03-29 14:16
     */
     public interface playingCallback{
-        void onSongPosition(int position);
+        void onSongPosition(Song song,int position);
         void getSongList(ArrayList<Song> SongList);
         void getISongManager(ISongManager mISongManager);
     }

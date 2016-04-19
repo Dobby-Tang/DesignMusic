@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-regular"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textColor="@color/playingSongTextColor"
                 android:singleLine="true"
                 android:ellipsize="marquee"
@@ -47,14 +47,13 @@
                 tools:text="ajldfkjl"/>
 
             <TextView
-                android:id="@+id/music_player_playing_num"
+                android:id="@+id/music_player_playing_artistname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-regular"
                 android:layout_marginTop="8dp"
-                android:textSize="15sp"
+                android:textSize="13sp"
                 android:textColor="@color/playingNumTextColor"
-
                 tools:text="dsafljlksdjfl"/>
         </LinearLayout>
 

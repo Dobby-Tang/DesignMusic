@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:scrollbars="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.android.designmusic.ui.activity.ArtistSongActivity"
+    tools:context=".ui.activity.ArtistSongActivity1"
     tools:showIn="@layout/activity_artist_song">
 </android.support.v7.widget.RecyclerView>
 

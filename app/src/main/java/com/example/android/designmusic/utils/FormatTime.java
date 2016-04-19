@@ -7,7 +7,6 @@ package com.example.android.designmusic.utils;
 public class FormatTime {
 
     public static String secToTime(int time){
-        int hour = 0 ;
         int minute = 0;
         int second = 0;
         String timeStr = null ;
@@ -18,15 +17,6 @@ public class FormatTime {
             if (minute < 60){
                 second = time % 60;
                 timeStr = unitFormat(minute) + ":" + unitFormat(second);
-            }else {
-                hour = minute / 60;
-                if (hour > 99){
-                    return "99:59:59";
-                }
-                minute = minute % 60;
-                second = time - hour * 3600 - minute * 60 ;
-                timeStr = unitFormat(hour) + ":" + unitFormat(minute) + ":" + unitFormat(second);
-
             }
         }
         return timeStr;
