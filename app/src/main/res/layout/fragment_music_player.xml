@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="350dp"
             fresco:actualImageScaleType="fitXY"
+            fresco:failureImageScaleType="fitXY"
             fresco:placeholderImageScaleType="fitXY"
             fresco:placeholderImage="@drawable/hd_default_artwork"
             fresco:failureImage="@drawable/hd_default_artwork"

@@ -29,13 +29,13 @@
             android:configChanges="orientation|screenSize"/>
 
         <activity
-            android:name=".ui.activity.AlbumSongActivity"
-            android:label="@string/title_activity_album_song"
+            android:name=".ui.activity.ArtistSongActivity"
+            android:label="@string/title_activity_artist_song"
             android:theme="@style/Theme.DesignDemo"
             android:configChanges="orientation|screenSize"/>
 
         <activity
-            android:name=".ui.activity.ArtistSongActivity"
+            android:name=".ui.activity.AlbumSongActivity"
             android:label="@string/title_activity_artist_song"
             android:theme="@style/Theme.DesignDemo"
             android:configChanges="orientation|screenSize"/>

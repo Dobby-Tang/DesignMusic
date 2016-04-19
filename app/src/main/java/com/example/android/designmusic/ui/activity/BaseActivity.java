@@ -13,7 +13,6 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +38,7 @@ import java.util.ArrayList;
 */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private static final String TAG = "BaseActivity";
+
     private static final boolean BOOTOM_VISIBILITY = true;
     private static final boolean BOOTOM_GONE = false;
 
@@ -116,7 +115,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         @Override
         public void playingCallback(int position,Song song) throws RemoteException {
-            Log.d(TAG, "playingCallback: "+ song.song.get(LoadingMusicTask.songName));
             Message msg = Message.obtain();
             msg.what = Constant.PLAYING_CALL_BACK;
             msg.obj = song;
@@ -203,25 +201,27 @@ public abstract class BaseActivity extends AppCompatActivity {
                 play.setOnStateChangedListener(new MorphButton.OnStateChangedListener() {
                     @Override
                     public void onStateChanged(MorphButton.MorphState changedTo, boolean isAnimating) {
-                        switch (changedTo){
-                            case START:
-                                try {
-                                    int position = -1;
-                                    position = mISongManager.getSongPosition();
-                                    if (position >= 0){
-                                        mISongManager.play(position);
+                        if (isAnimating){
+                            switch (changedTo){
+                                case START:
+                                    try {
+                                        int position = -1;
+                                        position = mISongManager.getSongPosition();
+                                        if (position >= 0){
+                                            mISongManager.play(position);
+                                        }
+                                    } catch (RemoteException e) {
+                                        e.printStackTrace();
                                     }
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
-                                break;
-                            case END:
-                                try {
-                                    mISongManager.pause();
-                                } catch (RemoteException e) {
-                                    e.printStackTrace();
-                                }
-                                break;
+                                    break;
+                                case END:
+                                    try {
+                                        mISongManager.pause();
+                                    } catch (RemoteException e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                            }
                         }
 
                     }
@@ -234,6 +234,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
     private void updateBottomPlayView(Song song) throws RemoteException {
+
         if (bottomViewIsVisibility && existCoordinatorLayout){
             if (song != null){
                 bottomIsVisibility(BOOTOM_VISIBILITY,bottomViewHeight);
@@ -244,7 +245,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                         ,Integer.valueOf(song.song.get(LoadingMusicTask.albumId)));
                 albumCover.setImageURI(uri);
             }else {
-                Log.d(TAG, "updateBottomPlayView: set bottom is gone");
                 bottomIsVisibility(BOOTOM_GONE,bottomViewHeight);
                 playingBottomView.setVisibility(View.GONE);
             }
@@ -254,7 +254,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     abstract protected void handleMessageCallback(Message msg);
     abstract protected void initISongManager(ISongManager mISongManager);
-    abstract protected void bottomIsVisibility(boolean isVisibility,int height);
+    abstract protected void bottomIsVisibility(boolean isVisibility,int height); //设置是否根据回调调成布局
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -272,16 +272,15 @@ public abstract class BaseActivity extends AppCompatActivity {
             if (mISongManager != null){
                 try {
                     if (mISongManager.isPlaying()){
-                        play.setState(MorphButton.MorphState.START);
-                    }else {
-                        play.setState(MorphButton.MorphState.END);
+                        play.setState(MorphButton.MorphState.START,false);
+                    }else{
+                        play.setState(MorphButton.MorphState.END,false);
                     }
                     updateBottomPlayView(mISongManager.getSongItem());
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
             }else{
-                Log.d(TAG, "onStart: mISongManager is null");
                 bottomIsVisibility(BOOTOM_GONE,bottomViewHeight);
                 playingBottomView.setVisibility(View.GONE);
             }

@@ -1,5 +1,6 @@
 package com.example.android.designmusic.ui.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,12 @@ import java.util.HashMap;
 */
 public class ArtistListAdapter extends BaseListAdapter<HashMap<String,String>> {
 
+    private Context context;
+
+    public ArtistListAdapter(Context context){
+        this.context = context;
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreate(ViewGroup parent, int viewType) {
         View artistItem = LayoutInflater.from(parent.getContext())
@@ -30,7 +37,9 @@ public class ArtistListAdapter extends BaseListAdapter<HashMap<String,String>> {
     public void onBind(RecyclerView.ViewHolder holder, int Realposition
             , HashMap<String, String> data) {
         ((ArtistListHolder)holder).title.setText(data.get(LoadingMusicTask.artistName));
-        ((ArtistListHolder)holder).subTitle.setText(data.get(LoadingMusicTask.albumNum));
+        ((ArtistListHolder)holder).subTitle.setText(
+                context.getResources().getString(R.string.local_album) + ":"
+                        + data.get(LoadingMusicTask.albumNum));
 //        Uri uri = ContentUris.withAppendedId(LoadingMusicTask.albumArtUri
 //                ,Integer.valueOf(data.get(LoadingMusicTask.artistImgPathID)));
 //        ((ArtistListHolder)holder).artistImg.setImageURI(uri);

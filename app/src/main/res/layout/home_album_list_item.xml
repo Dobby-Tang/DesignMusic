@@ -34,6 +34,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/home_album_item_title"
             android:padding="8dp"
+            android:lines="1"
+            android:ellipsize="end"
+            android:layout_marginRight="32dp"
             android:textSize="14sp" />
 
         <ImageView

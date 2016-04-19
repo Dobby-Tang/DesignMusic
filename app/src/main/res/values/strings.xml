@@ -4,8 +4,8 @@
     <string name="action_settings">Settings</string>
 
     <!--抽屉菜单-->
-    <string name="local_music">Local music</string>
-    <string name="find_music">Find music</string>
+    <string name="music_library">Music Library</string>
+    <string name="listen_now">Listen now</string>
 
     <!--本地音乐菜单-->
     <string name="local_song">SONG</string>

@@ -170,6 +170,8 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
         totalTime = (TextView) view.findViewById(R.id.music_player_total_playing_time);
         currentTime = (TextView) view.findViewById(R.id.music_player_current_playing_time);
 
+        playerBtn.setState(MorphButton.MorphState.START);
+
         nextBtn.setOnClickListener(this);
         lastBtn.setOnClickListener(this);
 
@@ -177,14 +179,16 @@ public class MusicPlayerFragment extends Fragment implements View.OnClickListene
             @Override
             public void onStateChanged(MorphButton.MorphState changedTo, boolean isAnimating) {
                 try {
-                    switch (changedTo){
-                        case START:
-                            position = mISongManager.getSongPosition();
-                            mISongManager.play(position);
-                            break;
-                        case END:
-                            mISongManager.pause();
-                            break;
+                    if (mISongManager != null){
+                        switch (changedTo){
+                            case START:
+                                position = mISongManager.getSongPosition();
+                                mISongManager.play(position);
+                                break;
+                            case END:
+                                mISongManager.pause();
+                                break;
+                        }
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();

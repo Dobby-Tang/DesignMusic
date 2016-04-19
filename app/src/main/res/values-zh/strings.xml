@@ -5,8 +5,8 @@
 
 
     <!--抽屉菜单-->
-    <string name="local_music">本地音乐</string>
-    <string name="find_music">发现音乐</string>
+    <string name="music_library">音乐库</string>
+    <string name="listen_now">立即欣赏</string>
 
     <!--本地音乐菜单-->
     <string name="local_song">歌曲</string>

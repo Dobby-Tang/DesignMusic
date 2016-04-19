@@ -1,26 +1,21 @@
 package com.example.android.designmusic;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.example.android.designmusic.ui.activity.BaseActivity;
-import com.example.android.designmusic.ui.adapter.HomeFragmentPagerAdapter;
-import com.example.android.designmusic.ui.fragment.AlbumFragment;
-import com.example.android.designmusic.ui.fragment.ArtistFragment;
-import com.example.android.designmusic.ui.fragment.SongFragment;
+import com.example.android.designmusic.ui.fragment.HomeViewPagerFragment;
 
 
 /**
@@ -32,9 +27,11 @@ public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
 
     private DrawerLayout mDrawerLayout;
-    private Resources resources;
+    private FrameLayout homeFrameLayout;
+    private Toolbar toolbar;
+    private NavigationView navigationView;
 
-    ViewPager viewPager;
+    private HomeViewPagerFragment homeViewPagerFragment;
 
 
     @Override
@@ -44,28 +41,10 @@ public class MainActivity extends BaseActivity {
         setBottomViewVisibility(true);
         initBottomView();
 
-        resources = getResources();
+        initView();
+        initStartFragment();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        final ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.mipmap.ic_menu);
-        ab.setDisplayHomeAsUpEnabled(true);
-
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.main_nav_view);
-        if(navigationView != null){
-            setupDrawerContent(navigationView);
-        }
-
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        if(viewPager != null){
-            setupViewPager(viewPager);
-        }
-
-       FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,14 +52,6 @@ public class MainActivity extends BaseActivity {
                         .setAction("Action", null).show();
             }
         });
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-
-//        Intent intent = new Intent(this, MusicService.class);
-//        bindService(intent,serviceConnection, Context.BIND_AUTO_CREATE);
-
-//        initView();
 
     }
 
@@ -114,25 +85,6 @@ public class MainActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupViewPager(ViewPager viewPager){
-        HomeFragmentPagerAdapter homeFragmentPagerAdapter =
-                new HomeFragmentPagerAdapter(getSupportFragmentManager());
-
-        SongFragment songFragment = SongFragment.newInstance(SongFragment.TYPE_SONG);
-        homeFragmentPagerAdapter.addFragment(
-                songFragment,resources.getString(R.string.local_song));
-
-        ArtistFragment artistFragment = ArtistFragment.newInstance(ArtistFragment.TYPE_ARTIST);
-        homeFragmentPagerAdapter.addFragment(
-                artistFragment,resources.getString(R.string.local_artist));
-
-        AlbumFragment albumFragment = AlbumFragment.newInstance(AlbumFragment.TYPE_ALBUM);
-        homeFragmentPagerAdapter.addFragment(
-                albumFragment,resources.getString(R.string.local_album));
-
-        viewPager.setAdapter(homeFragmentPagerAdapter);
-    }
-
 
     @Override
     protected void handleMessageCallback(Message msg) {
@@ -146,21 +98,38 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void bottomIsVisibility(boolean isVisibility, int height) {
-        if (isVisibility){
-            viewPager.setPadding(0,0,0,height);
+        if (isVisibility && homeFrameLayout != null){
+            homeFrameLayout.setPadding(0,0,0,height);
         }else{
-            viewPager.setPadding(0,0,0,0);
+            homeFrameLayout.setPadding(0,0,0,0);
         }
     }
 
 
-    private void setupDrawerContent(NavigationView navigationView){
+    private void initView(){
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        final ActionBar ab = getSupportActionBar();
+        ab.setHomeAsUpIndicator(R.mipmap.ic_menu);
+        ab.setDisplayHomeAsUpEnabled(true);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.main_nav_view);
+        homeFrameLayout = (FrameLayout)findViewById(R.id.home_fragment);
+        homeViewPagerFragment = new HomeViewPagerFragment();
+
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem item) {
-                        if(item.getItemId() != R.id.sub_1 && item.getItemId() != R.id.sub_2){
-                        item.setChecked(true);
+                        switch (item.getItemId()){
+                            case R.id.music_library:
+                                getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.home_fragment, homeViewPagerFragment).commit();
+                                item.setChecked(true);
+                                toolbar.setTitle(item.getTitle());
+                                break;
                         }
                         mDrawerLayout.closeDrawers();
                         return true;
@@ -168,5 +137,11 @@ public class MainActivity extends BaseActivity {
                 }
 
         );
+    }
+
+    private void initStartFragment(){
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.home_fragment, homeViewPagerFragment).commit();
+        navigationView.getMenu().getItem(1).setChecked(true);
     }
 }

@@ -58,7 +58,7 @@ public class ArtistFragment extends Fragment{
     private void setupHomeList(String mType,RecyclerView mHomeList){
         LoadingMusicTask musicTask;
         if (artistListAdapter == null){
-            artistListAdapter = new ArtistListAdapter();
+            artistListAdapter = new ArtistListAdapter(getActivity());
         }
 
         artistListAdapter.setOnItemClickListener(new BaseListAdapter.OnItemClickListener() {

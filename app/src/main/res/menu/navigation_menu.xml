@@ -2,25 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_home"
-            android:icon="@mipmap/ic_dashboard"
-            android:title="Home"/>
 
         <item
-            android:id="@+id/nav_messages"
-            android:icon="@mipmap/ic_event"
-            android:title="messages"/>
-
-        <item
-            android:id="@+id/nav_friends"
+            android:id="@+id/listen_now"
             android:icon="@mipmap/ic_headset"
-            android:title="Friends"/>
+            android:title="@string/listen_now"/>
 
         <item
-            android:id="@+id/nav_discussion"
+            android:id="@+id/music_library"
             android:icon="@mipmap/ic_forum"
-            android:title="Discussion"/>
+            android:title="@string/music_library"/>
+
     </group>
 
     <item android:title="Sub items">

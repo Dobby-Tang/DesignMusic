@@ -24,6 +24,8 @@
             android:layout_below="@+id/home_artist_item_img"
             android:padding="8dp"
             android:textSize="16sp"
+            android:lines="1"
+            android:ellipsize="end"
             android:textStyle="bold"/>
 
         <TextView
@@ -32,6 +34,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/home_artist_item_title"
             android:padding="8dp"
+            android:layout_marginRight="32dp"
+            android:lines="1"
+            android:ellipsize="end"
             android:textSize="14sp" />
 
         <ImageView
