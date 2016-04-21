@@ -45,7 +45,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private boolean bottomViewIsVisibility = false;
     private boolean existCoordinatorLayout = false;
 
-    int paddingInDP = 48;
+    int paddingInDP = 64;
 
     private TextView songName;
     private TextView artistName;
@@ -166,11 +166,13 @@ public abstract class BaseActivity extends AppCompatActivity {
 
             if(existCoordinatorLayout){
                 bottomViewGroup = (CoordinatorLayout) view;
-                playingBottomView = LayoutInflater.from(this).inflate(R.layout.activity_now_playing,null);
+                playingBottomView = LayoutInflater.from(this)
+                        .inflate(R.layout.activity_now_playing,null);
                 songName = (TextView)playingBottomView.findViewById(R.id.home_music_name);
                 artistName = (TextView)playingBottomView.findViewById(R.id.home_artist_name);
                 play = (MorphButton)playingBottomView.findViewById(R.id.home_music_playBtn);
-                albumCover = (SimpleDraweeView)playingBottomView.findViewById(R.id.home_music_album_img);
+                albumCover = (SimpleDraweeView)playingBottomView
+                        .findViewById(R.id.home_music_album_img);
 //        playingBottomView = (LinearLayout)findViewById(R.id.playing_bottom_view);
 
                 final float scale = getResources().getDisplayMetrics().density;

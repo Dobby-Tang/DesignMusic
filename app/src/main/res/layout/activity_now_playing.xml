@@ -15,7 +15,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="64dp"
         android:background="@color/window_background">
 
         <com.facebook.drawee.view.SimpleDraweeView

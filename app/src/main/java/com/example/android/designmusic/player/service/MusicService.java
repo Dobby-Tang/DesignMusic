@@ -32,7 +32,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public final static int PAUSED = 0;
     public final static int PLAYING = 1;
     public final static int STOP = 2;
+
     public int state = STOP;
+    public int audioState = STOP;
 
     private static final String TAG = "MusicService";
     private static final String PACKAGE_SAYHI = "com.example.android.designmusic";
@@ -455,17 +457,19 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             for (int i = 0;i < listenerNum;i++){
                 IAudioStatusChangeListener listener = mStatusListener.getBroadcastItem(i);
                 if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
-                    state = PAUSED;
-                    mPlayer.pause();
-                    if (listener != null){
-                        try {
-                            listener.AudioIsPause();
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
+                    if (state == PLAYING){
+                        audioState = PAUSED;
+                        mPlayer.pause();
+                        if (listener != null){
+                            try {
+                                listener.AudioIsPause();
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }else if (focusChange == AudioManager.AUDIOFOCUS_GAIN){
-                    if(state == PAUSED){
+                    if(audioState == PAUSED){
                         state = PLAYING;
                         mPlayer.start();
                         if (listener != null){
@@ -478,13 +482,15 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
                     }
 
                 }else if (focusChange== AudioManager.AUDIOFOCUS_LOSS){
-                    state = PAUSED;
-                    mPlayer.pause();
-                    if (listener != null){
-                        try {
-                            listener.AudioIsPause();
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
+                    if(state == PLAYING){
+                        state = PAUSED;
+                        mPlayer.pause();
+                        if (listener != null){
+                            try {
+                                listener.AudioIsPause();
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
 
